@@ -34,6 +34,9 @@ const Navbar = () => {
                 <Link to="/dashboard" className="text-gray-700 hover:text-primary">
                   Dashboard
                 </Link>
+                <Link to="/profile" className="text-gray-700 hover:text-primary">
+                  Profile
+                </Link>
                 {userRole === 'organizer' && (
                   <Link to="/create-fest" className="text-gray-700 hover:text-primary">
                     Create Fest

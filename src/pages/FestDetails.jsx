@@ -64,11 +64,20 @@ const FestDetails = () => {
 
     try {
       setRegistering(true);
+      
+      // Fetch student details from users collection
+      const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+      const userData = userDoc.data();
+      
       await addDoc(collection(db, 'registrations'), {
         festId: id,
         userId: currentUser.uid,
         festName: fest.festName,
         collegeName: fest.collegeName,
+        studentName: userData?.name || currentUser.displayName || 'N/A',
+        studentEmail: userData?.email || currentUser.email,
+        studentPhone: userData?.phone || 'Not provided',
+        studentCollege: userData?.college || 'Not provided',
         registeredAt: new Date().toISOString()
       });
       setIsRegistered(true);

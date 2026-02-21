@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   const [needsRoleSelection, setNeedsRoleSelection] = useState(false);
 
   // Sign up function
-  const signup = async (email, password, name, role) => {
+  const signup = async (email, password, name, role, phone = '', college = '') => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -38,14 +38,22 @@ export const AuthProvider = ({ children }) => {
       await sendEmailVerification(user);
       
       // Create user document in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
+      const userData = {
         name,
         email,
         role,
         emailVerified: false,
         createdAt: new Date().toISOString(),
         authProvider: 'email'
-      });
+      };
+
+      // Add phone and college for students
+      if (role === 'student' && phone && college) {
+        userData.phone = phone;
+        userData.college = college;
+      }
+
+      await setDoc(doc(db, 'users', user.uid), userData);
       
       setUserRole(role);
       return user;

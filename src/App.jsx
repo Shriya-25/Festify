@@ -12,6 +12,7 @@ import FestDetails from './pages/FestDetails';
 import CreateFest from './pages/CreateFest';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import Profile from './pages/Profile';
 
 // Wrapper to handle role selection redirect
 const AppContent = () => {
@@ -54,6 +55,14 @@ const AppContent = () => {
           element={
             <ProtectedRoute requiredRole="admin">
               <Admin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />

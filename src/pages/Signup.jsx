@@ -8,7 +8,9 @@ const Signup = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'student'
+    role: 'student',
+    phone: '',
+    college: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,10 +36,27 @@ const Signup = () => {
       return setError('Password must be at least 6 characters');
     }
 
+    // Validate student-specific fields
+    if (formData.role === 'student') {
+      if (!formData.phone || !formData.college) {
+        return setError('Phone number and college are required for students');
+      }
+      if (formData.phone.length < 10) {
+        return setError('Please enter a valid phone number');
+      }
+    }
+
     try {
       setError('');
       setLoading(true);
-      await signup(formData.email, formData.password, formData.name, formData.role);
+      await signup(
+        formData.email, 
+        formData.password, 
+        formData.name, 
+        formData.role,
+        formData.phone,
+        formData.college
+      );
       // Redirect to email verification page
       navigate('/verify-email');
     } catch (error) {
@@ -159,6 +178,43 @@ const Signup = () => {
                 <option value="organizer">Organizer</option>
               </select>
             </div>
+
+            {/* Additional fields for students */}
+            {formData.role === 'student' && (
+              <>
+                <div>
+                  <label htmlFor="phone" className="label">
+                    Phone Number <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    required
+                    className="input-field"
+                    placeholder="1234567890"
+                    value={formData.phone}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="college" className="label">
+                    College/University <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="college"
+                    name="college"
+                    type="text"
+                    required
+                    className="input-field"
+                    placeholder="Enter your college name"
+                    value={formData.college}
+                    onChange={handleChange}
+                  />
+                </div>
+              </>
+            )}
           </div>
 
           <button
