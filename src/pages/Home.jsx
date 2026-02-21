@@ -28,8 +28,7 @@ const Home = () => {
       setLoading(true);
       const festsQuery = query(
         collection(db, 'fests'),
-        where('status', '==', 'approved'),
-        orderBy('date', 'desc')
+        where('status', '==', 'published')
       );
       
       const querySnapshot = await getDocs(festsQuery);
@@ -38,6 +37,10 @@ const Home = () => {
         ...doc.data()
       }));
       
+      // Sort by date on client side
+      festsData.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      console.log('Fetched published fests:', festsData);
       setFests(festsData);
       setFilteredFests(festsData);
     } catch (error) {

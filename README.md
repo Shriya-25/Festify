@@ -4,7 +4,9 @@ A student-first fest discovery platform where college students can discover fest
 
 ## Features
 
-- 🔐 Authentication (Email/Password)
+- 🔐 Authentication (Email/Password + Google Sign-In)
+- ✉️ Email Verification for email/password sign-ups
+- 👤 Smart Role Selection for Google users
 - 🎉 Browse and search fests
 - 📝 Register for events
 - 🏫 Organizer dashboard to create fests
@@ -41,8 +43,13 @@ npm run dev
 1. Go to Firebase Console
 2. Create a new project
 3. Enable Authentication > Email/Password
-4. Create Firestore Database (Start in test mode)
-5. Copy your config and paste it in `src/firebase/config.js`
+4. Enable Authentication > Google (optional but recommended)
+5. Create Firestore Database (Start in test mode)
+6. Copy your config to `.env` file
+
+**Detailed Guides:**
+- Google Sign-In: See [GOOGLE_SIGNIN_SETUP.md](GOOGLE_SIGNIN_SETUP.md)
+- Email Verification: See [EMAIL_VERIFICATION_GUIDE.md](EMAIL_VERIFICATION_GUIDE.md)
 
 ## Default Admin Account
 

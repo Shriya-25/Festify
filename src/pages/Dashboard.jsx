@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 const Dashboard = () => {
   const { currentUser, userRole } = useAuth();
   const [data, setData] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,6 +42,27 @@ const Dashboard = () => {
           ...doc.data()
         }));
         setData(fests);
+
+        // Fetch registrations for organizer's fests
+        if (fests.length > 0) {
+          const festIds = fests.map(f => f.id);
+          const registrationsQuery = query(
+            collection(db, 'registrations')
+          );
+          const regsSnapshot = await getDocs(registrationsQuery);
+          const allRegistrations = regsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          
+          // Filter registrations for this organizer's fests
+          const filteredRegs = allRegistrations.filter(reg => 
+            festIds.includes(reg.festId)
+          );
+          
+          console.log('Organizer registrations:', filteredRegs);
+          setRegistrations(filteredRegs);
+        }
       } else if (userRole === 'admin') {
         // Fetch all pending fests for approval
         const festsQuery = query(
@@ -64,7 +86,7 @@ const Dashboard = () => {
   const handleApproveFest = async (festId) => {
     try {
       await updateDoc(doc(db, 'fests', festId), {
-        status: 'approved',
+        status: 'published',
         approvedAt: new Date().toISOString()
       });
       fetchDashboardData(); // Refresh data
@@ -168,7 +190,7 @@ const Dashboard = () => {
                             {fest.festName}
                           </h3>
                           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            fest.status === 'approved' 
+                            fest.status === 'published' 
                               ? 'bg-green-100 text-green-800' 
                               : fest.status === 'pending'
                               ? 'bg-yellow-100 text-yellow-800'
@@ -184,7 +206,7 @@ const Dashboard = () => {
                         <p className="text-gray-700 line-clamp-2">{fest.description}</p>
                       </div>
                       <div className="flex gap-2 ml-4">
-                        {fest.status === 'approved' && (
+                        {fest.status === 'published' && (
                           <Link
                             to={`/fest/${fest.id}`}
                             className="btn-secondary text-sm"
@@ -204,6 +226,81 @@ const Dashboard = () => {
                 ))}
               </div>
             )}
+
+            {/* Registrations Section */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Student Registrations</h2>
+              {registrations.length === 0 ? (
+                <div className="text-center py-12 bg-white rounded-lg shadow">
+                  <p className="text-gray-600">No student registrations yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {data.map(fest => {
+                    const festRegistrations = registrations.filter(reg => reg.festId === fest.id);
+                    if (festRegistrations.length === 0) return null;
+                    
+                    return (
+                      <div key={fest.id} className="bg-white rounded-lg shadow p-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">
+                          {fest.festName} - {festRegistrations.length} {festRegistrations.length === 1 ? 'Registration' : 'Registrations'}
+                        </h3>
+                        <div className="overflow-x-auto">
+                          <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Student Name
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Email
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Phone
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  College
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Registered At
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {festRegistrations.map((reg) => (
+                                <tr key={reg.id} className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {reg.studentName}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    {reg.studentEmail}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    {reg.studentPhone}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    {reg.studentCollege}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    {new Date(reg.registeredAt).toLocaleDateString('en-IN', {
+                                      year: 'numeric',
+                                      month: 'short',
+                                      day: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         )}
 

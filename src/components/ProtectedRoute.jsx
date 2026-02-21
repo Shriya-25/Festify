@@ -9,6 +9,12 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" />;
   }
 
+  // Check email verification for email/password users
+  // Google users are automatically verified
+  if (!currentUser.emailVerified && currentUser.providerData[0]?.providerId === 'password') {
+    return <Navigate to="/verify-email" />;
+  }
+
   if (requiredRole && userRole !== requiredRole) {
     return (
       <div className="min-h-screen flex items-center justify-center">

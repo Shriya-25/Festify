@@ -39,6 +39,11 @@ const Navbar = () => {
                     Create Fest
                   </Link>
                 )}
+                {userRole === 'admin' && (
+                  <Link to="/admin" className="text-indigo-600 hover:text-indigo-700 font-semibold">
+                    🔐 Admin Panel
+                  </Link>
+                )}
                 <span className="text-sm text-gray-500">
                   ({userRole})
                 </span>
