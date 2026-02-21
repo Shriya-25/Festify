@@ -1,0 +1,276 @@
+import React, { useState, useEffect } from 'react';
+import { collection, query, where, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
+import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
+
+const Dashboard = () => {
+  const { currentUser, userRole } = useAuth();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [userRole]);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      if (userRole === 'student') {
+        // Fetch student registrations
+        const registrationsQuery = query(
+          collection(db, 'registrations'),
+          where('userId', '==', currentUser.uid)
+        );
+        const querySnapshot = await getDocs(registrationsQuery);
+        const registrations = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setData(registrations);
+      } else if (userRole === 'organizer') {
+        // Fetch organizer's fests
+        const festsQuery = query(
+          collection(db, 'fests'),
+          where('createdBy', '==', currentUser.uid)
+        );
+        const querySnapshot = await getDocs(festsQuery);
+        const fests = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setData(fests);
+      } else if (userRole === 'admin') {
+        // Fetch all pending fests for approval
+        const festsQuery = query(
+          collection(db, 'fests'),
+          where('status', '==', 'pending')
+        );
+        const querySnapshot = await getDocs(festsQuery);
+        const fests = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setData(fests);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApproveFest = async (festId) => {
+    try {
+      await updateDoc(doc(db, 'fests', festId), {
+        status: 'approved',
+        approvedAt: new Date().toISOString()
+      });
+      fetchDashboardData(); // Refresh data
+    } catch (error) {
+      console.error('Error approving fest:', error);
+    }
+  };
+
+  const handleRejectFest = async (festId) => {
+    if (window.confirm('Are you sure you want to reject this fest?')) {
+      try {
+        await deleteDoc(doc(db, 'fests', festId));
+        fetchDashboardData(); // Refresh data
+      } catch (error) {
+        console.error('Error rejecting fest:', error);
+      }
+    }
+  };
+
+  const handleDeleteFest = async (festId) => {
+    if (window.confirm('Are you sure you want to delete this fest?')) {
+      try {
+        await deleteDoc(doc(db, 'fests', festId));
+        fetchDashboardData(); // Refresh data
+      } catch (error) {
+        console.error('Error deleting fest:', error);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Student Dashboard */}
+        {userRole === 'student' && (
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-8">My Registrations</h1>
+            {data.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-lg shadow">
+                <p className="text-gray-600 mb-4">You haven't registered for any fests yet</p>
+                <Link to="/" className="btn-primary">
+                  Browse Fests
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {data.map(registration => (
+                  <div key={registration.id} className="card">
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                      {registration.festName}
+                    </h3>
+                    <p className="text-gray-600 mb-2">{registration.collegeName}</p>
+                    <p className="text-sm text-gray-500 mb-4">
+                      Registered on: {new Date(registration.registeredAt).toLocaleDateString()}
+                    </p>
+                    <Link
+                      to={`/fest/${registration.festId}`}
+                      className="btn-primary w-full text-center block"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Organizer Dashboard */}
+        {userRole === 'organizer' && (
+          <div>
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-800">My Fests</h1>
+              <Link to="/create-fest" className="btn-primary">
+                + Create New Fest
+              </Link>
+            </div>
+            {data.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-lg shadow">
+                <p className="text-gray-600 mb-4">You haven't created any fests yet</p>
+                <Link to="/create-fest" className="btn-primary">
+                  Create Your First Fest
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {data.map(fest => (
+                  <div key={fest.id} className="bg-white rounded-lg shadow p-6">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-xl font-bold text-gray-800">
+                            {fest.festName}
+                          </h3>
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            fest.status === 'approved' 
+                              ? 'bg-green-100 text-green-800' 
+                              : fest.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {fest.status.toUpperCase()}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 mb-1">{fest.collegeName}</p>
+                        <p className="text-sm text-gray-500 mb-2">
+                          📅 {new Date(fest.date).toLocaleDateString()} | 📍 {fest.location}
+                        </p>
+                        <p className="text-gray-700 line-clamp-2">{fest.description}</p>
+                      </div>
+                      <div className="flex gap-2 ml-4">
+                        {fest.status === 'approved' && (
+                          <Link
+                            to={`/fest/${fest.id}`}
+                            className="btn-secondary text-sm"
+                          >
+                            View
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => handleDeleteFest(fest.id)}
+                          className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Admin Dashboard */}
+        {userRole === 'admin' && (
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-8">Fest Approvals</h1>
+            {data.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-lg shadow">
+                <p className="text-gray-600">No pending fests for approval</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {data.map(fest => (
+                  <div key={fest.id} className="bg-white rounded-lg shadow p-6">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                          {fest.festName}
+                        </h3>
+                        <p className="text-gray-600 mb-1">
+                          <span className="font-semibold">College:</span> {fest.collegeName}
+                        </p>
+                        <p className="text-gray-600 mb-1">
+                          <span className="font-semibold">Category:</span> {fest.category}
+                        </p>
+                        <p className="text-gray-600 mb-1">
+                          <span className="font-semibold">Date:</span> {new Date(fest.date).toLocaleDateString()}
+                        </p>
+                        <p className="text-gray-600 mb-1">
+                          <span className="font-semibold">Location:</span> {fest.location}
+                        </p>
+                        <p className="text-gray-700 mt-3">{fest.description}</p>
+                        {fest.bannerUrl && (
+                          <div className="mt-4">
+                            <img
+                              src={fest.bannerUrl}
+                              alt={fest.festName}
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-4 mt-6">
+                      <button
+                        onClick={() => handleApproveFest(fest.id)}
+                        className="btn-primary flex-1"
+                      >
+                        ✓ Approve
+                      </button>
+                      <button
+                        onClick={() => handleRejectFest(fest.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg flex-1"
+                      >
+                        ✗ Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
