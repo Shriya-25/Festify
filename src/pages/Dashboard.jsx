@@ -127,31 +127,34 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Loading dashboard...</p>
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-600 border-t-primary mb-4"></div>
+          <p className="text-gray-400">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4">
         {/* Student Dashboard */}
         {userRole === 'student' && (
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">My Registrations</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">My Registrations</h1>
             
             {/* Profile completion reminder - only show if profile is incomplete */}
             {(!userProfile?.phone || !userProfile?.college) && (
-              <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="mb-4 sm:mb-6 glass-container p-4 sm:p-6 border-l-4 border-primary">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <div className="ml-3 flex-1">
-                    <h3 className="text-sm font-medium text-blue-800">Complete Your Profile</h3>
-                    <div className="mt-2 text-sm text-blue-700">
+                    <h3 className="text-sm sm:text-base font-semibold text-white">Complete Your Profile</h3>
+                    <div className="mt-2 text-xs sm:text-sm text-gray-300">
                       <p>
                         Make sure your profile has your phone number and college details before registering for fests. 
                         Organizers need this information to contact you.
@@ -160,7 +163,7 @@ const Dashboard = () => {
                     <div className="mt-3">
                       <Link
                         to="/profile"
-                        className="text-sm font-medium text-blue-800 hover:text-blue-900 underline"
+                        className="text-sm font-medium text-primary hover:text-orange-400 underline transition-colors"
                       >
                         Update Profile →
                       </Link>
@@ -171,26 +174,29 @@ const Dashboard = () => {
             )}
 
             {data.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg shadow">
-                <p className="text-gray-600 mb-4">You haven't registered for any fests yet</p>
-                <Link to="/" className="btn-primary">
+              <div className="glass-container p-12 text-center">
+                <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-6">You haven't registered for any fests yet</p>
+                <Link to="/" className="btn-primary px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base">
                   Browse Fests
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {data.map(registration => (
-                  <div key={registration.id} className="card">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  <div key={registration.id} className="card p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
                       {registration.festName}
                     </h3>
-                    <p className="text-gray-600 mb-2">{registration.collegeName}</p>
-                    <p className="text-sm text-gray-500 mb-4">
-                      Registered on: {new Date(registration.registeredAt).toLocaleDateString()}
+                    <p className="text-sm sm:text-base text-gray-300 mb-2">{registration.collegeName}</p>
+                    <p className="text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4">
+                      Registered: {new Date(registration.registeredAt).toLocaleDateString()}
                     </p>
                     <Link
                       to={`/fest/${registration.festId}`}
-                      className="btn-primary w-full text-center block"
+                      className="btn-primary w-full text-center block px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
                     >
                       View Details
                     </Link>
@@ -204,29 +210,32 @@ const Dashboard = () => {
         {/* Organizer Dashboard */}
         {userRole === 'organizer' && (
           <div>
-            <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-800">My Fests</h1>
-              <Link to="/create-fest" className="btn-primary">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">My Fests</h1>
+              <Link to="/create-fest" className="btn-primary px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base">
                 + Create New Fest
               </Link>
             </div>
             {data.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg shadow">
-                <p className="text-gray-600 mb-4">You haven't created any fests yet</p>
-                <Link to="/create-fest" className="btn-primary">
+              <div className="glass-container p-6 sm:p-12 text-center">
+                <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-6">You haven't created any fests yet</p>
+                <Link to="/create-fest" className="btn-primary px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base">
                   Create Your First Fest
                 </Link>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-4 sm:space-y-6">
                 {data.map(fest => (
-                  <div key={fest.id} className="bg-white rounded-lg shadow p-6">
+                  <div key={fest.id} className="glass-container p-4 sm:p-6">{/* Admin Comment Alert - Show for changes_requested or rejected */}
                     {/* Admin Comment Alert - Show for changes_requested or rejected */}
                     {fest.adminComments && (fest.status === 'changes_requested' || fest.status === 'rejected') && (
-                      <div className={`mb-4 p-4 rounded-lg border-l-4 ${
+                      <div className={`mb-3 sm:mb-4 p-3 sm:p-4 rounded-2xl border-l-4 bg-white/5 backdrop-blur ${
                         fest.status === 'changes_requested' 
-                          ? 'bg-orange-50 border-orange-500' 
-                          : 'bg-red-50 border-red-500'
+                          ? 'border-orange-500' 
+                          : 'border-red-500'
                       }`}>
                         <div className="flex items-start">
                           <div className="flex-shrink-0">
@@ -239,20 +248,20 @@ const Dashboard = () => {
                           <div className="ml-3 flex-1">
                             <h4 className={`text-sm font-semibold ${
                               fest.status === 'changes_requested' 
-                                ? 'text-orange-800' 
-                                : 'text-red-800'
+                                ? 'text-orange-300' 
+                                : 'text-red-300'
                             }`}>
                               {fest.status === 'changes_requested' ? 'Changes Requested by Admin' : 'Fest Rejected by Admin'}
                             </h4>
                             <p className={`mt-1 text-sm ${
                               fest.status === 'changes_requested' 
-                                ? 'text-orange-700' 
-                                : 'text-red-700'
+                                ? 'text-orange-200' 
+                                : 'text-red-200'
                             }`}>
                               {fest.adminComments}
                             </p>
                             {fest.status === 'changes_requested' && (
-                              <p className="mt-2 text-xs text-orange-600">
+                              <p className="mt-2 text-xs text-orange-400">
                                 Please edit your fest to address the admin's feedback and resubmit for approval.
                               </p>
                             )}
@@ -261,42 +270,48 @@ const Dashboard = () => {
                       </div>
                     )}
                     
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-bold text-gray-800">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0">
+                      <div className="flex-1 w-full">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                          <h3 className="text-xl sm:text-2xl font-bold text-white">
                             {fest.festName}
                           </h3>
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          <span className={`badge ${
                             fest.status === 'published' || fest.status === 'approved'
-                              ? 'bg-green-100 text-green-800' 
+                              ? 'bg-green-500/20 text-green-300 border-green-500/30' 
                               : fest.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-800'
+                              ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30'
                               : fest.status === 'changes_requested'
-                              ? 'bg-orange-100 text-orange-800'
-                              : 'bg-red-100 text-red-800'
+                              ? 'bg-orange-500/20 text-orange-300 border-orange-500/30'
+                              : 'bg-red-500/20 text-red-300 border-red-500/30'
                           }`}>
                             {fest.status === 'changes_requested' ? 'CHANGES REQUESTED' : fest.status.toUpperCase()}
                           </span>
                         </div>
-                        <p className="text-gray-600 mb-1">{fest.collegeName}</p>
-                        <p className="text-sm text-gray-500 mb-2">
-                          📅 {new Date(fest.date).toLocaleDateString()} | 📍 {fest.venue || fest.location || 'Venue TBA'}
-                        </p>
-                        <p className="text-gray-700 line-clamp-2">{fest.description}</p>
+                        <p className="text-sm sm:text-base text-gray-300 mb-2 font-medium">{fest.collegeName}</p>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-400 mb-3">
+                          <span className="flex items-center gap-1">
+                            <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {new Date(fest.date).toLocaleDateString()}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            {fest.venue || fest.location || 'Venue TBA'}
+                          </span>
+                        </div>
+                        <p className="text-sm sm:text-base text-gray-400 line-clamp-2">{fest.description}</p>
                       </div>
-                      <div className="flex gap-2 ml-4">
+                      <div className="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto sm:ml-4 flex-shrink-0">
                         {(fest.status === 'published' || fest.status === 'approved') && (
                           <>
                             <Link
-                              to={`/fest/${fest.id}`}
-                              className="btn-secondary text-sm"
-                            >
-                              View
-                            </Link>
-                            <Link
                               to={`/fest/${fest.id}/manage`}
-                              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg text-sm"
+                              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 sm:px-4 rounded-full text-xs sm:text-sm transition-all"
                             >
                               Manage
                             </Link>
@@ -305,14 +320,14 @@ const Dashboard = () => {
                         {fest.status === 'changes_requested' && (
                           <Link
                             to={`/fest/${fest.id}/edit`}
-                            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg text-sm inline-flex items-center gap-1"
+                            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-3 sm:px-4 rounded-full text-xs sm:text-sm inline-flex items-center gap-1 transition-all"
                           >
-                            ✏️ Edit & Resubmit
+                            Edit & Resubmit
                           </Link>
                         )}
                         <button
                           onClick={() => handleDeleteFest(fest.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg text-sm"
+                          className="btn-danger text-xs sm:text-sm px-3 sm:px-4 py-2"
                         >
                           Delete
                         </button>
@@ -328,56 +343,63 @@ const Dashboard = () => {
         {/* Admin Dashboard */}
         {userRole === 'admin' && (
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-8">Fest Approvals</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">Fest Approvals</h1>
             {data.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg shadow">
-                <p className="text-gray-600">No pending fests for approval</p>
+              <div className="glass-container p-6 sm:p-12 text-center">
+                <p className="text-sm sm:text-base text-gray-400">No pending fests for approval</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-4 sm:space-y-6">
                 {data.map(fest => (
-                  <div key={fest.id} className="bg-white rounded-lg shadow p-6">
+                  <div key={fest.id} className="glass-container p-4 sm:p-6">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
                           {fest.festName}
                         </h3>
-                        <p className="text-gray-600 mb-1">
-                          <span className="font-semibold">College:</span> {fest.collegeName}
-                        </p>
-                        <p className="text-gray-600 mb-1">
-                          <span className="font-semibold">Category:</span> {fest.category}
-                        </p>
-                        <p className="text-gray-600 mb-1">
-                          <span className="font-semibold">Date:</span> {new Date(fest.date).toLocaleDateString()}
-                        </p>
-                        <p className="text-gray-600 mb-1">
-                          <span className="font-semibold">Venue:</span> {fest.venue || fest.location || 'Not specified'}
-                        </p>
-                        <p className="text-gray-700 mt-3">{fest.description}</p>
+                        <div className="space-y-2 mb-3 sm:mb-4">
+                          <p className="text-sm sm:text-base text-gray-300">
+                            <span className="font-semibold text-white">College:</span> {fest.collegeName}
+                          </p>
+                          <p className="text-sm sm:text-base text-gray-300">
+                            <span className="font-semibold text-white">Category:</span> 
+                            <span className={`ml-2 badge ${
+                              fest.category === 'Technical' ? 'badge-tech' :
+                              fest.category === 'Cultural' ? 'badge-culture' :
+                              'badge-sports'
+                            }`}>{fest.category}</span>
+                          </p>
+                          <p className="text-sm sm:text-base text-gray-300">
+                            <span className="font-semibold text-white">Date:</span> {new Date(fest.date).toLocaleDateString()}
+                          </p>
+                          <p className="text-sm sm:text-base text-gray-300">
+                            <span className="font-semibold text-white">Venue:</span> {fest.venue || fest.location || 'Not specified'}
+                          </p>
+                        </div>
+                        <p className="text-sm sm:text-base text-gray-400 leading-relaxed">{fest.description}</p>
                         {fest.bannerUrl && (
-                          <div className="mt-4">
+                          <div className="mt-3 sm:mt-4">
                             <img
                               src={fest.bannerUrl}
                               alt={fest.festName}
-                              className="w-full h-48 object-cover rounded-lg"
+                              className="w-full h-32 sm:h-48 object-cover rounded-2xl"
                             />
                           </div>
                         )}
                       </div>
                     </div>
-                    <div className="flex gap-4 mt-6">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <button
                         onClick={() => handleApproveFest(fest.id)}
-                        className="btn-primary flex-1"
+                        className="btn-primary flex-1 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
                       >
-                        ✓ Approve
+                        Approve
                       </button>
                       <button
                         onClick={() => handleRejectFest(fest.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg flex-1"
+                        className="btn-danger flex-1 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
                       >
-                        ✗ Reject
+                        Reject
                       </button>
                     </div>
                   </div>

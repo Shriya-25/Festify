@@ -18,7 +18,7 @@ const CreateFest = () => {
   const [festData, setFestData] = useState({
     festName: '',
     collegeName: '',
-    category: 'Cultural',
+    category: 'Technical',
     description: '',
     date: '',
     venue: '',
@@ -27,7 +27,7 @@ const CreateFest = () => {
     prefillUserData: true
   });
 
-  const categories = ['Cultural', 'Technical', 'Sports', 'Literary', 'Music', 'Dance', 'Other'];
+  const categories = ['Technical', 'Cultural', 'Sports'];
 
   const handleChange = (e) => {
     setFestData({
@@ -184,62 +184,69 @@ const CreateFest = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Back Button */}
-        <div className="mb-6">
-          <button onClick={() => navigate('/dashboard')} className="text-primary hover:underline flex items-center">
-            ← Back to Dashboard
+        <div className="mb-6 sm:mb-8">
+          <button onClick={() => navigate('/dashboard')} className="text-primary hover:text-orange-400 flex items-center gap-2 font-medium transition-colors text-sm sm:text-base">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Dashboard
           </button>
         </div>
         
         {/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 sm:mb-10">
+          <div className="flex items-center justify-between max-w-3xl mx-auto">
             {[1, 2, 3, 4].map((step) => (
-              <div key={step} className="flex items-center">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                    currentStep >= step ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600'
-                  }`}
-                >
-                  {step}
+              <div key={step} className="flex items-center flex-1">
+                <div className="flex flex-col items-center flex-1">
+                  <div
+                    className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold text-sm sm:text-base md:text-lg transition-all duration-200 ${
+                      currentStep >= step 
+                        ? 'bg-primary text-white shadow-glow' 
+                        : 'bg-white/10 text-gray-500 border-2 border-white/20'
+                    }`}
+                  >
+                    {step}
+                  </div>
+                  <span className={`mt-1 sm:mt-2 text-xs sm:text-sm font-medium ${
+                    currentStep >= step ? 'text-white' : 'text-gray-500'
+                  }`}>
+                    {step === 1 ? 'Basic Details' : step === 2 ? 'Banner' : step === 3 ? 'Registration Form' : 'Review'}
+                  </span>
                 </div>
                 {step < 4 && (
                   <div
-                    className={`w-full h-1 mx-2 ${
-                      currentStep > step ? 'bg-primary' : 'bg-gray-300'
+                    className={`h-1 w-full mx-1 sm:mx-2 md:mx-4 rounded transition-all duration-200 ${
+                      currentStep > step ? 'bg-primary' : 'bg-white/10'
                     }`}
-                    style={{ width: '100px' }}
                   />
                 )}
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-2 text-sm">
-            <span className={currentStep >= 1 ? 'text-primary font-semibold' : 'text-gray-500'}>Basic Details</span>
-            <span className={currentStep >= 2 ? 'text-primary font-semibold' : 'text-gray-500'}>Banner</span>
-            <span className={currentStep >= 3 ? 'text-primary font-semibold' : 'text-gray-500'}>Registration Form</span>
-            <span className={currentStep >= 4 ? 'text-primary font-semibold' : 'text-gray-500'}>Review</span>
-          </div>
         </div>
 
         {message && (
-          <div className={`mb-6 p-4 rounded-lg ${
-            message.includes('success') || message.includes('🎉') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          <div className={`mb-6 p-4 rounded-2xl border ${
+            message.includes('success') || message.includes('🎉') 
+              ? 'bg-green-900/30 border-green-500/50 text-green-200' 
+              : 'bg-red-900/30 border-red-500/50 text-red-200'
           }`}>
             {message}
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="glass-container p-4 sm:p-6 md:p-8">
           {/* Step 1: Basic Details */}
           {currentStep === 1 && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Step 1: Fest Basic Details</h2>
-              <div className="space-y-4">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 1: Fest Basic Details</h2>
+              <div className="space-y-4 sm:space-y-6">
                 <div>
-                  <label htmlFor="festName" className="label">
+                  <label htmlFor="festName" className="label text-sm">
                     Fest Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -255,7 +262,7 @@ const CreateFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="collegeName" className="label">
+                  <label htmlFor="collegeName" className="label text-sm">
                     College Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -271,7 +278,7 @@ const CreateFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="date" className="label">
+                  <label htmlFor="date" className="label text-sm">
                     Date <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -286,7 +293,7 @@ const CreateFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="venue" className="label">
+                  <label htmlFor="venue" className="label text-sm">
                     Venue <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -302,7 +309,7 @@ const CreateFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="category" className="label">
+                  <label htmlFor="category" className="label text-sm">
                     Category <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -321,15 +328,15 @@ const CreateFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="description" className="label">
-                    Description <span className="text-red-500">*</span>
+                  <label htmlFor="description" className="label text-sm">
+                    Description <span className="text-red-400">*</span>
                   </label>
                   <textarea
                     id="description"
                     name="description"
                     required
                     rows="4"
-                    className="input-field"
+                    className="textarea-field"
                     placeholder="Describe your fest, events, and what makes it special..."
                     value={festData.description}
                     onChange={handleChange}
@@ -342,15 +349,15 @@ const CreateFest = () => {
           {/* Step 2: Banner Image */}
           {currentStep === 2 && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Step 2: Add Banner Image</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 2: Add Banner Image</h2>
               
               {festData.bannerUrl && (
-                <div className="mb-6">
-                  <label className="label">Banner Preview</label>
+                <div className="mb-4 sm:mb-6">
+                  <label className="label text-sm">Banner Preview</label>
                   <img
                     src={festData.bannerUrl}
                     alt="Banner Preview"
-                    className="w-full h-64 object-cover rounded-lg"
+                    className="w-full h-48 sm:h-56 md:h-64 object-cover rounded-2xl border-2 border-white/10"
                     onError={(e) => {
                       e.target.src = 'https://via.placeholder.com/800x400?text=Invalid+Image+URL';
                     }}
@@ -358,10 +365,10 @@ const CreateFest = () => {
                 </div>
               )}
 
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 <div>
-                  <label className="label">Option 1: Upload Image</label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <label className="label text-sm">Option 1: Upload Image</label>
+                  <div className="border-2 border-dashed border-white/20 rounded-2xl p-4 sm:p-6 md:p-8 text-center bg-white/5 hover:bg-white/10 transition-all">
                     <input
                       type="file"
                       accept="image/*"
@@ -374,19 +381,29 @@ const CreateFest = () => {
                       htmlFor="banner-upload"
                       className={`cursor-pointer ${uploadingImage ? 'opacity-50' : ''}`}
                     >
-                      <div className="text-gray-600 mb-2">
-                        {uploadingImage ? '⏳ Uploading...' : '📤 Click to upload image'}
+                      <svg className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <div className="text-white mb-2 font-medium">
+                        {uploadingImage ? 'Uploading...' : 'Click to upload image'}
                       </div>
-                      <p className="text-sm text-gray-500">PNG, JPG up to 5MB</p>
+                      <p className="text-sm text-gray-400">PNG, JPG up to 5MB</p>
                     </label>
                   </div>
                 </div>
 
-                <div className="text-center text-gray-500">OR</div>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-white/10"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-dark-100 text-gray-400 font-medium">OR</span>
+                  </div>
+                </div>
 
                 <div>
-                  <label className="label">Option 2: Add Custom Image Link</label>
-                  <div className="flex gap-2">
+                  <label className="label text-sm">Option 2: Add Custom Image Link</label>
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="url"
                       name="bannerUrl"
@@ -398,7 +415,7 @@ const CreateFest = () => {
                     <button
                       type="button"
                       onClick={handleCustomUrlSubmit}
-                      className="btn-secondary"
+                      className="btn-secondary px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base whitespace-nowrap"
                     >
                       Validate
                     </button>
@@ -411,22 +428,22 @@ const CreateFest = () => {
           {/* Step 3: Registration Form Builder */}
           {currentStep === 3 && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Step 3: Create Registration Form</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 3: Create Registration Form</h2>
               
-              <div className="mb-6">
-                <label className="flex items-center space-x-2 cursor-pointer">
+              <div className="mb-6 bg-white/5 p-4 rounded-2xl border border-white/10">
+                <label className="flex items-center space-x-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={festData.prefillUserData}
                     onChange={(e) => setFestData({...festData, prefillUserData: e.target.checked})}
-                    className="w-4 h-4"
+                    className="w-5 h-5 rounded text-primary focus:ring-2 focus:ring-primary"
                   />
-                  <span className="text-gray-700">
-                    ☑ Auto-fill user profile data (Name, Email, Phone, College)
+                  <span className="text-white font-medium">
+                    Auto-fill user profile data
                   </span>
                 </label>
-                <p className="text-sm text-gray-500 ml-6 mt-1">
-                  When enabled, registered users' basic information will be pre-filled in the form
+                <p className="text-sm text-gray-400 ml-8 mt-1">
+                  When enabled, registered users' basic information (Name, Email, Phone, College) will be pre-filled
                 </p>
               </div>
 
@@ -440,43 +457,50 @@ const CreateFest = () => {
           {/* Step 4: Review & Publish */}
           {currentStep === 4 && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Step 4: Review & Publish</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 4: Review & Publish</h2>
               
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 <div>
-                  <h3 className="font-semibold text-lg mb-3">Fest Details</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                    <p><strong>Name:</strong> {festData.festName}</p>
-                    <p><strong>College:</strong> {festData.collegeName}</p>
-                    <p><strong>Date:</strong> {festData.date}</p>
-                    <p><strong>Venue:</strong> {festData.venue}</p>
-                    <p><strong>Category:</strong> {festData.category}</p>
-                    <p><strong>Description:</strong> {festData.description}</p>
+                  <h3 className="font-semibold text-lg sm:text-xl text-white mb-3 sm:mb-4">Fest Details</h3>
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-3">
+                    <p className="text-gray-300"><span className="font-semibold text-white">Name:</span> {festData.festName}</p>
+                    <p className="text-gray-300"><span className="font-semibold text-white">College:</span> {festData.collegeName}</p>
+                    <p className="text-gray-300"><span className="font-semibold text-white">Date:</span> {festData.date}</p>
+                    <p className="text-gray-300"><span className="font-semibold text-white">Venue:</span> {festData.venue}</p>
+                    <p className="text-gray-300">
+                      <span className="font-semibold text-white">Category:</span> 
+                      <span className={`ml-2 badge ${
+                        festData.category === 'Technical' ? 'badge-tech' :
+                        festData.category === 'Cultural' ? 'badge-culture' :
+                        'badge-sports'
+                      }`}>{festData.category}</span>
+                    </p>
+                    <p className="text-gray-300"><span className="font-semibold text-white">Description:</span> {festData.description}</p>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-lg mb-3">Banner</h3>
+                  <h3 className="font-semibold text-lg sm:text-xl text-white mb-3 sm:mb-4">Banner</h3>
                   {festData.bannerUrl && (
                     <img
                       src={festData.bannerUrl}
                       alt="Banner"
-                      className="w-full h-48 object-cover rounded-lg"
+                      className="w-full h-40 sm:h-48 object-cover rounded-2xl border-2 border-white/10"
                     />
                   )}
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-lg mb-3">Registration Form</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="mb-2">
-                      <strong>Prefill User Data:</strong> {festData.prefillUserData ? 'Yes' : 'No'}
+                  <h3 className="font-semibold text-lg sm:text-xl text-white mb-3 sm:mb-4">Registration Form</h3>
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <p className="mb-2 text-gray-300">
+                      <span className="font-semibold text-white">Prefill User Data:</span> {festData.prefillUserData ? 'Yes' : 'No'}
                     </p>
-                    <p className="mb-2">
-                      <strong>Custom Fields:</strong> {festData.registrationForm.length} field(s)
+                    <p className="mb-2 text-gray-300">
+                      <span className="font-semibold text-white">Custom Fields:</span> {festData.registrationForm.length} field(s)
                     </p>
                     {festData.registrationForm.length === 0 && (
-                      <p className="text-sm text-gray-500">Standard registration (Name, Email, Phone, College only)</p>
+                      <p className="text-sm text-gray-400">Standard registration (Name, Email, Phone, College only)</p>
                     )}
                   </div>
                 </div>
@@ -485,32 +509,32 @@ const CreateFest = () => {
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8 pt-6 border-t">
+          <div className="flex justify-between mt-6 sm:mt-8 md:mt-10 pt-4 sm:pt-6 border-t border-white/10">
             <button
               type="button"
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-secondary disabled:opacity-30 disabled:cursor-not-allowed px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
             >
-              ← Previous
+              Previous
             </button>
             
             {currentStep < 4 ? (
               <button
                 type="button"
                 onClick={handleNext}
-                className="btn-primary"
+                className="btn-primary px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
               >
-                Next →
+                Next
               </button>
             ) : (
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="btn-primary disabled:opacity-50"
+                className="btn-primary disabled:opacity-50 shadow-glow px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
               >
-                {loading ? 'Publishing...' : '🚀 Publish Fest'}
+                {loading ? 'Publishing...' : 'Publish Fest'}
               </button>
             )}
           </div>

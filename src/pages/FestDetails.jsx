@@ -76,7 +76,10 @@ const FestDetails = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Loading...</p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-white">Loading fest details...</p>
+        </div>
       </div>
     );
   }
@@ -85,7 +88,7 @@ const FestDetails = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Fest Not Found</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">Fest Not Found</h2>
           <button onClick={() => navigate('/')} className="btn-primary">
             Back to Home
           </button>
@@ -95,49 +98,49 @@ const FestDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Banner Image */}
         {fest.bannerUrl && (
-          <div className="mb-8">
+          <div className="mb-4 sm:mb-6 md:mb-8">
             <img
               src={fest.bannerUrl}
               alt={fest.festName}
-              className="w-full h-96 object-cover rounded-lg shadow-lg"
+              className="w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover rounded-lg shadow-lg"
             />
           </div>
         )}
 
         {/* Fest Details */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          <div className="flex justify-between items-start mb-6">
+        <div className="glass-container p-4 sm:p-6 md:p-8 mb-4 sm:mb-6 md:mb-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 sm:mb-6 gap-3">
             <div>
-              <h1 className="text-4xl font-bold text-gray-800 mb-2">{fest.festName}</h1>
-              <p className="text-xl text-gray-600">{fest.collegeName}</p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">{fest.festName}</h1>
+              <p className="text-base sm:text-lg md:text-xl text-gray-300">{fest.collegeName}</p>
             </div>
-            <span className="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold">
+            <span className="px-3 sm:px-4 py-1.5 sm:py-2 bg-primary text-white rounded-full text-xs sm:text-sm font-semibold self-start">
               {fest.category}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="flex items-center text-gray-700">
-              <span className="font-semibold mr-2">📍 Venue:</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="flex items-center text-gray-300 text-sm sm:text-base">
+              <span className="font-semibold mr-2">Venue:</span>
               <span>{fest.venue || fest.location || 'TBA'}</span>
             </div>
-            <div className="flex items-center text-gray-700">
-              <span className="font-semibold mr-2">📅 Date:</span>
+            <div className="flex items-center text-gray-300 text-sm sm:text-base">
+              <span className="font-semibold mr-2">Date:</span>
               <span>{new Date(fest.date).toLocaleDateString()}</span>
             </div>
-            <div className="flex items-center text-gray-700">
-              <span className="font-semibold mr-2">🎯 Events:</span>
+            <div className="flex items-center text-gray-300 text-sm sm:text-base">
+              <span className="font-semibold mr-2">Events:</span>
               <span>{events.length}</span>
             </div>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">About</h2>
-            <p className="text-gray-700 leading-relaxed">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 sm:mb-3">About</h2>
+            <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
               {fest.description}
             </p>
           </div>
@@ -145,20 +148,20 @@ const FestDetails = () => {
 
         {/* Events Section */}
         <div>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-gray-800">Events</h2>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-3">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Events</h2>
             
             {/* Domain Filter */}
             {events.length > 0 && (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {domains.map(domain => (
                   <button
                     key={domain}
                     onClick={() => setSelectedDomain(domain)}
-                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition ${
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold text-xs sm:text-sm transition ${
                       selectedDomain === domain
                         ? 'bg-primary text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        : 'bg-white/5 text-gray-300 hover:bg-white/10'
                     }`}
                   >
                     {domain}
@@ -169,20 +172,20 @@ const FestDetails = () => {
           </div>
 
           {filteredEvents.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-12 text-center">
-              <p className="text-gray-600 mb-4">
+            <div className="glass-container p-8 sm:p-12 text-center">
+              <p className="text-sm sm:text-base text-gray-400 mb-4">
                 {events.length === 0 
                   ? 'No events have been added yet. Check back soon!' 
                   : 'No events in this category'}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredEvents.map(event => (
-                <div key={event.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+                <div key={event.id} className="glass-container overflow-hidden hover:shadow-xl transition">
                   {/* Event Banner */}
                   {event.bannerUrl && (
-                    <div className="w-full h-48 overflow-hidden bg-gray-200">
+                    <div className="w-full h-40 sm:h-48 overflow-hidden bg-white/5">
                       <img 
                         src={event.bannerUrl} 
                         alt={event.eventName}
@@ -191,55 +194,55 @@ const FestDetails = () => {
                     </div>
                   )}
                   
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-xl font-bold text-gray-800 pr-2">
+                  <div className="p-4 sm:p-6">
+                    <div className="flex justify-between items-start mb-2 sm:mb-3 gap-2">
+                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-white">
                         {event.eventName}
                       </h3>
                       {isRegistrationOpen(event) ? (
-                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded font-semibold whitespace-nowrap">
+                        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded font-semibold whitespace-nowrap border border-green-500/30 flex-shrink-0">
                           Open
                         </span>
                       ) : (
-                        <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold whitespace-nowrap">
+                        <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded font-semibold whitespace-nowrap border border-red-500/30 flex-shrink-0">
                           Closed
                         </span>
                       )}
                     </div>
 
-                    <div className="mb-3">
-                      <span className="inline-block px-3 py-1 bg-blue-100 text-primary text-sm rounded-full font-semibold">
+                    <div className="mb-2 sm:mb-3">
+                      <span className="inline-block px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-500/20 text-blue-400 text-xs sm:text-sm rounded-full font-semibold border border-blue-500/30">
                         {event.domain}
                       </span>
                     </div>
 
-                    <p className="text-gray-700 text-sm mb-4 line-clamp-3">
+                    <p className="text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
                       {event.description}
                     </p>
 
-                    <div className="space-y-2 text-sm text-gray-600 mb-4">
+                    <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4">
                       <div className="flex items-center">
-                        <span className="font-semibold mr-2">📅</span>
+                        <span className="font-semibold mr-2"></span>
                         {new Date(event.date).toLocaleDateString()} at {event.time}
                       </div>
                       <div className="flex items-center">
-                        <span className="font-semibold mr-2">📍</span>
+                        <span className="font-semibold mr-2"></span>
                         {event.venue}
                       </div>
                       <div className="flex items-center">
-                        <span className="font-semibold mr-2">👥</span>
+                        <span className="font-semibold mr-2"></span>
                         {event.participantCount || 0} registered
                         {event.maxParticipants && ` / ${event.maxParticipants}`}
                       </div>
                       <div className="flex items-center">
-                        <span className="font-semibold mr-2">⏰</span>
+                        <span className="font-semibold mr-2"></span>
                         Deadline: {new Date(event.registrationDeadline).toLocaleString()}
                       </div>
                     </div>
 
                     <Link
                       to={`/event/${event.id}`}
-                      className="btn-primary w-full text-center block"
+                      className="btn-primary w-full text-center block text-sm sm:text-base py-2 sm:py-3"
                     >
                       View Details
                     </Link>
@@ -250,10 +253,10 @@ const FestDetails = () => {
           )}
         </div>
 
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           <button
             onClick={() => navigate('/')}
-            className="btn-secondary"
+            className="btn-secondary text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3"
           >
             ← Back to All Fests
           </button>

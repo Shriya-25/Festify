@@ -92,7 +92,7 @@ const StudentProfile = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent mb-4"></div>
-          <p className="text-gray-600">Loading profile...</p>
+          <p className="text-white">Loading profile...</p>
         </div>
       </div>
     );
@@ -103,122 +103,125 @@ const StudentProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4">
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 text-primary hover:underline"
+          className="mb-4 sm:mb-6 text-primary hover:text-primary/80 inline-flex items-center gap-2 transition-colors text-sm sm:text-base"
         >
-          ← Back
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
         </button>
 
         {/* Profile Card */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="glass-container border border-white/10 overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-primary to-blue-600 px-8 py-6">
-            <div className="flex items-center space-x-4">
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-3xl font-bold text-primary">
+          <div className="bg-gradient-to-r from-primary to-orange-600 px-4 sm:px-6 py-4 sm:py-6">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold text-white border-2 border-white/30">
                 {student.name?.charAt(0).toUpperCase() || '?'}
               </div>
               <div className="text-white">
-                <h1 className="text-3xl font-bold">{student.name}</h1>
-                <p className="text-blue-100">Student Profile</p>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">{student.name}</h1>
+                <p className="text-sm sm:text-base text-white/80">Student Profile</p>
               </div>
             </div>
           </div>
 
           {/* Profile Details */}
-          <div className="px-8 py-6">
-            <div className="mb-6">
-              <div className="inline-block px-3 py-1 bg-blue-100 text-primary rounded-full text-sm font-semibold">
-                🔒 View-Only Access
+          <div className="px-4 sm:px-6 py-4 sm:py-6">
+            <div className="mb-4 sm:mb-6">
+              <div className="inline-block px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm font-semibold border border-blue-500/30">
+                View-Only Access
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Email */}
               <div>
-                <label className="block text-sm font-semibold text-gray-600 mb-1">
+                <label className="label text-sm sm:text-base">
                   Email Address
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-800">📧 {student.email}</p>
+                <div className="p-2 sm:p-3 bg-white/5 rounded-xl border border-white/10">
+                  <p className="text-sm sm:text-base text-white">{student.email}</p>
                 </div>
               </div>
 
               {/* Phone */}
               <div>
-                <label className="block text-sm font-semibold text-gray-600 mb-1">
+                <label className="label text-sm sm:text-base">
                   Phone Number
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-800">📱 {student.phone || 'Not provided'}</p>
+                <div className="p-2 sm:p-3 bg-white/5 rounded-xl border border-white/10">
+                  <p className="text-sm sm:text-base text-white">{student.phone || 'Not provided'}</p>
                 </div>
               </div>
 
               {/* College */}
               <div>
-                <label className="block text-sm font-semibold text-gray-600 mb-1">
+                <label className="label text-sm sm:text-base">
                   College/University
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-800">🏫 {student.college || 'Not provided'}</p>
+                <div className="p-2 sm:p-3 bg-white/5 rounded-xl border border-white/10">
+                  <p className="text-sm sm:text-base text-white">{student.college || 'Not provided'}</p>
                 </div>
               </div>
 
               {/* Branch */}
               <div>
-                <label className="block text-sm font-semibold text-gray-600 mb-1">
+                <label className="label text-sm sm:text-base">
                   Branch
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-800">📚 {student.branch || 'Not provided'}</p>
+                <div className="p-2 sm:p-3 bg-white/5 rounded-xl border border-white/10">
+                  <p className="text-sm sm:text-base text-white">{student.branch || 'Not provided'}</p>
                 </div>
               </div>
 
               {/* Year */}
               <div>
-                <label className="block text-sm font-semibold text-gray-600 mb-1">
+                <label className="label text-sm sm:text-base">
                   Year
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-800">📅 {student.year || 'Not provided'}</p>
+                <div className="p-2 sm:p-3 bg-white/5 rounded-xl border border-white/10">
+                  <p className="text-sm sm:text-base text-white">{student.year || 'Not provided'}</p>
                 </div>
               </div>
 
               {/* Gender */}
               <div>
-                <label className="block text-sm font-semibold text-gray-600 mb-1">
+                <label className="label text-sm sm:text-base">
                   Gender
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-800">👤 {student.gender || 'Not provided'}</p>
+                <div className="p-2 sm:p-3 bg-white/5 rounded-xl border border-white/10">
+                  <p className="text-sm sm:text-base text-white">{student.gender || 'Not provided'}</p>
                 </div>
               </div>
             </div>
 
             {/* Registrations (for organizers) */}
             {userRole === 'organizer' && registrations.length > 0 && (
-              <div className="mt-8 pt-6 border-t">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">
+              <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/10">
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-4">
                   Event Registrations ({registrations.length})
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-3 sm:space-y-4">
                   {registrations.map(reg => (
-                    <div key={reg.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <h3 className="font-semibold text-gray-800">{reg.eventName}</h3>
-                      <p className="text-sm text-gray-600">{reg.festName}</p>
-                      <p className="text-xs text-gray-500 mt-1">
+                    <div key={reg.id} className="p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10">
+                      <h3 className="text-sm sm:text-base font-semibold text-white">{reg.eventName}</h3>
+                      <p className="text-xs sm:text-sm text-gray-300">{reg.festName}</p>
+                      <p className="text-xs text-gray-400 mt-1">
                         Registered: {new Date(reg.registeredAt).toLocaleString()}
                       </p>
                       {reg.customFields && Object.keys(reg.customFields).length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-gray-300">
-                          <p className="text-xs font-semibold text-gray-600 mb-2">Form Responses:</p>
+                        <div className="mt-3 pt-3 border-t border-white/10">
+                          <p className="text-xs font-semibold text-gray-300 mb-2">Form Responses:</p>
                           <div className="space-y-1">
                             {Object.entries(reg.customFields).map(([key, value]) => (
-                              <p key={key} className="text-sm text-gray-700">
-                                <span className="font-medium">{key}:</span> {String(value)}
+                              <p key={key} className="text-sm text-gray-300">
+                                <span className="font-medium text-white">{key}:</span> {String(value)}
                               </p>
                             ))}
                           </div>
@@ -234,8 +237,8 @@ const StudentProfile = () => {
 
         {/* Note for Organizers */}
         {userRole === 'organizer' && (
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
+          <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+            <p className="text-sm text-blue-400">
               <strong>Note:</strong> You can view this profile because this student registered for your event. 
               You cannot edit their information.
             </p>

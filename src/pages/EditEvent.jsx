@@ -247,38 +247,44 @@ const EditEvent = () => {
   if (initialLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Loading event...</p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-white">Loading event...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-6">
-          <button onClick={() => navigate(-1)} className="text-primary hover:underline">
-            ← Back
+    <div className="min-h-screen py-4 sm:py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4">
+        <div className="mb-4 sm:mb-6">
+          <button onClick={() => navigate(-1)} className="text-primary hover:underline flex items-center gap-2">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back
           </button>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Edit Event</h1>
-          <p className="text-gray-600 mb-4">
+        <div className="glass-container p-4 sm:p-6 md:p-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Edit Event</h1>
+          <p className="text-sm sm:text-base text-gray-300 mb-3 sm:mb-4">
             <strong>{eventData.eventName}</strong>
           </p>
-          <p className="text-sm text-yellow-700 bg-yellow-50 p-3 rounded-lg mb-8">
+          <p className="text-xs sm:text-sm text-yellow-300 bg-yellow-500/20 p-3 rounded-lg mb-4 sm:mb-6 md:mb-8 border border-yellow-500/30">
             ⚠️ After editing, this event will be sent back for admin approval and marked as pending.
           </p>
 
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
+            <div className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg ${
               message.includes('success') || message.includes('🎉') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
             }`}>
               {message}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Event Name */}
             <div>
               <label htmlFor="eventName" className="label">
@@ -328,15 +334,15 @@ const EditEvent = () => {
                 className="input-field"
               />
               {bannerPreview && (
-                <div className="mt-4">
+                <div className="mt-3 sm:mt-4">
                   <img
                     src={bannerPreview}
                     alt="Banner preview"
-                    className="w-full h-48 object-cover rounded-lg"
+                    className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-lg"
                   />
                 </div>
               )}
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 Recommended size: 1200x400px (Max 5MB). Leave empty to keep existing banner.
               </p>
             </div>
@@ -346,8 +352,8 @@ const EditEvent = () => {
               <label className="label">
                 Entry Fee <span className="text-red-500">*</span>
               </label>
-              <div className="space-y-3">
-                <label className="flex items-center space-x-3 cursor-pointer">
+              <div className="space-y-2 sm:space-y-3">
+                <label className="flex items-start sm:items-center space-x-3 cursor-pointer">
                   <input
                     type="radio"
                     name="isPaid"
@@ -355,9 +361,9 @@ const EditEvent = () => {
                     onChange={() => setEventData({...eventData, isPaid: false, entryFee: ''})}
                     className="w-4 h-4"
                   />
-                  <span className="text-gray-700">Free Event</span>
+                  <span className="text-gray-300 text-sm sm:text-base">Free Event</span>
                 </label>
-                <label className="flex items-center space-x-3 cursor-pointer">
+                <label className="flex items-start sm:items-center space-x-3 cursor-pointer">
                   <input
                     type="radio"
                     name="isPaid"
@@ -365,13 +371,13 @@ const EditEvent = () => {
                     onChange={() => setEventData({...eventData, isPaid: true})}
                     className="w-4 h-4"
                   />
-                  <span className="text-gray-700">Paid Event</span>
+                  <span className="text-gray-300 text-sm sm:text-base">Paid Event</span>
                 </label>
               </div>
 
               {/* Entry Amount - shown only for paid events */}
               {eventData.isPaid && (
-                <div className="mt-4">
+                <div className="mt-3 sm:mt-4">
                   <label htmlFor="entryFee" className="label">
                     Entry Amount (₹) <span className="text-red-500">*</span>
                   </label>
@@ -387,7 +393,7 @@ const EditEvent = () => {
                     value={eventData.entryFee}
                     onChange={handleChange}
                   />
-                  <p className="text-sm text-yellow-600 mt-1">
+                  <p className="text-sm text-yellow-400 mt-1">
                     ⚠️ Note: Changing payment settings may require admin re-approval
                   </p>
                 </div>
@@ -395,7 +401,7 @@ const EditEvent = () => {
             </div>
 
             {/* Date and Time */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               <div>
                 <label htmlFor="date" className="label">
                   Event Date <span className="text-red-500">*</span>
@@ -457,7 +463,7 @@ const EditEvent = () => {
                 value={eventData.registrationDeadline}
                 onChange={handleChange}
               />
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 Students cannot register after this deadline
               </p>
             </div>
@@ -497,9 +503,9 @@ const EditEvent = () => {
             </div>
 
             {/* Prefill Toggle */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Registration Form</h3>
-              <div className="mb-6">
+            <div className="border-t border-white/10 pt-4 sm:pt-6">
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Registration Form</h3>
+              <div className="mb-4 sm:mb-6">
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -507,11 +513,11 @@ const EditEvent = () => {
                     onChange={(e) => setEventData({...eventData, prefillUserData: e.target.checked})}
                     className="w-4 h-4"
                   />
-                  <span className="text-gray-700">
-                    ☑ Auto-fill user profile data (Name, Email, Phone, College, Branch, Year, Gender)
+                  <span className="text-gray-300">
+                    Auto-fill user profile data (Name, Email, Phone, College, Branch, Year, Gender)
                   </span>
                 </label>
-                <p className="text-sm text-gray-500 ml-6 mt-1">
+                <p className="text-sm text-gray-400 ml-6 mt-1">
                   When enabled, registered users' profile information will be pre-filled
                 </p>
               </div>
@@ -523,18 +529,18 @@ const EditEvent = () => {
             </div>
 
             {/* Submit Buttons */}
-            <div className="flex space-x-4 pt-6 border-t">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-white/10">
               <button
                 type="submit"
                 disabled={loading || uploadingBanner}
-                className="btn-primary flex-1 disabled:opacity-50"
+                className="btn-primary flex-1 disabled:opacity-50 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
               >
-                {uploadingBanner ? 'Uploading Banner...' : loading ? 'Updating...' : '💾 Update Event & Resubmit for Approval'}
+                {uploadingBanner ? 'Uploading Banner...' : loading ? 'Updating...' : 'Update Event & Resubmit for Approval'}
               </button>
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="btn-secondary flex-1"
+                className="btn-secondary flex-1 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
                 disabled={loading || uploadingBanner}
               >
                 Cancel

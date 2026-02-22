@@ -91,41 +91,41 @@ const VerifyEmail = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-primary to-secondary py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 sm:py-12 px-3 sm:px-4">
+      <div className="max-w-sm sm:max-w-md w-full glass-container border border-white/10 p-6 sm:p-8">
         <div className="text-center mb-8">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
-            <svg className="h-8 w-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-yellow-500/20 border border-yellow-500/30 mb-4">
+            <svg className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">
             Verify Your Email
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-300">
             We've sent a verification link to
           </p>
-          <p className="text-sm font-semibold text-gray-800 mt-1">
+          <p className="text-sm font-semibold text-primary mt-1">
             {currentUser?.email}
           </p>
         </div>
 
         {message && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          <div className="bg-green-500/20 border border-green-500/30 text-green-400 text-sm p-3 sm:p-4 rounded-lg mb-4">
             {message}
           </div>
         )}
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-500/20 border border-red-500/30 text-red-400 text-sm p-3 sm:p-4 rounded-lg mb-4">
             {error}
           </div>
         )}
 
         <div className="space-y-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="font-semibold text-blue-900 mb-2">📬 Check Your Email</h3>
-            <ul className="text-sm text-blue-800 space-y-1">
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 sm:p-4">
+            <h3 className="font-semibold text-blue-400 mb-2">Check Your Email</h3>
+            <ul className="text-sm text-blue-300 space-y-1">
               <li>• Open your email inbox</li>
               <li>• Look for an email from Firebase</li>
               <li>• Click the verification link</li>
@@ -136,40 +136,40 @@ const VerifyEmail = () => {
           <button
             onClick={handleCheckVerification}
             disabled={checking}
-            className="btn-primary w-full"
+            className="btn-primary w-full py-2.5 sm:py-3 text-sm sm:text-base"
           >
-            {checking ? 'Checking...' : '✓ I\'ve Verified My Email'}
+            {checking ? 'Checking...' : 'I\'ve Verified My Email'}
           </button>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-white/10"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Didn't receive the email?</span>
+              <span className="px-2 bg-white/5 text-gray-300 border border-white/10 rounded-lg py-1">Didn't receive the email?</span>
             </div>
           </div>
 
           <button
             onClick={handleResendEmail}
             disabled={resending}
-            className="btn-secondary w-full"
+            className="btn-secondary w-full py-2.5 sm:py-3 text-sm sm:text-base"
           >
-            {resending ? 'Sending...' : '📧 Resend Verification Email'}
+            {resending ? 'Sending...' : 'Resend Verification Email'}
           </button>
 
-          <div className="pt-4 border-t border-gray-200">
+          <div className="pt-4 border-t border-white/10">
             <button
               onClick={handleLogout}
-              className="text-sm text-gray-600 hover:text-gray-800 w-full text-center"
+              className="text-sm text-gray-400 hover:text-white w-full text-center transition-colors"
             >
               Logout and try a different account
             </button>
           </div>
         </div>
 
-        <div className="mt-6 text-xs text-gray-500 text-center">
-          <p>💡 Tip: Check your spam/junk folder if you don't see the email</p>
+        <div className="mt-6 text-xs text-gray-400 text-center">
+          <p>Tip: Check your spam/junk folder if you don't see the email</p>
         </div>
       </div>
     </div>

@@ -230,30 +230,33 @@ const EditFest = () => {
 
   if (fetchingFest) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading fest details...</p>
+          <p className="text-white">Loading fest details...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Back Button */}
-        <div className="mb-4">
-          <button onClick={() => navigate('/dashboard')} className="text-primary hover:underline flex items-center">
-            ← Back to Dashboard
+        <div className="mb-4 sm:mb-6">
+          <button onClick={() => navigate('/dashboard')} className="text-primary hover:underline flex items-center gap-2 text-sm sm:text-base">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Dashboard
           </button>
         </div>
         
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Edit Fest</h1>
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-            <p className="text-sm text-yellow-800">
+        <div className="mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Edit Fest</h1>
+          <div className="bg-yellow-500/20 border-l-4 border-yellow-400 p-4 rounded">
+            <p className="text-sm text-yellow-300">
               ⚠️ <strong>Note:</strong> After editing, this fest will be sent back for admin approval. 
               It will show as "Pending" until the admin reviews and approves it again.
             </p>
@@ -261,33 +264,32 @@ const EditFest = () => {
         </div>
 
         {/* Progress Steps */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between">
             {[1, 2, 3, 4].map((step) => (
-              <div key={step} className="flex items-center">
+              <div key={step} className="flex items-center flex-1">
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                    currentStep >= step ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600'
+                  className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-sm sm:text-base ${
+                    currentStep >= step ? 'bg-primary text-white' : 'bg-white/10 text-gray-400'
                   }`}
                 >
                   {step}
                 </div>
                 {step < 4 && (
                   <div
-                    className={`w-full h-1 mx-2 ${
-                      currentStep > step ? 'bg-primary' : 'bg-gray-300'
+                    className={`w-full h-1 mx-1 sm:mx-2 ${
+                      currentStep > step ? 'bg-primary' : 'bg-white/10'
                     }`}
-                    style={{ width: '100px' }}
                   />
                 )}
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-2 text-sm">
-            <span className={currentStep >= 1 ? 'text-primary font-semibold' : 'text-gray-500'}>Basic Details</span>
-            <span className={currentStep >= 2 ? 'text-primary font-semibold' : 'text-gray-500'}>Banner</span>
-            <span className={currentStep >= 3 ? 'text-primary font-semibold' : 'text-gray-500'}>Registration Form</span>
-            <span className={currentStep >= 4 ? 'text-primary font-semibold' : 'text-gray-500'}>Review</span>
+          <div className="flex justify-between mt-2 text-xs sm:text-sm">
+            <span className={currentStep >= 1 ? 'text-primary font-semibold' : 'text-gray-400'}>Basic Details</span>
+            <span className={currentStep >= 2 ? 'text-primary font-semibold' : 'text-gray-400'}>Banner</span>
+            <span className={currentStep >= 3 ? 'text-primary font-semibold' : 'text-gray-400'}>Registration Form</span>
+            <span className={currentStep >= 4 ? 'text-primary font-semibold' : 'text-gray-400'}>Review</span>
           </div>
         </div>
 
@@ -299,14 +301,14 @@ const EditFest = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="glass-container p-4 sm:p-6 md:p-8">
           {/* Step 1: Basic Details */}
           {currentStep === 1 && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Step 1: Fest Basic Details</h2>
-              <div className="space-y-4">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 1: Fest Basic Details</h2>
+              <div className="space-y-4 sm:space-y-6">
                 <div>
-                  <label htmlFor="festName" className="label">
+                  <label htmlFor="festName" className="label text-sm">
                     Fest Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -322,7 +324,7 @@ const EditFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="collegeName" className="label">
+                  <label htmlFor="collegeName" className="label text-sm">
                     College Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -338,7 +340,7 @@ const EditFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="date" className="label">
+                  <label htmlFor="date" className="label text-sm">
                     Date <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -353,7 +355,7 @@ const EditFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="venue" className="label">
+                  <label htmlFor="venue" className="label text-sm">
                     Venue <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -369,7 +371,7 @@ const EditFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="category" className="label">
+                  <label htmlFor="category" className="label text-sm">
                     Category <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -387,7 +389,7 @@ const EditFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="description" className="label">
+                  <label htmlFor="description" className="label text-sm">
                     Description <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -408,24 +410,24 @@ const EditFest = () => {
           {/* Step 2: Banner Upload */}
           {currentStep === 2 && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Step 2: Add Banner Image</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 2: Add Banner Image</h2>
               
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {/* Current Banner Preview */}
                 {festData.bannerUrl && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Current Banner</h3>
+                    <h3 className="text-sm font-medium text-gray-300 mb-2">Current Banner</h3>
                     <img
                       src={festData.bannerUrl}
                       alt="Current Banner"
-                      className="w-full h-64 object-cover rounded-lg border-2 border-gray-300"
+                      className="w-full h-48 sm:h-56 md:h-64 object-cover rounded-lg border-2 border-white/10"
                     />
                   </div>
                 )}
 
                 {/* Upload by File */}
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">
+                  <h3 className="text-sm font-medium text-gray-300 mb-2">
                     {festData.bannerUrl ? 'Upload New Banner' : 'Upload Banner'} 
                     <span className="text-red-500"> *</span>
                   </h3>
@@ -434,7 +436,7 @@ const EditFest = () => {
                     accept="image/*"
                     onChange={handleImageUpload}
                     disabled={uploadingImage}
-                    className="block w-full text-sm text-gray-500
+                    className="block w-full text-sm text-gray-300
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-lg file:border-0
                       file:text-sm file:font-semibold
@@ -443,22 +445,22 @@ const EditFest = () => {
                       disabled:opacity-50"
                   />
                   {uploadingImage && (
-                    <p className="text-sm text-gray-500 mt-2">Uploading image...</p>
+                    <p className="text-sm text-gray-400 mt-2">Uploading image...</p>
                   )}
-                  <p className="text-xs text-gray-500 mt-1">Max size: 5MB. Supported formats: JPG, PNG, GIF</p>
+                  <p className="text-xs text-gray-400 mt-1">Max size: 5MB. Supported formats: JPG, PNG, GIF</p>
                 </div>
 
                 {/* OR Divider */}
                 <div className="flex items-center">
-                  <div className="flex-1 border-t border-gray-300"></div>
-                  <span className="px-4 text-gray-500 text-sm">OR</span>
-                  <div className="flex-1 border-t border-gray-300"></div>
+                  <div className="flex-1 border-t border-white/10"></div>
+                  <span className="px-4 text-gray-400 text-sm">OR</span>
+                  <div className="flex-1 border-t border-white/10"></div>
                 </div>
 
                 {/* Upload by URL */}
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Use Image URL</h3>
-                  <div className="flex gap-2">
+                  <h3 className="text-sm font-medium text-gray-300 mb-2">Use Image URL</h3>
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="url"
                       name="bannerUrl"
@@ -470,12 +472,12 @@ const EditFest = () => {
                     <button
                       type="button"
                       onClick={handleCustomUrlSubmit}
-                      className="btn-secondary"
+                      className="btn-secondary px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base whitespace-nowrap"
                     >
                       Add URL
                     </button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Provide a direct link to your banner image</p>
+                  <p className="text-xs text-gray-400 mt-1">Provide a direct link to your banner image</p>
                 </div>
               </div>
             </div>
@@ -484,7 +486,7 @@ const EditFest = () => {
           {/* Step 3: Registration Form Builder */}
           {currentStep === 3 && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Step 3: Edit Registration Form</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 3: Edit Registration Form</h2>
               
               <div className="mb-6">
                 <label className="flex items-center space-x-2 cursor-pointer">
@@ -494,11 +496,11 @@ const EditFest = () => {
                     onChange={(e) => setFestData({...festData, prefillUserData: e.target.checked})}
                     className="w-4 h-4"
                   />
-                  <span className="text-gray-700">
-                    ☑ Auto-fill user profile data (Name, Email, Phone, College)
+                  <span className="text-gray-300">
+                    Auto-fill user profile data (Name, Email, Phone, College)
                   </span>
                 </label>
-                <p className="text-sm text-gray-500 ml-6 mt-1">
+                <p className="text-sm text-gray-400 ml-6 mt-1">
                   When enabled, registered users' basic information will be pre-filled in the form
                 </p>
               </div>
@@ -513,12 +515,12 @@ const EditFest = () => {
           {/* Step 4: Review & Submit */}
           {currentStep === 4 && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Step 4: Review & Update</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 4: Review & Update</h2>
               
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 <div>
-                  <h3 className="font-semibold text-lg mb-3">Fest Details</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                  <h3 className="font-semibold text-base sm:text-lg text-white mb-3">Fest Details</h3>
+                  <div className="bg-white/5 p-4 rounded-lg space-y-2 text-gray-300">
                     <p><strong>Name:</strong> {festData.festName}</p>
                     <p><strong>College:</strong> {festData.collegeName}</p>
                     <p><strong>Date:</strong> {festData.date}</p>
@@ -529,19 +531,19 @@ const EditFest = () => {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-lg mb-3">Banner</h3>
+                  <h3 className="font-semibold text-base sm:text-lg text-white mb-3">Banner</h3>
                   {festData.bannerUrl && (
                     <img
                       src={festData.bannerUrl}
                       alt="Banner"
-                      className="w-full h-48 object-cover rounded-lg"
+                      className="w-full h-40 sm:h-48 object-cover rounded-lg"
                     />
                   )}
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-lg mb-3">Registration Form</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-base sm:text-lg text-white mb-3">Registration Form</h3>
+                  <div className="bg-white/5 p-4 rounded-lg text-gray-300">
                     <p className="mb-2">
                       <strong>Prefill User Data:</strong> {festData.prefillUserData ? 'Yes' : 'No'}
                     </p>
@@ -549,7 +551,7 @@ const EditFest = () => {
                       <strong>Custom Fields:</strong> {festData.registrationForm.length} field(s)
                     </p>
                     {festData.registrationForm.length === 0 && (
-                      <p className="text-sm text-gray-500">Standard registration (Name, Email, Phone, College only)</p>
+                      <p className="text-sm text-gray-400">Standard registration (Name, Email, Phone, College only)</p>
                     )}
                   </div>
                 </div>
@@ -558,12 +560,12 @@ const EditFest = () => {
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8 pt-6 border-t">
+          <div className="flex justify-between mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/10">
             <button
               type="button"
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
             >
               ← Previous
             </button>
@@ -572,7 +574,7 @@ const EditFest = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="btn-primary"
+                className="btn-primary px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
               >
                 Next →
               </button>
@@ -581,9 +583,9 @@ const EditFest = () => {
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="btn-primary disabled:opacity-50"
+                className="btn-primary disabled:opacity-50 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
               >
-                {loading ? 'Updating...' : '✏️ Update Fest'}
+                {loading ? 'Updating...' : 'Update Fest'}
               </button>
             )}
           </div>

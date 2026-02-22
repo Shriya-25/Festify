@@ -341,28 +341,28 @@ function Admin() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'published': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      case 'changes_requested': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'approved': return 'bg-green-500/20 text-green-400 border border-green-500/30';
+      case 'published': return 'bg-green-500/20 text-green-400 border border-green-500/30';
+      case 'pending': return 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
+      case 'rejected': return 'bg-red-500/20 text-red-400 border border-red-500/30';
+      case 'changes_requested': return 'bg-orange-500/20 text-orange-400 border border-orange-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border border-gray-500/30';
     }
   };
 
   const getRoleBadgeColor = (role) => {
     switch (role) {
-      case 'admin': return 'bg-purple-100 text-purple-800 border border-purple-300';
-      case 'organizer': return 'bg-blue-100 text-blue-800 border border-blue-300';
-      case 'student': return 'bg-green-100 text-green-800 border border-green-300';
-      default: return 'bg-gray-100 text-gray-800 border border-gray-300';
+      case 'admin': return 'bg-purple-500/20 text-purple-400 border border-purple-500/30';
+      case 'organizer': return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+      case 'student': return 'bg-green-500/20 text-green-400 border border-green-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border border-gray-500/30';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl text-gray-600">Loading admin panel...</div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
+        <div className="text-xl text-white">Loading admin panel...</div>
       </div>
     );
   }
@@ -374,85 +374,99 @@ function Admin() {
   const changesRequestedEvents = events.filter(e => e.status === 'changes_requested').length;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Back Button */}
         <div className="mb-4">
-          <button onClick={() => navigate('/')} className="text-primary hover:underline flex items-center">
-            ← Back to Home
+          <button onClick={() => navigate('/')} className="text-primary hover:text-orange-400 transition-colors flex items-center gap-2 text-sm sm:text-base">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Home
           </button>
         </div>
         
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">🔐 Admin Panel</h1>
-          <p className="mt-2 text-gray-600">Manage fests, events, and users on the platform</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Admin Panel</h1>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-400">Manage fests, events, and users on the platform</p>
         </div>
 
         {/* Dashboard Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="glass-container border border-white/10 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Pending Fests</p>
-                <p className="text-3xl font-bold text-yellow-600">{pendingFests}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-400">Pending Fests</p>
+                <p className="text-2xl sm:text-3xl font-bold text-yellow-400">{pendingFests}</p>
               </div>
-              <div className="text-4xl">🎪</div>
+              <svg className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="glass-container border border-white/10 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Pending Events</p>
-                <p className="text-3xl font-bold text-yellow-600">{pendingEvents}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-400">Pending Events</p>
+                <p className="text-2xl sm:text-3xl font-bold text-yellow-400">{pendingEvents}</p>
               </div>
-              <div className="text-4xl">🎯</div>
+              <svg className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="glass-container border border-white/10 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Changes Requested</p>
-                <p className="text-3xl font-bold text-orange-600">{changesRequestedFests + changesRequestedEvents}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-400">Changes Requested</p>
+                <p className="text-2xl sm:text-3xl font-bold text-orange-400">{changesRequestedFests + changesRequestedEvents}</p>
               </div>
-              <div className="text-4xl">📝</div>
+              <svg className="w-8 h-8 sm:w-10 sm:h-10 text-orange-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="glass-container border border-white/10 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Users</p>
-                <p className="text-3xl font-bold text-blue-600">{users.length}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-400">Total Users</p>
+                <p className="text-2xl sm:text-3xl font-bold text-blue-400">{users.length}</p>
               </div>
-              <div className="text-4xl">👥</div>
+              <svg className="w-8 h-8 sm:w-10 sm:h-10 text-blue-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
             </div>
           </div>
         </div>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-            {error}
+          <div className="mb-4 p-4 glass-container border border-red-500/30 rounded-lg">
+            <p className="text-red-400">{error}</p>
           </div>
         )}
 
         {/* Tabs */}
-        <div className="mb-6 border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
+        <div className="mb-6 glass-container border border-white/10 overflow-x-auto">
+          <nav className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max sm:min-w-0">
             <button
               onClick={() => setActiveTab('fests')}
               className={`${
                 activeTab === 'fests'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                  ? 'border-primary text-white'
+                  : 'border-transparent text-gray-400 hover:text-white hover:border-white/30'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors flex items-center gap-1 sm:gap-2`}
             >
-              🎪 Fests ({fests.length})
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
+              <span className="hidden xs:inline">Fests</span> ({fests.length})
               {pendingFests > 0 && (
-                <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold">
-                  {pendingFests} Pending
+                <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded-full text-xs font-bold">
+                  {pendingFests}
                 </span>
               )}
             </button>
@@ -460,14 +474,17 @@ function Admin() {
               onClick={() => setActiveTab('events')}
               className={`${
                 activeTab === 'events'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                  ? 'border-primary text-white'
+                  : 'border-transparent text-gray-400 hover:text-white hover:border-white/30'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors flex items-center gap-1 sm:gap-2`}
             >
-              🎯 Events ({events.length})
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="hidden xs:inline">Events</span> ({events.length})
               {pendingEvents > 0 && (
-                <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold">
-                  {pendingEvents} Pending
+                <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded-full text-xs font-bold">
+                  {pendingEvents}
                 </span>
               )}
             </button>
@@ -475,11 +492,14 @@ function Admin() {
               onClick={() => setActiveTab('users')}
               className={`${
                 activeTab === 'users'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                  ? 'border-primary text-white'
+                  : 'border-transparent text-gray-400 hover:text-white hover:border-white/30'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors flex items-center gap-1 sm:gap-2`}
             >
-              👥 Users ({users.length})
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span className="hidden xs:inline">Users</span> ({users.length})
             </button>
           </nav>
         </div>
@@ -488,58 +508,58 @@ function Admin() {
         {activeTab === 'fests' && (
           <div className="space-y-4">
             {/* Status Filter */}
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="glass-container border border-white/10 p-3 sm:p-4">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-medium text-gray-700">Filter by Status:</span>
+                <span className="text-xs sm:text-sm font-medium text-gray-300">Filter by Status:</span>
                 <button
                   onClick={() => setFestStatusFilter('all')}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     festStatusFilter === 'all' 
-                      ? 'bg-indigo-600 text-white' 
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? 'bg-primary text-white' 
+                      : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
                   }`}
                 >
                   All ({fests.length})
                 </button>
                 <button
                   onClick={() => setFestStatusFilter('pending')}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     festStatusFilter === 'pending' 
-                      ? 'bg-yellow-600 text-white' 
-                      : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                      ? 'bg-yellow-500 text-white' 
+                      : 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border border-yellow-500/30'
                   }`}
                 >
-                  ⏳ Pending ({pendingFests})
+                  Pending ({pendingFests})
                 </button>
                 <button
                   onClick={() => setFestStatusFilter('changes_requested')}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     festStatusFilter === 'changes_requested' 
-                      ? 'bg-orange-600 text-white' 
-                      : 'bg-orange-100 text-orange-800 hover:bg-orange-200'
+                      ? 'bg-orange-500 text-white' 
+                      : 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 border border-orange-500/30'
                   }`}
                 >
-                  📝 Changes Requested ({changesRequestedFests})
+                  Changes Requested ({changesRequestedFests})
                 </button>
                 <button
                   onClick={() => setFestStatusFilter('approved')}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     festStatusFilter === 'approved' 
-                      ? 'bg-green-600 text-white' 
-                      : 'bg-green-100 text-green-800 hover:bg-green-200'
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30'
                   }`}
                 >
-                  ✓ Approved ({fests.filter(f => f.status === 'approved' || f.status === 'published').length})
+                  Approved ({fests.filter(f => f.status === 'approved' || f.status === 'published').length})
                 </button>
                 <button
                   onClick={() => setFestStatusFilter('rejected')}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     festStatusFilter === 'rejected' 
-                      ? 'bg-red-600 text-white' 
-                      : 'bg-red-100 text-red-800 hover:bg-red-200'
+                      ? 'bg-red-500 text-white' 
+                      : 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
                   }`}
                 >
-                  ✗ Rejected ({fests.filter(f => f.status === 'rejected').length})
+                  Rejected ({fests.filter(f => f.status === 'rejected').length})
                 </button>
               </div>
             </div>
@@ -552,8 +572,8 @@ function Admin() {
                 return fest.status === festStatusFilter;
               })
               .length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg shadow">
-                <p className="text-gray-500">No {festStatusFilter !== 'all' ? festStatusFilter : ''} fests found</p>
+              <div className="text-center py-12 glass-container border border-white/10">
+                <p className="text-gray-400">No {festStatusFilter !== 'all' ? festStatusFilter : ''} fests found</p>
               </div>
             ) : (
               fests
@@ -566,13 +586,13 @@ function Admin() {
                 .map((fest) => (
                 <div
                   key={fest.id}
-                  className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border border-gray-200"
+                  className="glass-container border border-white/10 p-4 sm:p-6 hover:border-primary/30 transition-all"
                 >
                   <div className="flex justify-between items-start gap-6">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start gap-3 mb-3">
                         <div className="flex-1">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-1">{fest.festName || 'Unnamed Fest'}</h3>
+                          <h3 className="text-2xl font-bold text-white mb-1">{fest.festName || 'Unnamed Fest'}</h3>
                           <span
                             className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase ${getStatusColor(
                               fest.status
@@ -584,22 +604,22 @@ function Admin() {
                       </div>
                       
                       <div className="space-y-2 mb-4">
-                        <p className="text-base font-semibold text-gray-700">
-                          🏫 {fest.collegeName || 'College not specified'}
+                        <p className="text-base font-semibold text-gray-300">
+                          {fest.collegeName || 'College not specified'}
                         </p>
                         {fest.organizerName && (
-                          <p className="text-sm text-gray-500">
-                            👤 Organizer: {fest.organizerName}
+                          <p className="text-sm text-gray-400">
+                            Organizer: {fest.organizerName}
                           </p>
                         )}
-                        <p className="text-gray-600 leading-relaxed">
+                        <p className="text-gray-300 leading-relaxed">
                           {fest.description || 'No description provided'}
                         </p>
                       </div>
                       
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 bg-white/5 p-3 rounded-lg border border-white/10">
                         <span className="flex items-center gap-1">
-                          <span className="font-semibold">📅 Date:</span> 
+                          <span className="font-semibold">Date:</span> 
                           {fest.date ? new Date(fest.date).toLocaleDateString('en-IN', { 
                             year: 'numeric', 
                             month: 'long', 
@@ -607,23 +627,23 @@ function Admin() {
                           }) : 'Not set'}
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="font-semibold">📍 Venue:</span> 
+                          <span className="font-semibold">Venue:</span> 
                           {fest.venue || fest.location || 'Not specified'}
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="font-semibold">💰 Fee:</span> 
+                          <span className="font-semibold">Fee:</span> 
                           ₹{fest.registrationFee || '0'}
                         </span>
                         {fest.createdAt && (
                           <span className="flex items-center gap-1">
-                            <span className="font-semibold">🕒 Created:</span> 
+                            <span className="font-semibold">Created:</span> 
                             {new Date(fest.createdAt).toLocaleDateString('en-IN')}
                           </span>
                         )}
                       </div>
                     </div>
                     
-                    <div className="flex flex-col gap-2 min-w-[140px]">
+                    <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto sm:min-w-[140px]">
                       {(fest.status === 'pending' || fest.status === 'changes_requested') && (
                         <>
                           <button
@@ -631,9 +651,9 @@ function Admin() {
                               setSelectedFest(fest);
                               setAdminComments('');
                             }}
-                            className="px-5 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium shadow-sm"
+                            className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium shadow-sm flex-1 sm:flex-none"
                           >
-                            ✓ Review
+                            Review
                           </button>
                         </>
                       )}
@@ -643,9 +663,9 @@ function Admin() {
                             setSelectedFest(fest);
                             setAdminComments('');
                           }}
-                          className="px-5 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium shadow-sm"
+                          className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium shadow-sm flex-1 sm:flex-none"
                         >
-                          ✓ Review
+                          Review
                         </button>
                       )}
                       {(fest.status === 'approved' || fest.status === 'published') && (
@@ -654,16 +674,16 @@ function Admin() {
                             setSelectedFest(fest);
                             setAdminComments('');
                           }}
-                          className="px-5 py-2.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium shadow-sm"
+                          className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium shadow-sm flex-1 sm:flex-none"
                         >
-                          📝 Review Again
+                          Review Again
                         </button>
                       )}
                       <button
                         onClick={() => handleDeleteFest(fest.id)}
-                        className="px-5 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm"
+                        className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm flex-1 sm:flex-none"
                       >
-                        🗑 Delete
+                        Delete
                       </button>
                     </div>
                   </div>
@@ -675,17 +695,17 @@ function Admin() {
 
         {/* Fest Review Modal */}
         {selectedFest && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-2xl w-full p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <div className="glass-container border border-white/20 rounded-lg max-w-2xl w-full p-6">
+              <h3 className="text-xl font-bold text-white mb-4">
                 Review Fest: {selectedFest.festName}
               </h3>
               <div className="mb-4">
-                <label className="label">Admin Comments (Optional for approval, Required for rejection/changes)</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Admin Comments (Optional for approval, Required for rejection/changes)</label>
                 <textarea
                   value={adminComments}
                   onChange={(e) => setAdminComments(e.target.value)}
-                  className="input-field"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
                   rows="4"
                   placeholder="Provide feedback or reasons for your decision..."
                 />
@@ -698,8 +718,7 @@ function Admin() {
                     setAdminComments('');
                   }}
                   className="btn-primary flex-1"
-                >
-                  ✓ Approve Fest
+                >  Approve Fest
                 </button>
                 <button
                   onClick={() => {
@@ -707,7 +726,7 @@ function Admin() {
                   }}
                   className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg flex-1"
                 >
-                  📝 Request Changes
+                  Request Changes
                 </button>
                 <button
                   onClick={() => {
@@ -715,7 +734,7 @@ function Admin() {
                   }}
                   className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg flex-1"
                 >
-                  ✗ Reject
+                  Reject
                 </button>
                 <button
                   onClick={() => {
@@ -735,58 +754,58 @@ function Admin() {
         {activeTab === 'events' && (
           <div className="space-y-4">
             {/* Status Filter */}
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="glass-container border border-white/10 p-3 sm:p-4">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-medium text-gray-700">Filter by Status:</span>
+                <span className="text-xs sm:text-sm font-medium text-gray-300">Filter by Status:</span>
                 <button
                   onClick={() => setEventStatusFilter('all')}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     eventStatusFilter === 'all' 
-                      ? 'bg-indigo-600 text-white' 
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? 'bg-primary text-white' 
+                      : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
                   }`}
                 >
                   All ({events.length})
                 </button>
                 <button
                   onClick={() => setEventStatusFilter('pending')}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     eventStatusFilter === 'pending' 
-                      ? 'bg-yellow-600 text-white' 
-                      : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                      ? 'bg-yellow-500 text-white' 
+                      : 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border border-yellow-500/30'
                   }`}
                 >
-                  ⏳ Pending ({pendingEvents})
+                  Pending ({pendingEvents})
                 </button>
                 <button
                   onClick={() => setEventStatusFilter('changes_requested')}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     eventStatusFilter === 'changes_requested' 
-                      ? 'bg-orange-600 text-white' 
-                      : 'bg-orange-100 text-orange-800 hover:bg-orange-200'
+                      ? 'bg-orange-500 text-white' 
+                      : 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 border border-orange-500/30'
                   }`}
                 >
-                  📝 Changes Requested ({changesRequestedEvents})
+                  Changes Requested ({changesRequestedEvents})
                 </button>
                 <button
                   onClick={() => setEventStatusFilter('approved')}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     eventStatusFilter === 'approved' 
-                      ? 'bg-green-600 text-white' 
-                      : 'bg-green-100 text-green-800 hover:bg-green-200'
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30'
                   }`}
                 >
-                  ✓ Approved ({events.filter(e => e.status === 'approved').length})
+                  Approved ({events.filter(e => e.status === 'approved').length})
                 </button>
                 <button
                   onClick={() => setEventStatusFilter('rejected')}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     eventStatusFilter === 'rejected' 
-                      ? 'bg-red-600 text-white' 
-                      : 'bg-red-100 text-red-800 hover:bg-red-200'
+                      ? 'bg-red-500 text-white' 
+                      : 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
                   }`}
                 >
-                  ✗ Rejected ({events.filter(e => e.status === 'rejected').length})
+                  Rejected ({events.filter(e => e.status === 'rejected').length})
                 </button>
               </div>
             </div>
@@ -798,8 +817,8 @@ function Admin() {
                 return event.status === eventStatusFilter;
               })
               .length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg shadow">
-                <p className="text-gray-500">No {eventStatusFilter !== 'all' ? eventStatusFilter : ''} events found</p>
+              <div className="text-center py-12 glass-container border border-white/10">
+                <p className="text-gray-400">No {eventStatusFilter !== 'all' ? eventStatusFilter : ''} events found</p>
               </div>
             ) : (
               events
@@ -811,22 +830,22 @@ function Admin() {
                 .map((event) => (
                 <div
                   key={event.id}
-                  className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border border-gray-200"
+                  className="glass-container border border-white/10 p-4 sm:p-6 hover:border-primary/30 transition-all"
                 >
-                  <div className="flex justify-between items-start gap-6">
-                    <div className="flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-6">
+                    <div className="flex-1 min-w-0 w-full">
                       {/* Banner */}
                       {event.bannerUrl && (
                         <img
                           src={event.bannerUrl}
                           alt={event.eventName}
-                          className="w-full h-32 object-cover rounded-lg mb-4"
+                          className="w-full h-32 object-cover rounded-lg mb-4 border border-white/10"
                         />
                       )}
                       
                       <div className="flex items-start gap-3 mb-3">
                         <div className="flex-1">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-1">{event.eventName || 'Unnamed Event'}</h3>
+                          <h3 className="text-2xl font-bold text-white mb-1">{event.eventName || 'Unnamed Event'}</h3>
                           <div className="flex items-center gap-2 mb-2">
                             <span
                               className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase ${getStatusColor(
@@ -835,7 +854,7 @@ function Admin() {
                             >
                               {event.status || 'pending'}
                             </span>
-                            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+                            <span className="px-3 py-1 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-full text-xs font-semibold">
                               {event.domain}
                             </span>
                           </div>
@@ -843,21 +862,21 @@ function Admin() {
                       </div>
                       
                       <div className="space-y-2 mb-4">
-                        <p className="text-base font-semibold text-gray-700">
-                          🎪 Fest: {event.festName || 'Not specified'}
+                        <p className="text-base font-semibold text-gray-300">
+                          Fest: {event.festName || 'Not specified'}
                         </p>
-                        <p className="text-gray-600 leading-relaxed">
+                        <p className="text-gray-300 leading-relaxed">
                           {event.description || 'No description provided'}
                         </p>
                         
                         {/* Show registration form details */}
                         {event.registrationForm && event.registrationForm.length > 0 && (
-                          <div className="bg-gray-50 p-3 rounded-lg mt-3">
-                            <p className="text-sm font-semibold text-gray-700 mb-2">📝 Registration Form Fields:</p>
-                            <ul className="text-sm text-gray-600 space-y-1">
+                          <div className="bg-white/5 p-3 rounded-lg mt-3 border border-white/10">
+                            <p className="text-sm font-semibold text-white mb-2">Registration Form Fields:</p>
+                            <ul className="text-sm text-gray-400 space-y-1">
                               {event.registrationForm.map((field, idx) => (
                                 <li key={idx}>
-                                  • {field.label} ({field.type}) {field.required && <span className="text-red-500">*</span>}
+                                  • {field.label} ({field.type}) {field.required && <span className="text-red-400">*</span>}
                                 </li>
                               ))}
                             </ul>
@@ -865,17 +884,17 @@ function Admin() {
                         )}
                       </div>
                       
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 bg-white/5 p-3 rounded-lg border border-white/10">
                         <span className="flex items-center gap-1">
-                          <span className="font-semibold">📅 Date:</span> 
+                          <span className="font-semibold">Date:</span> 
                           {event.date ? new Date(event.date).toLocaleDateString('en-IN') : 'Not set'} at {event.time || 'N/A'}
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="font-semibold">📍 Venue:</span> 
+                          <span className="font-semibold">Venue:</span> 
                           {event.venue || 'Not specified'}
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="font-semibold">💰 Fees:</span> 
+                          <span className="font-semibold">Fees:</span> 
                           {event.isPaid ? `₹${event.entryFee}` : 'Free'}
                           {event.isPaid && event.paymentConfig && (
                             <span className="text-xs text-gray-500 ml-2">
@@ -884,11 +903,11 @@ function Admin() {
                           )}
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="font-semibold">👥 Participants:</span> 
+                          <span className="font-semibold">Participants:</span> 
                           {event.participantCount || 0}{event.maxParticipants ? ` / ${event.maxParticipants}` : ''}
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="font-semibold">⏰ Deadline:</span> 
+                          <span className="font-semibold">Deadline:</span> 
                           {event.registrationDeadline ? new Date(event.registrationDeadline).toLocaleString('en-IN', {
                             dateStyle: 'short',
                             timeStyle: 'short'
@@ -898,14 +917,14 @@ function Admin() {
                       
                       {/* Admin Comments */}
                       {event.adminComments && (
-                        <div className="mt-3 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                          <p className="text-sm font-semibold text-yellow-800">📋 Previous Admin Comments:</p>
-                          <p className="text-sm text-yellow-700 mt-1">{event.adminComments}</p>
+                        <div className="mt-3 bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/30">
+                          <p className="text-sm font-semibold text-yellow-400">Previous Admin Comments:</p>
+                          <p className="text-sm text-yellow-300 mt-1">{event.adminComments}</p>
                         </div>
                       )}
                     </div>
                     
-                    <div className="flex flex-col gap-2 min-w-[140px]">
+                    <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto sm:min-w-[140px] flex-wrap">
                       {event.status === 'pending' && (
                         <>
                           <button
@@ -913,27 +932,27 @@ function Admin() {
                               setSelectedEvent(event);
                               setAdminComments('');
                             }}
-                            className="px-5 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium shadow-sm"
+                            className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium shadow-sm flex-1 sm:flex-none"
                           >
-                            ✓ Approve
+                            Approve
                           </button>
                           <button
                             onClick={() => {
                               setSelectedEvent(event);
                               setAdminComments('');
                             }}
-                            className="px-5 py-2.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium shadow-sm"
+                            className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium shadow-sm flex-1 sm:flex-none"
                           >
-                            ✗ Request Changes
+                            Request Changes
                           </button>
                         </>
                       )}
                       {event.status === 'rejected' && (
                         <button
                           onClick={() => handleApproveEvent(event.id, '')}
-                          className="px-5 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium shadow-sm"
+                          className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium shadow-sm flex-1 sm:flex-none"
                         >
-                          ✓ Approve
+                          Approve
                         </button>
                       )}
                       {event.status === 'approved' && (
@@ -942,22 +961,22 @@ function Admin() {
                             setSelectedEvent(event);
                             setAdminComments('');
                           }}
-                          className="px-5 py-2.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium shadow-sm"
+                          className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium shadow-sm flex-1 sm:flex-none"
                         >
-                          ✗ Unpublish
+                          Unpublish
                         </button>
                       )}
                       <button
                         onClick={() => handleViewRegistrations(event)}
-                        className="px-5 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium shadow-sm"
+                        className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium shadow-sm flex-1 sm:flex-none"
                       >
-                        👥 View Registrations
+                        View Registrations
                       </button>
                       <button
                         onClick={() => handleDeleteEvent(event.id)}
-                        className="px-5 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm"
+                        className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm flex-1 sm:flex-none"
                       >
-                        🗑 Delete
+                        Delete
                       </button>
                     </div>
                   </div>
@@ -969,17 +988,17 @@ function Admin() {
 
         {/* Admin Comments Modal */}
         {selectedEvent && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-2xl w-full p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <div className="glass-container border border-white/20 rounded-lg max-w-2xl w-full p-6">
+              <h3 className="text-xl font-bold text-white mb-4">
                 Review Event: {selectedEvent.eventName}
               </h3>
               <div className="mb-4">
-                <label className="label">Admin Comments (Optional for approval, Required for rejection/changes)</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Admin Comments (Optional for approval, Required for rejection/changes)</label>
                 <textarea
                   value={adminComments}
                   onChange={(e) => setAdminComments(e.target.value)}
-                  className="input-field"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
                   rows="4"
                   placeholder="Provide feedback or reasons for your decision..."
                 />
@@ -989,19 +1008,19 @@ function Admin() {
                   onClick={() => handleApproveEvent(selectedEvent.id, adminComments)}
                   className="btn-primary flex-1"
                 >
-                  ✓ Approve Event
+                  Approve Event
                 </button>
                 <button
                   onClick={() => handleRequestEventChanges(selectedEvent.id, adminComments)}
                   className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg flex-1"
                 >
-                  📝 Request Changes
+                  Request Changes
                 </button>
                 <button
                   onClick={() => handleRejectEvent(selectedEvent.id, adminComments)}
                   className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg flex-1"
                 >
-                  ✗ Reject
+                  Reject
                 </button>
                 <button
                   onClick={() => {
@@ -1019,15 +1038,15 @@ function Admin() {
 
         {/* View Registrations Modal */}
         {viewingRegistrations && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b p-6 z-10">
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <div className="glass-container border border-white/20 rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 glass-container border-b border-white/10 p-6 z-10">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-800">
+                    <h2 className="text-2xl font-bold text-white">
                       {viewingRegistrations.eventName} - Registrations
                     </h2>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-400 mt-1">
                       Total: {registrations.length} student{registrations.length !== 1 ? 's' : ''}
                     </p>
                   </div>
@@ -1037,7 +1056,7 @@ function Admin() {
                         onClick={handleDownloadCSV}
                         className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
                       >
-                        📥 Download CSV
+                        Download CSV
                       </button>
                     )}
                     <button
@@ -1048,7 +1067,7 @@ function Admin() {
                       }}
                       className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
                     >
-                      ✕ Close
+                      Close
                     </button>
                   </div>
                 </div>
@@ -1061,7 +1080,7 @@ function Admin() {
                       placeholder="Search by name, email, or college..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
                     />
                   </div>
                 )}
@@ -1070,12 +1089,12 @@ function Admin() {
               <div className="p-6">
                 {loadingRegistrations ? (
                   <div className="text-center py-12">
-                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
-                    <p className="text-gray-600 mt-4">Loading registrations...</p>
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
+                    <p className="text-gray-400 mt-4">Loading registrations...</p>
                   </div>
                 ) : registrations.length === 0 ? (
                   <div className="text-center py-12">
-                    <p className="text-gray-600 text-lg">No registrations yet</p>
+                    <p className="text-gray-400 text-lg">No registrations yet</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -1092,32 +1111,32 @@ function Admin() {
                       .map(reg => (
                         <div
                           key={reg.id}
-                          className="block p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                          className="block p-4 border border-white/10 rounded-lg glass-container hover:border-primary/30 transition-colors"
                         >
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
-                              <h3 className="font-semibold text-gray-800 text-lg">
+                              <h3 className="font-semibold text-white text-lg">
                                 {reg.name || 'N/A'}
                               </h3>
-                              <p className="text-sm text-gray-600 mt-1">
-                                📧 {reg.email || 'N/A'}
+                              <p className="text-sm text-gray-400 mt-1">
+                                {reg.email || 'N/A'}
                               </p>
-                              <p className="text-sm text-gray-600 mt-1">
-                                🏫 {reg.college || 'N/A'}
+                              <p className="text-sm text-gray-400 mt-1">
+                                {reg.college || 'N/A'}
                                 {reg.branch && ` • ${reg.branch}`}
                                 {reg.year && ` • ${reg.year}`}
                               </p>
                               {reg.phone && (
-                                <p className="text-sm text-gray-600 mt-1">
-                                  📱 {reg.phone}
+                                <p className="text-sm text-gray-400 mt-1">
+                                  {reg.phone}
                                 </p>
                               )}
                               {reg.formData && Object.keys(reg.formData).length > 0 && (
-                                <div className="mt-2 pt-2 border-t border-gray-200">
-                                  <p className="text-xs font-semibold text-gray-700 mb-1">Additional Info:</p>
+                                <div className="mt-2 pt-2 border-t border-white/10">
+                                  <p className="text-xs font-semibold text-gray-300 mb-1">Additional Info:</p>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                     {Object.entries(reg.formData).map(([key, value]) => (
-                                      <p key={key} className="text-xs text-gray-600">
+                                      <p key={key} className="text-xs text-gray-400">
                                         <span className="font-medium">{key}:</span> {value || 'N/A'}
                                       </p>
                                     ))}
@@ -1129,7 +1148,7 @@ function Admin() {
                               <p className="text-xs text-gray-500">
                                 Registered on
                               </p>
-                              <p className="text-sm font-medium text-gray-700">
+                              <p className="text-sm font-medium text-gray-300">
                                 {new Date(reg.registeredAt).toLocaleDateString('en-IN', {
                                   day: 'numeric',
                                   month: 'short',
@@ -1156,7 +1175,7 @@ function Admin() {
                       );
                     }).length === 0 && (
                       <div className="text-center py-8">
-                        <p className="text-gray-500">No registrations match your search</p>
+                        <p className="text-gray-400">No registrations match your search</p>
                       </div>
                     )}
                   </div>
@@ -1168,111 +1187,113 @@ function Admin() {
 
         {/* Users Tab */}
         {activeTab === 'users' && (
-          <div className="bg-white rounded-lg shadow-md overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Phone
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    College
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Auth Provider
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email Verified
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created At
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {user.name || user.displayName || 'Not provided'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{user.email || 'N/A'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{user.phone || 'N/A'}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-600 max-w-xs truncate" title={user.college}>
-                        {user.college || 'N/A'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${getRoleBadgeColor(
-                          user.role
-                        )}`}
-                      >
-                        {user.role || 'none'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{user.authProvider || 'email'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          user.emailVerified
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {user.emailVerified ? '✓ Verified' : '✗ Not Verified'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">
-                        {user.createdAt
-                          ? new Date(user.createdAt).toLocaleDateString('en-IN', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            })
-                          : 'N/A'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <select
-                        value={user.role || ''}
-                        onChange={(e) => handleChangeUserRole(user.id, e.target.value)}
-                        className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      >
-                        <option value="">No Role</option>
-                        <option value="student">Student</option>
-                        <option value="organizer">Organizer</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </td>
+          <div className="glass-container border border-white/10 rounded-lg">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-white/10">
+                <thead className="bg-white/5">
+                  <tr>
+                    <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Phone
+                    </th>
+                    <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      College
+                    </th>
+                    <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Auth Provider
+                    </th>
+                    <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Email Verified
+                    </th>
+                    <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Created At
+                    </th>
+                    <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-white/10">
+                  {users.map((user) => (
+                    <tr key={user.id} className="hover:bg-white/5 transition-colors">
+                      <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
+                        <div className="text-xs sm:text-sm font-medium text-white">
+                          {user.name || user.displayName || 'Not provided'}
+                        </div>
+                      </td>
+                      <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
+                        <div className="text-xs sm:text-sm text-gray-400">{user.email || 'N/A'}</div>
+                      </td>
+                      <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
+                        <div className="text-xs sm:text-sm text-gray-400">{user.phone || 'N/A'}</div>
+                      </td>
+                      <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4">
+                        <div className="text-xs sm:text-sm text-gray-400 max-w-xs truncate" title={user.college}>
+                          {user.college || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-semibold uppercase ${getRoleBadgeColor(
+                            user.role
+                          )}`}
+                        >
+                          {user.role || 'none'}
+                        </span>
+                      </td>
+                      <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
+                        <div className="text-xs sm:text-sm text-gray-400">{user.authProvider || 'email'}</div>
+                      </td>
+                      <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
+                        <span
+                          className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-semibold ${
+                            user.emailVerified
+                              ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                              : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                          }`}
+                        >
+                          {user.emailVerified ? 'Verified' : 'Not Verified'}
+                        </span>
+                      </td>
+                      <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
+                        <div className="text-xs sm:text-sm text-gray-400">
+                          {user.createdAt
+                            ? new Date(user.createdAt).toLocaleDateString('en-IN', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })
+                            : 'N/A'}
+                        </div>
+                      </td>
+                      <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap text-xs sm:text-sm">
+                        <select
+                          value={user.role || ''}
+                          onChange={(e) => handleChangeUserRole(user.id, e.target.value)}
+                          className="bg-white/5 border border-white/10 rounded-md px-2 sm:px-3 py-1 text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        >
+                          <option value="" className="bg-gray-800">No Role</option>
+                          <option value="student" className="bg-gray-800">Student</option>
+                          <option value="organizer" className="bg-gray-800">Organizer</option>
+                          <option value="admin" className="bg-gray-800">Admin</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             {users.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-gray-500">No users found</p>
+                <p className="text-gray-400">No users found</p>
               </div>
             )}
           </div>

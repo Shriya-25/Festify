@@ -112,36 +112,42 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Loading profile...</p>
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mb-4"></div>
+          <p className="text-white">Loading profile...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-8">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4">
         {/* Back Button */}
-        <div className="mb-4">
-          <button onClick={() => navigate('/dashboard')} className="text-primary hover:underline flex items-center">
-            ← Back to Dashboard
+        <div className="mb-4 sm:mb-6">
+          <button onClick={() => navigate('/dashboard')} className="text-primary hover:text-primary/80 inline-flex items-center gap-2 transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Dashboard
           </button>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
-          <p className="text-gray-600 mb-8">Update your personal information</p>
+        <div className="glass-container p-4 sm:p-6 border border-white/10">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">My Profile</h1>
+          <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6">Update your personal information</p>
 
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
+            <div className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl border ${
               message.includes('success') 
-                ? 'bg-green-50 text-green-800 border border-green-200' 
-                : 'bg-red-50 text-red-800 border border-red-200'
+                ? 'bg-green-500/10 text-green-400 border-green-500/30' 
+                : 'bg-red-500/10 text-red-400 border-red-500/30'
             }`}>
               {message}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                 Full Name
@@ -152,13 +158,13 @@ const Profile = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="label">
                 Email Address
               </label>
               <input
@@ -167,14 +173,14 @@ const Profile = () => {
                 name="email"
                 value={formData.email}
                 disabled
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
+                className="input-field opacity-50 cursor-not-allowed"
               />
               <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number <span className="text-red-500">*</span>
+              <label htmlFor="phone" className="label">
+                Phone Number <span className="text-red-400">*</span>
               </label>
               <input
                 type="tel"
@@ -183,14 +189,14 @@ const Profile = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Enter your phone number"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="input-field"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="college" className="block text-sm font-medium text-gray-700 mb-2">
-                College/University <span className="text-red-500">*</span>
+              <label htmlFor="college" className="label">
+                College/University <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
@@ -199,23 +205,23 @@ const Profile = () => {
                 value={formData.college}
                 onChange={handleChange}
                 placeholder="Enter your college name"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="input-field"
                 required
               />
             </div>
 
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
+                className="flex-1 btn-primary disabled:opacity-50 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
               <button
                 type="button"
                 onClick={() => navigate('/dashboard')}
-                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors"
+                className="flex-1 btn-secondary px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
               >
                 Cancel
               </button>

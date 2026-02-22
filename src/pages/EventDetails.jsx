@@ -571,7 +571,10 @@ const EventDetails = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Loading...</p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-white">Loading event details...</p>
+        </div>
       </div>
     );
   }
@@ -583,81 +586,81 @@ const EventDetails = () => {
   const registrationStatus = !isRegistrationOpen() ? 'closed' : isRegistered ? 'registered' : 'open';
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Banner Image */}
         {event.bannerUrl && (
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <img
               src={event.bannerUrl}
               alt={event.eventName}
-              className="w-full h-64 object-cover rounded-lg shadow-lg"
+              className="w-full h-48 sm:h-64 md:h-80 object-cover rounded-lg shadow-lg"
             />
           </div>
         )}
 
         {/* Event Details Card */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
-          <div className="flex justify-between items-start mb-4">
+        <div className="glass-container p-4 sm:p-6 lg:p-8 mb-4 sm:mb-6">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4 space-y-3 md:space-y-0">
             <div>
-              <h1 className="text-4xl font-bold text-gray-800 mb-2">{event.eventName}</h1>
-              <p className="text-xl text-gray-600">{event.festName}</p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">{event.eventName}</h1>
+              <p className="text-lg sm:text-xl text-gray-300">{event.festName}</p>
             </div>
-            <div className="text-right">
-              <span className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${
+            <div className="md:text-right">
+              <span className={`inline-block px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold ${
                 registrationStatus === 'closed' 
-                  ? 'bg-red-100 text-red-800'
+                  ? 'bg-red-500/20 text-red-400 border border-red-500/30'
                   : registrationStatus === 'registered'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-blue-100 text-primary'
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                  : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
               }`}>
-                {registrationStatus === 'closed' ? '🔒 Registrations Closed' 
-                  : registrationStatus === 'registered' ? '✓ Registered' 
-                  : '🎯 Open for Registration'}
+                {registrationStatus === 'closed' ? 'Registrations Closed' 
+                  : registrationStatus === 'registered' ? 'Registered' 
+                  : 'Open for Registration'}
               </span>
               <div className="mt-2">
-                <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm">
+                <span className="inline-block px-2 py-1 sm:px-3 bg-white/5 text-gray-300 rounded text-xs sm:text-sm">
                   {event.domain}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6 p-3 sm:p-4 bg-white/5 rounded-lg">
             <div>
-              <p className="text-sm text-gray-600 mb-1">📅 Date & Time</p>
-              <p className="font-semibold text-gray-800">
+              <p className="text-xs sm:text-sm text-gray-400 mb-1">Date & Time</p>
+              <p className="font-semibold text-white text-sm sm:text-base">
                 {new Date(event.date).toLocaleDateString()} at {event.time}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">📍 Venue</p>
-              <p className="font-semibold text-gray-800">{event.venue}</p>
+              <p className="text-xs sm:text-sm text-gray-400 mb-1">Venue</p>
+              <p className="font-semibold text-white text-sm sm:text-base">{event.venue}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">💰 Entry Fees</p>
-              <p className="font-semibold text-gray-800">
+              <p className="text-xs sm:text-sm text-gray-400 mb-1">Entry Fees</p>
+              <p className="font-semibold text-white text-lg sm:text-xl md:text-2xl">
                 {event.isPaid ? `₹${event.entryFee}` : 'Free'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">👥 Participants</p>
-              <p className="font-semibold text-gray-800">
+              <p className="text-xs sm:text-sm text-gray-400 mb-1">Participants</p>
+              <p className="font-semibold text-white text-sm sm:text-base">
                 {event.participantCount || 0}
                 {event.maxParticipants && ` / ${event.maxParticipants}`}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">⏰ Registration Deadline</p>
-              <p className="font-semibold text-gray-800">
+              <p className="text-xs sm:text-sm text-gray-400 mb-1">Registration Deadline</p>
+              <p className="font-semibold text-white text-sm sm:text-base">
                 {new Date(event.registrationDeadline).toLocaleString()}
               </p>
             </div>
           </div>
 
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">About This Event</h2>
-            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">About This Event</h2>
+            <p className="text-gray-300 text-sm sm:text-base leading-relaxed whitespace-pre-line">
               {event.description}
             </p>
           </div>
@@ -673,26 +676,26 @@ const EventDetails = () => {
 
           <div>
             {!currentUser ? (
-              <button onClick={() => navigate('/login')} className="btn-primary w-full">
+              <button onClick={() => navigate('/login')} className="btn-primary w-full text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6">
                 Login to Register
               </button>
             ) : !isRegistrationOpen() ? (
-              <button disabled className="w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed">
+              <button disabled className="w-full bg-red-500 text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg cursor-not-allowed text-sm sm:text-base">
                 🔒 Registration Closed
               </button>
             ) : isRegistered ? (
-              <button disabled className="w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-lg">
+              <button disabled className="w-full bg-green-500 text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-sm sm:text-base">
                 ✓ Already Registered
               </button>
             ) : userRole === 'student' ? (
               <button
                 onClick={openRegistrationModal}
-                className="btn-primary w-full"
+                className="btn-primary w-full text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6"
               >
                 Register for this Event
               </button>
             ) : (
-              <div className="text-center text-gray-600">
+              <div className="text-center text-gray-400">
                 Only students can register for events
               </div>
             )}
@@ -701,26 +704,26 @@ const EventDetails = () => {
 
         {/* Payment Step Modal */}
         {showPaymentStep && event.isPaid && event.paymentConfig && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-800">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="glass-container max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 glass-container border-b border-white/10 p-4 sm:p-6 flex justify-between items-start">
+                <div className="flex-1 pr-2">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
                     Payment - {event.eventName}
                   </h2>
                   <div className="mt-2">
                     {couponApplied && appliedCoupon ? (
                       <div>
-                        <p className="text-sm text-gray-600 line-through">Original: ₹{originalAmount}</p>
-                        <p className="text-lg font-semibold text-green-600">
+                        <p className="text-xs sm:text-sm text-gray-400 line-through">Original: ₹{originalAmount}</p>
+                        <p className="text-base sm:text-lg md:text-xl font-semibold text-green-400">
                           Final Amount: ₹{finalAmount.toFixed(2)}
                         </p>
-                        <p className="text-xs text-green-600">
+                        <p className="text-xs sm:text-sm text-green-400">
                           🎊 {appliedCoupon.discountPercent}% discount applied - You save ₹{appliedCoupon.discountAmount.toFixed(2)}!
                         </p>
                       </div>
                     ) : (
-                      <p className="text-lg font-semibold text-primary mt-1">
+                      <p className="text-base sm:text-lg md:text-xl font-semibold text-primary mt-1">
                         Amount: ₹{originalAmount}
                       </p>
                     )}
@@ -731,30 +734,30 @@ const EventDetails = () => {
                     setShowPaymentStep(false);
                     setShowRegistrationModal(true);
                   }}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                  className="text-gray-400 hover:text-white text-2xl"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {/* Coupon Section - Show if coupons are enabled */}
                 {event.coupon && event.coupon.enabled && !couponApplied && (
-                  <div className="mb-6 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-purple-900 mb-3 flex items-center">
+                  <div className="mb-4 sm:mb-6 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-3 sm:p-4">
+                    <h3 className="font-semibold text-purple-900 mb-2 sm:mb-3 flex items-center text-sm sm:text-base">
                       🎟️ Have a Discount Coupon?
                     </h3>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <input
                         type="text"
-                        className="input-field flex-1"
+                        className="input-field flex-1 text-sm sm:text-base"
                         placeholder="Enter coupon code"
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                       />
                       <button
                         onClick={handleApplyCoupon}
-                        className="btn-primary whitespace-nowrap"
+                        className="btn-primary whitespace-nowrap py-2 px-4 sm:px-6 text-sm sm:text-base"
                       >
                         Apply
                       </button>
@@ -762,7 +765,7 @@ const EventDetails = () => {
                     {couponError && (
                       <p className="text-sm text-red-600 mt-2">{couponError}</p>
                     )}
-                    <p className="text-xs text-gray-600 mt-2">
+                    <p className="text-xs text-gray-400 mt-2">
                       Get {event.coupon.discountPercent}% off with the right code!
                     </p>
                   </div>
@@ -770,13 +773,13 @@ const EventDetails = () => {
 
                 {/* Show applied coupon with remove option */}
                 {couponApplied && appliedCoupon && (
-                  <div className="mb-6 bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="font-semibold text-green-900 flex items-center">
+                  <div className="mb-4 sm:mb-6 bg-green-50 border-2 border-green-200 rounded-lg p-3 sm:p-4">
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-green-900 flex items-center text-sm sm:text-base">
                           ✅ Coupon Applied: {appliedCoupon.code}
                         </h3>
-                        <p className="text-sm text-green-800 mt-1">
+                        <p className="text-xs sm:text-sm text-green-800 mt-1">
                           {appliedCoupon.discountPercent}% discount - You save ₹{appliedCoupon.discountAmount.toFixed(2)}
                         </p>
                       </div>
@@ -800,26 +803,26 @@ const EventDetails = () => {
 
                 {/* Manual QR Payment */}
                 {event.paymentConfig.method === 'manual' && (
-                  <div className="space-y-6">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <h3 className="font-semibold text-blue-900 mb-2">📱 Payment Instructions</h3>
-                      <p className="text-blue-800 whitespace-pre-line">
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3 sm:p-4">
+                      <h3 className="font-semibold text-blue-300 mb-2 text-sm sm:text-base">Payment Instructions</h3>
+                      <p className="text-blue-200 whitespace-pre-line text-xs sm:text-sm">
                         {event.paymentConfig.instructions}
                       </p>
                     </div>
 
                     <div className="flex justify-center">
-                      <div className="border-2 border-gray-300 rounded-lg p-4">
+                      <div className="border-2 border-white/10 rounded-lg p-2 sm:p-4">
                         <img
                           src={event.paymentConfig.qrImageURL}
                           alt="Payment QR Code"
-                          className="w-64 h-64 object-contain"
+                          className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 object-contain"
                         />
                       </div>
                     </div>
 
-                    <div className="border-t pt-6">
-                      <h3 className="font-semibold text-gray-800 mb-4">Upload Payment Proof</h3>
+                    <div className="border-t border-white/10 pt-4 sm:pt-6">
+                      <h3 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Upload Payment Proof</h3>
                       
                       <div className="space-y-4">
                         <div>
@@ -834,15 +837,15 @@ const EventDetails = () => {
                             required
                           />
                           {paymentScreenshotPreview && (
-                            <div className="mt-4">
+                            <div className="mt-3 sm:mt-4">
                               <img
                                 src={paymentScreenshotPreview}
                                 alt="Screenshot preview"
-                                className="w-full h-48 object-contain border rounded-lg"
+                                className="w-full h-32 sm:h-40 md:h-48 object-contain border rounded-lg"
                               />
                             </div>
                           )}
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-sm text-gray-400 mt-1">
                             Upload screenshot of your payment (Max 5MB)
                           </p>
                         </div>
@@ -863,11 +866,11 @@ const EventDetails = () => {
                       </div>
                     </div>
 
-                    <div className="flex space-x-4 pt-4">
+                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 pt-4">
                       <button
                         onClick={handleFinalSubmit}
                         disabled={!paymentScreenshot || !transactionId.trim() || uploadingScreenshot || registering}
-                        className="btn-primary flex-1 disabled:opacity-50"
+                        className="btn-primary flex-1 disabled:opacity-50 py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
                       >
                         {registering ? 'Submitting...' : uploadingScreenshot ? 'Processing...' : 'Confirm & Register'}
                       </button>
@@ -876,7 +879,7 @@ const EventDetails = () => {
                           setShowPaymentStep(false);
                           setShowRegistrationModal(true);
                         }}
-                        className="btn-secondary flex-1"
+                        className="btn-secondary flex-1 py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
                         disabled={registering}
                       >
                         Back
@@ -887,37 +890,37 @@ const EventDetails = () => {
 
                 {/* Razorpay Payment */}
                 {event.paymentConfig.method === 'razorpay' && (
-                  <div className="space-y-6">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <h3 className="font-semibold text-blue-900 mb-2">💳 Razorpay Payment</h3>
-                      <p className="text-blue-800">
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3 sm:p-4">
+                      <h3 className="font-semibold text-blue-300 mb-2 text-sm sm:text-base">Razorpay Payment</h3>
+                      <p className="text-blue-200 text-xs sm:text-sm">
                         You will be redirected to Razorpay to complete the payment securely.
                       </p>
                     </div>
 
-                    <div className="text-center py-8">
-                      <p className="text-gray-700 mb-6">
-                        Click the button below to proceed with payment of <strong>₹{event.entryFee}</strong>
+                    <div className="text-center py-6 sm:py-8">
+                      <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
+                        Click the button below to proceed with payment of <strong className="text-lg sm:text-xl">₹{event.entryFee}</strong>
                       </p>
                       <button
                         onClick={handleRazorpayPayment}
                         disabled={processingRazorpay || registering}
-                        className="btn-primary disabled:opacity-50"
+                        className="btn-primary disabled:opacity-50 py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
                       >
                         {processingRazorpay ? 'Loading...' : 'Pay with Razorpay'}
                       </button>
-                      <p className="text-sm text-gray-500 mt-4">
-                        🔒 Secure payment powered by Razorpay
+                      <p className="text-sm text-gray-400 mt-4">
+                        Secure payment powered by Razorpay
                       </p>
                     </div>
 
-                    <div className="flex space-x-4 pt-4">
+                    <div className="flex pt-4">
                       <button
                         onClick={() => {
                           setShowPaymentStep(false);
                           setShowRegistrationModal(true);
                         }}
-                        className="btn-secondary w-full"
+                        className="btn-secondary w-full py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
                         disabled={processingRazorpay || registering}
                       >
                         Back
@@ -932,24 +935,24 @@ const EventDetails = () => {
 
         {/* Registration Modal */}
         {showRegistrationModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="glass-container max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 glass-container border-b border-white/10 p-4 sm:p-6 flex justify-between items-start">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white pr-2">
                   Registration Form - {event.eventName}
                 </h2>
                 <button
                   onClick={() => setShowRegistrationModal(false)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                  className="text-gray-400 hover:text-white text-2xl"
                 >
                   ✕
                 </button>
               </div>
 
-              <form onSubmit={handleRegistrationFormSubmit} className="p-6 space-y-4">
+              <form onSubmit={handleRegistrationFormSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                 {event.prefillUserData && (
-                  <div className="space-y-4 pb-4 border-b">
-                    <h3 className="font-semibold text-gray-700">Basic Information</h3>
+                  <div className="space-y-3 sm:space-y-4 pb-4 border-b border-white/10">
+                    <h3 className="font-semibold text-white text-sm sm:text-base">Basic Information</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -1036,8 +1039,8 @@ const EventDetails = () => {
 
                 {/* Custom Fields */}
                 {event.registrationForm && event.registrationForm.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-700">Additional Information</h3>
+                  <div className="space-y-3 sm:space-y-4">
+                    <h3 className="font-semibold text-white text-sm sm:text-base">Additional Information</h3>
                     
                     {event.registrationForm.map((field) => (
                       <div key={field.id}>
@@ -1137,18 +1140,18 @@ const EventDetails = () => {
                   </div>
                 )}
 
-                <div className="pt-4 flex space-x-4">
+                <div className="pt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                   <button
                     type="submit"
                     disabled={registering}
-                    className="btn-primary flex-1"
+                    className="btn-primary flex-1 py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
                   >
                     {registering ? 'Submitting...' : (event.isPaid ? 'Proceed to Payment' : 'Submit Registration')}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowRegistrationModal(false)}
-                    className="btn-secondary flex-1"
+                    className="btn-secondary flex-1 py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
                   >
                     Cancel
                   </button>
@@ -1160,7 +1163,7 @@ const EventDetails = () => {
 
         <button
           onClick={() => navigate(`/fest/${event.festId}`)}
-          className="btn-secondary"
+          className="btn-secondary text-sm sm:text-base py-2 sm:py-3 px-3 sm:px-4"
         >
           ← Back to Fest
         </button>

@@ -328,29 +328,32 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-6">
-          <Link to={`/fest/${festId}/manage`} className="text-primary hover:underline">
-            ← Back to Fest Management
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-4 sm:py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4">
+        <div className="mb-4 sm:mb-6">
+          <Link to={`/fest/${festId}/manage`} className="text-primary hover:text-orange-400 transition-colors flex items-center gap-2">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Fest Management
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Create New Event</h1>
-          <p className="text-gray-600 mb-8">
+        <div className="glass-container border border-white/10 p-4 sm:p-6 md:p-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Create New Event</h1>
+          <p className="text-gray-300 mb-4 sm:mb-6 md:mb-8">
             Add an event under <strong>{fest.festName}</strong>
           </p>
 
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
-              message.includes('success') || message.includes('🎉') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+            <div className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg border ${
+              message.includes('success') || message.includes('🎉') ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'
             }`}>
               {message}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Event Name */}
             <div>
               <label htmlFor="eventName" className="label">
@@ -400,11 +403,11 @@ const CreateEvent = () => {
                 className="input-field"
               />
               {bannerPreview && (
-                <div className="mt-4">
+                <div className="mt-3 sm:mt-4">
                   <img
                     src={bannerPreview}
                     alt="Banner preview"
-                    className="w-full h-48 object-cover rounded-lg"
+                    className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-lg"
                   />
                 </div>
               )}
@@ -418,8 +421,8 @@ const CreateEvent = () => {
               <label className="label">
                 Entry Fee <span className="text-red-500">*</span>
               </label>
-              <div className="space-y-3">
-                <label className="flex items-center space-x-3 cursor-pointer">
+              <div className="space-y-2 sm:space-y-3">
+                <label className="flex items-start sm:items-center space-x-3 cursor-pointer">
                   <input
                     type="radio"
                     name="isPaid"
@@ -427,9 +430,9 @@ const CreateEvent = () => {
                     onChange={() => setEventData({...eventData, isPaid: false, entryFee: ''})}
                     className="w-4 h-4"
                   />
-                  <span className="text-gray-700">Free Event</span>
+                  <span className="text-gray-700 text-sm sm:text-base">Free Event</span>
                 </label>
-                <label className="flex items-center space-x-3 cursor-pointer">
+                <label className="flex items-start sm:items-center space-x-3 cursor-pointer">
                   <input
                     type="radio"
                     name="isPaid"
@@ -437,13 +440,13 @@ const CreateEvent = () => {
                     onChange={() => setEventData({...eventData, isPaid: true})}
                     className="w-4 h-4"
                   />
-                  <span className="text-gray-700">Paid Event</span>
+                  <span className="text-gray-700 text-sm sm:text-base">Paid Event</span>
                 </label>
               </div>
 
               {/* Entry Amount - shown only for paid events */}
               {eventData.isPaid && (
-                <div className="mt-4 space-y-4">
+                <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
                   <div>
                     <label htmlFor="entryFee" className="label">
                       Entry Amount (₹) <span className="text-red-500">*</span>
@@ -463,8 +466,8 @@ const CreateEvent = () => {
                   </div>
 
                   {/* Coupon System */}
-                  <div className="border-t pt-4">
-                    <label className="label flex items-center space-x-2">
+                  <div className="border-t pt-3 sm:pt-4">
+                    <label className="label flex items-start sm:items-center space-x-2">
                       <input
                         type="checkbox"
                         checked={eventData.enableCoupon}
@@ -478,15 +481,15 @@ const CreateEvent = () => {
                         })}
                         className="w-4 h-4"
                       />
-                      <span>🎫 Enable Discount Coupon (Optional)</span>
+                      <span className="text-sm sm:text-base">🎫 Enable Discount Coupon (Optional)</span>
                     </label>
-                    <p className="text-sm text-gray-500 mt-1">Allow students to use a coupon code for discounts</p>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">Allow students to use a coupon code for discounts</p>
                   </div>
 
                   {/* Coupon Fields - shown only when enabled */}
                   {eventData.enableCoupon && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 space-y-3 sm:space-y-4">
+                      <div className="grid grid-cols-1 gap-3 sm:gap-4">
                         <div>
                           <label htmlFor="couponCode" className="label">
                             Coupon Code <span className="text-red-500">*</span>
@@ -522,7 +525,7 @@ const CreateEvent = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-3 sm:gap-4">
                         <div>
                           <label htmlFor="couponExpiry" className="label">
                             Coupon Expiry Date (Optional)
@@ -556,8 +559,8 @@ const CreateEvent = () => {
                         </div>
                       </div>
 
-                      <div className="bg-blue-100 border border-blue-300 rounded p-3">
-                        <p className="text-sm text-blue-800">
+                      <div className="bg-blue-100 border border-blue-300 rounded p-2 sm:p-3">
+                        <p className="text-xs sm:text-sm text-blue-800">
                           <strong>📊 Preview:</strong> Students using code <strong>{eventData.couponCode || 'CODE'}</strong> will get <strong>{eventData.discountPercent || 0}% OFF</strong>
                           {eventData.entryFee && eventData.discountPercent && (
                             <span>
@@ -573,7 +576,7 @@ const CreateEvent = () => {
             </div>
 
             {/* Date and Time */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               <div>
                 <label htmlFor="date" className="label">
                   Event Date <span className="text-red-500">*</span>
@@ -675,9 +678,9 @@ const CreateEvent = () => {
             </div>
 
             {/* Prefill Toggle */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Registration Form</h3>
-              <div className="mb-6">
+            <div className="border-t border-white/10 pt-4 sm:pt-6">
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Registration Form</h3>
+              <div className="mb-4 sm:mb-6">
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -701,11 +704,11 @@ const CreateEvent = () => {
             </div>
 
             {/* Submit Buttons */}
-            <div className="flex space-x-4 pt-6 border-t">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6 border-t">
               <button
                 type="submit"
                 disabled={loading || uploadingBanner}
-                className="btn-primary flex-1 disabled:opacity-50"
+                className="btn-primary flex-1 disabled:opacity-50 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
               >
                 {uploadingBanner ? 'Uploading Banner...' : loading ? (eventData.isPaid ? 'Processing...' : 'Creating Event...') : (eventData.isPaid ? '➡️ Next' : '🚀 Create Event & Submit for Approval')}
               </button>
@@ -716,7 +719,7 @@ const CreateEvent = () => {
                   sessionStorage.removeItem('pendingEventData');
                   navigate(`/fest/${festId}/manage`);
                 }}
-                className="btn-secondary flex-1"
+                className="btn-secondary flex-1 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
                 disabled={loading || uploadingBanner}
               >
                 Cancel

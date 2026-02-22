@@ -2,11 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import RoleSelection from './components/RoleSelection';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import About from './pages/About';
+import Contact from './pages/Contact';
 import VerifyEmail from './pages/VerifyEmail';
 import ResendVerification from './pages/ResendVerification';
 import FestDetails from './pages/FestDetails';
@@ -32,103 +35,108 @@ const AppContent = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/resend-verification" element={<ResendVerification />} />
-        <Route path="/role-selection" element={<RoleSelection />} />
-        <Route path="/fest/:id" element={<FestDetails />} />
-        <Route path="/event/:eventId" element={<EventDetails />} />
-        
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/create-fest"
-          element={
-            <ProtectedRoute requiredRole="organizer">
-              <CreateFest />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/fest/:festId/edit"
-          element={
-            <ProtectedRoute requiredRole="organizer">
-              <EditFest />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/fest/:festId/manage"
-          element={
-            <ProtectedRoute requiredRole="organizer">
-              <ManageFest />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/fest/:festId/create-event"
-          element={
-            <ProtectedRoute requiredRole="organizer">
-              <CreateEvent />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/fest/:festId/create-event/payment-setup"
-          element={
-            <ProtectedRoute requiredRole="organizer">
-              <PaymentSetup />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/event/:eventId/edit"
-          element={
-            <ProtectedRoute requiredRole="organizer">
-              <EditEvent />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/student-profile/:userId"
-          element={
-            <ProtectedRoute requiredRole="organizer">
-              <StudentProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <Admin />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/resend-verification" element={<ResendVerification />} />
+          <Route path="/role-selection" element={<RoleSelection />} />
+          <Route path="/fest/:id" element={<FestDetails />} />
+          <Route path="/event/:eventId" element={<EventDetails />} />
+          
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-fest"
+            element={
+              <ProtectedRoute requiredRole="organizer">
+                <CreateFest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fest/:festId/edit"
+            element={
+              <ProtectedRoute requiredRole="organizer">
+                <EditFest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fest/:festId/manage"
+            element={
+              <ProtectedRoute requiredRole="organizer">
+                <ManageFest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fest/:festId/create-event"
+            element={
+              <ProtectedRoute requiredRole="organizer">
+                <CreateEvent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fest/:festId/create-event/payment-setup"
+            element={
+              <ProtectedRoute requiredRole="organizer">
+                <PaymentSetup />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/event/:eventId/edit"
+            element={
+              <ProtectedRoute requiredRole="organizer">
+                <EditEvent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student-profile/:userId"
+            element={
+              <ProtectedRoute requiredRole="organizer">
+                <StudentProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Catch all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+      <Footer />
     </div>
   );
 };

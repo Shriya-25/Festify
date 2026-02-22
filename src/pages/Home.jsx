@@ -14,7 +14,8 @@ const Home = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const categories = ['all', 'Cultural', 'Technical', 'Sports', 'Literary', 'Music', 'Dance', 'Other'];
+  // Only 3 categories: Technical, Cultural, Sports
+  const categories = ['all', 'Technical', 'Cultural', 'Sports'];
 
   useEffect(() => {
     // Check if user is logged in but email not verified (email/password users only)
@@ -79,103 +80,99 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary to-secondary text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-4">
+      <div className="relative py-8 sm:py-16 lg:py-24 overflow-hidden">
+        {/* Gradient glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-transparent to-transparent opacity-50 blur-3xl"></div>
+        
+        <div className="relative max-w-5xl mx-auto px-3 sm:px-4 lg:px-8 text-center">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6 tracking-tight">
             Discover College Fests Near You
           </h1>
-          <p className="text-xl mb-8">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-300 mb-6 sm:mb-10 max-w-2xl mx-auto px-2">
             Explore, Register, and Experience Amazing College Events
           </p>
-          {!currentUser && (
-            <Link to="/signup" className="bg-white text-primary font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-200">
-              Get Started
-            </Link>
-          )}
-        </div>
-      </div>
 
-      {/* Search and Filter Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+          {/* Search Bar */}
+          <div className="max-w-3xl mx-auto mb-6 sm:mb-8 px-2">
+            <div className="relative">
+              <svg className="absolute left-4 sm:left-6 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
               <input
                 type="text"
                 placeholder="Search by fest name, college, or location..."
-                className="input-field"
+                className="search-rounded w-full pl-12 sm:pl-14 pr-4 py-3 sm:py-4 text-sm sm:text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div>
-              <select
-                className="input-field"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category === 'all' ? 'All Categories' : category}
-                  </option>
-                ))}
-              </select>
+          </div>
+
+          {/* Category Filter */}
+          <div className="max-w-2xl mx-auto px-2">
+            <div className="glass-container p-2 flex flex-wrap items-center justify-center gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 sm:px-6 py-2 rounded-full font-medium text-sm sm:text-base transition-all duration-200 ${
+                    selectedCategory === category
+                      ? 'bg-primary text-white shadow-glow'
+                      : 'text-gray-300 hover:bg-white/5'
+                  }`}
+                >
+                  {category === 'all' ? 'All Categories' : category}
+                </button>
+              ))}
             </div>
           </div>
+
+          {!currentUser && (
+            <div className="mt-6 sm:mt-10 px-2">
+              <Link to="/signup" className="btn-primary text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 inline-block">
+                Get Started
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Fests Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 lg:py-12">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-2">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
             {selectedCategory === 'all' ? 'All Fests' : `${selectedCategory} Fests`}
           </h2>
-          <p className="text-gray-600">
-            {filteredFests.length} {filteredFests.length === 1 ? 'fest' : 'fests'} found
-          </p>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-primary rounded-full"></div>
+            <p className="text-sm sm:text-base text-gray-400">
+              {filteredFests.length} {filteredFests.length === 1 ? 'fest' : 'fests'} found
+            </p>
+          </div>
         </div>
 
         {loading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">Loading fests...</p>
+          <div className="text-center py-12 sm:py-20">
+            <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-gray-600 border-t-primary"></div>
+            <p className="text-gray-400 mt-4 text-sm sm:text-base">Loading fests...</p>
           </div>
         ) : filteredFests.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">No fests found</p>
-            <p className="text-gray-500 mt-2">Try adjusting your search or filters</p>
+          <div className="text-center py-12 sm:py-20">
+            <div className="glass-container p-6 sm:p-12 max-w-md mx-auto">
+              <svg className="w-12 h-12 sm:w-16 sm:h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-gray-400 text-base sm:text-lg mb-2">No fests found</p>
+              <p className="text-gray-500 text-xs sm:text-sm">Try adjusting your search or filters</p>
+            </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {filteredFests.map(fest => (
               <FestCard key={fest.id} fest={fest} />
             ))}
           </div>
         )}
-      </div>
-
-      {/* Categories Section */}
-      <div className="bg-gray-100 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-            Browse by Category
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {categories.filter(c => c !== 'all').map(category => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`p-6 rounded-lg text-center transition duration-200 ${
-                  selectedCategory === category
-                    ? 'bg-primary text-white'
-                    : 'bg-white hover:bg-gray-50'
-                }`}
-              >
-                <p className="font-semibold">{category}</p>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

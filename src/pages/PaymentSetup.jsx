@@ -232,71 +232,74 @@ const PaymentSetup = () => {
 
   if (!eventData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Loading...</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
+        <p className="text-white">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-6">
-          <Link to={`/fest/${festId}/create-event`} className="text-primary hover:underline">
-            ← Back to Event Details
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-4 sm:py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4">
+        <div className="mb-4 sm:mb-6">
+          <Link to={`/fest/${festId}/create-event`} className="text-primary hover:text-orange-400 transition-colors flex items-center gap-2">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Event Details
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Payment Configuration</h1>
-          <p className="text-gray-600 mb-2">
+        <div className="glass-container border border-white/10 p-4 sm:p-6 md:p-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Payment Configuration</h1>
+          <p className="text-sm sm:text-base text-gray-300 mb-2">
             Configure payment method for <strong>{eventData.eventName}</strong>
           </p>
-          <p className="text-lg font-semibold text-primary mb-8">
+          <p className="text-base sm:text-lg font-semibold text-primary mb-4 sm:mb-6 md:mb-8">
             Entry Fee: ₹{eventData.entryFee}
           </p>
 
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
-              message.includes('success') || message.includes('🎉') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+            <div className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg border ${
+              message.includes('success') || message.includes('🎉') ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'
             }`}>
               {message}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Payment Method Selection */}
             <div>
-              <label className="label">
-                Payment Method <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Payment Method <span className="text-red-400">*</span>
               </label>
-              <div className="space-y-3">
-                <label className="flex items-center space-x-3 cursor-pointer border rounded-lg p-4 hover:bg-gray-50">
+              <div className="space-y-2 sm:space-y-3">
+                <label className="flex items-start space-x-3 cursor-pointer border border-white/10 rounded-lg p-3 sm:p-4 bg-white/5 hover:bg-white/10 transition-all">
                   <input
                     type="radio"
                     name="paymentMethod"
                     value="manual"
                     checked={paymentMethod === 'manual'}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-4 h-4"
+                    className="w-4 h-4 mt-0.5"
                   />
                   <div>
-                    <span className="text-gray-800 font-medium">📱 Manual QR Payment</span>
-                    <p className="text-sm text-gray-500">Students pay via UPI/QR and upload payment proof</p>
+                    <span className="text-white font-medium text-sm sm:text-base">Manual QR Payment</span>
+                    <p className="text-xs sm:text-sm text-gray-400">Students pay via UPI/QR and upload payment proof</p>
                   </div>
                 </label>
-                <label className="flex items-center space-x-3 cursor-pointer border rounded-lg p-4 hover:bg-gray-50">
+                <label className="flex items-start space-x-3 cursor-pointer border border-white/10 rounded-lg p-3 sm:p-4 bg-white/5 hover:bg-white/10 transition-all">
                   <input
                     type="radio"
                     name="paymentMethod"
                     value="razorpay"
                     checked={paymentMethod === 'razorpay'}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-4 h-4"
+                    className="w-4 h-4 mt-0.5"
                   />
                   <div>
-                    <span className="text-gray-800 font-medium">💳 Razorpay Payment Gateway</span>
-                    <p className="text-sm text-gray-500">Automated payment processing with instant confirmation</p>
+                    <span className="text-white font-medium text-sm sm:text-base">Razorpay Payment Gateway</span>
+                    <p className="text-xs sm:text-sm text-gray-400">Automated payment processing with instant confirmation</p>
                   </div>
                 </label>
               </div>
@@ -304,50 +307,50 @@ const PaymentSetup = () => {
 
             {/* Manual QR Payment Configuration */}
             {paymentMethod === 'manual' && (
-              <div className="border-t pt-6 space-y-6">
-                <h3 className="text-lg font-semibold text-gray-800">Manual QR Payment Setup</h3>
+              <div className="border-t border-white/10 pt-4 sm:pt-6 space-y-4 sm:space-y-6">
+                <h3 className="text-base sm:text-lg font-semibold text-white">Manual QR Payment Setup</h3>
                 
                 {/* QR Code Upload */}
                 <div>
-                  <label className="label">
-                    Upload QR Code Image <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Upload QR Code Image <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleQrFileChange}
-                    className="input-field"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white hover:file:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-primary/50"
                     required
                   />
                   {qrPreview && (
-                    <div className="mt-4 flex justify-center">
+                    <div className="mt-3 sm:mt-4 flex justify-center">
                       <img
                         src={qrPreview}
                         alt="QR Code preview"
-                        className="w-64 h-64 object-contain border rounded-lg"
+                        className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 object-contain border border-white/10 rounded-lg"
                       />
                     </div>
                   )}
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-xs sm:text-sm text-gray-400 mt-1">
                     Upload your UPI/payment QR code (Max 5MB)
                   </p>
                 </div>
 
                 {/* Payment Instructions */}
                 <div>
-                  <label htmlFor="paymentInstructions" className="label">
-                    Payment Instructions <span className="text-red-500">*</span>
+                  <label htmlFor="paymentInstructions" className="block text-sm font-medium text-gray-300 mb-2">
+                    Payment Instructions <span className="text-red-400">*</span>
                   </label>
                   <textarea
                     id="paymentInstructions"
                     rows="4"
-                    className="input-field"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
                     placeholder="e.g., Scan the QR code and pay ₹2000. After payment, upload screenshot and enter transaction ID."
                     value={paymentInstructions}
                     onChange={(e) => setPaymentInstructions(e.target.value)}
                     required
                   />
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-400 mt-1">
                     Provide clear instructions for students on how to complete the payment
                   </p>
                 </div>
@@ -356,64 +359,64 @@ const PaymentSetup = () => {
 
             {/* Razorpay Payment Configuration */}
             {paymentMethod === 'razorpay' && (
-              <div className="border-t pt-6 space-y-6">
-                <h3 className="text-lg font-semibold text-gray-800">Razorpay Configuration</h3>
+              <div className="border-t border-white/10 pt-6 space-y-6">
+                <h3 className="text-lg font-semibold text-white">Razorpay Configuration</h3>
                 
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-yellow-800">
-                    ⚠️ <strong>Security Note:</strong> Only the API Key (Key ID) is used for frontend payment processing. 
+                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-yellow-400">
+                    <strong>Security Note:</strong> Only the API Key (Key ID) is used for frontend payment processing. 
                     The Secret Key is stored but not exposed to students. In production, consider using Razorpay's 
                     order creation API via a secure backend for enhanced security.
                   </p>
                 </div>
 
                 <div>
-                  <label htmlFor="apiKey" className="label">
-                    Razorpay Key ID (API Key) <span className="text-red-500">*</span>
+                  <label htmlFor="apiKey" className="block text-sm font-medium text-gray-300 mb-2">
+                    Razorpay Key ID (API Key) <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
                     id="apiKey"
                     name="apiKey"
-                    className="input-field"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
                     placeholder="rzp_test_xxxxxxxxxxxxx or rzp_live_xxxxxxxxxxxxx"
                     value={razorpayData.apiKey}
                     onChange={handleRazorpayChange}
                     required
                   />
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-400 mt-1">
                     This will be used for payment processing on the frontend
                   </p>
                 </div>
 
                 <div>
-                  <label htmlFor="secretKey" className="label">
-                    Razorpay Secret Key <span className="text-red-500">*</span>
+                  <label htmlFor="secretKey" className="block text-sm font-medium text-gray-300 mb-2">
+                    Razorpay Secret Key <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="password"
                     id="secretKey"
                     name="secretKey"
-                    className="input-field"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
                     placeholder="Enter your Razorpay secret key"
                     value={razorpayData.secretKey}
                     onChange={handleRazorpayChange}
                     required
                   />
-                  <p className="text-sm text-red-500 mt-1">
+                  <p className="text-sm text-red-400 mt-1">
                     Keep this confidential. Should be handled via backend in production.
                   </p>
                 </div>
 
                 <div>
-                  <label htmlFor="businessName" className="label">
-                    Business Name <span className="text-red-500">*</span>
+                  <label htmlFor="businessName" className="block text-sm font-medium text-gray-300 mb-2">
+                    Business Name <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
                     id="businessName"
                     name="businessName"
-                    className="input-field"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
                     placeholder="e.g., College Fest Organizers"
                     value={razorpayData.businessName}
                     onChange={handleRazorpayChange}
@@ -422,14 +425,14 @@ const PaymentSetup = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="successRedirectURL" className="label">
+                  <label htmlFor="successRedirectURL" className="block text-sm font-medium text-gray-300 mb-2">
                     Success Redirect URL (Optional)
                   </label>
                   <input
                     type="url"
                     id="successRedirectURL"
                     name="successRedirectURL"
-                    className="input-field"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
                     placeholder="https://yoursite.com/payment-success"
                     value={razorpayData.successRedirectURL}
                     onChange={handleRazorpayChange}
@@ -437,14 +440,14 @@ const PaymentSetup = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="failureRedirectURL" className="label">
+                  <label htmlFor="failureRedirectURL" className="block text-sm font-medium text-gray-300 mb-2">
                     Failure Redirect URL (Optional)
                   </label>
                   <input
                     type="url"
                     id="failureRedirectURL"
                     name="failureRedirectURL"
-                    className="input-field"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
                     placeholder="https://yoursite.com/payment-failure"
                     value={razorpayData.failureRedirectURL}
                     onChange={handleRazorpayChange}
@@ -454,13 +457,13 @@ const PaymentSetup = () => {
             )}
 
             {/* Submit Buttons */}
-            <div className="flex space-x-4 pt-6 border-t">
+            <div className="flex space-x-4 pt-6 border-t border-white/10">
               <button
                 type="submit"
                 disabled={loading || uploadingQR}
                 className="btn-primary flex-1 disabled:opacity-50"
               >
-                {uploadingQR ? 'Uploading QR...' : loading ? 'Submitting Event...' : '🚀 Submit Event for Approval'}
+                {uploadingQR ? 'Uploading QR...' : loading ? 'Submitting Event...' : 'Submit Event for Approval'}
               </button>
               <button
                 type="button"
