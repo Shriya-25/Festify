@@ -18,19 +18,54 @@ const Profile = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
+    if (currentUser) {
+      fetchUserProfile();
+    }
+  }, [currentUser]);
 
   const fetchUserProfile = async () => {
     try {
+      console.log('Fetching profile for user:', currentUser.uid);
+      
       const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+      
+      console.log('User document exists:', userDoc.exists());
+      
       if (userDoc.exists()) {
         const userData = userDoc.data();
+        
+        console.log('User data from Firestore:');
+        console.log('  - name:', userData.name);
+        console.log('  - email:', userData.email);
+        console.log('  - phone:', userData.phone);
+        console.log('  - college:', userData.college);
+        console.log('  - role:', userData.role);
+        console.log('currentUser.displayName:', currentUser.displayName);
+        console.log('currentUser.email:', currentUser.email);
+        
+        const finalName = userData.name || currentUser.displayName || '';
+        console.log('Final name to be used:', finalName);
+        
         setFormData({
-          name: userData.name || currentUser.displayName || '',
+          name: finalName,
           email: userData.email || currentUser.email || '',
           phone: userData.phone || '',
           college: userData.college || ''
+        });
+        
+        console.log('Form data after setting:');
+        console.log('  - formData.name:', finalName);
+        console.log('  - formData.email:', userData.email || currentUser.email || '');
+        console.log('  - formData.phone:', userData.phone || '');
+        console.log('  - formData.college:', userData.college || '');
+      } else {
+        console.log('User document does not exist in Firestore');
+        // If document doesn't exist, use auth data
+        setFormData({
+          name: currentUser.displayName || '',
+          email: currentUser.email || '',
+          phone: '',
+          college: ''
         });
       }
     } catch (error) {

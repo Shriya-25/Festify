@@ -34,7 +34,7 @@ const Home = () => {
       setLoading(true);
       const festsQuery = query(
         collection(db, 'fests'),
-        where('status', '==', 'published')
+        where('status', 'in', ['published', 'approved'])
       );
       
       const querySnapshot = await getDocs(festsQuery);

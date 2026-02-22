@@ -221,6 +221,46 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {data.map(fest => (
                   <div key={fest.id} className="bg-white rounded-lg shadow p-6">
+                    {/* Admin Comment Alert - Show for changes_requested or rejected */}
+                    {fest.adminComments && (fest.status === 'changes_requested' || fest.status === 'rejected') && (
+                      <div className={`mb-4 p-4 rounded-lg border-l-4 ${
+                        fest.status === 'changes_requested' 
+                          ? 'bg-orange-50 border-orange-500' 
+                          : 'bg-red-50 border-red-500'
+                      }`}>
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0">
+                            {fest.status === 'changes_requested' ? (
+                              <span className="text-2xl">📝</span>
+                            ) : (
+                              <span className="text-2xl">⚠️</span>
+                            )}
+                          </div>
+                          <div className="ml-3 flex-1">
+                            <h4 className={`text-sm font-semibold ${
+                              fest.status === 'changes_requested' 
+                                ? 'text-orange-800' 
+                                : 'text-red-800'
+                            }`}>
+                              {fest.status === 'changes_requested' ? 'Changes Requested by Admin' : 'Fest Rejected by Admin'}
+                            </h4>
+                            <p className={`mt-1 text-sm ${
+                              fest.status === 'changes_requested' 
+                                ? 'text-orange-700' 
+                                : 'text-red-700'
+                            }`}>
+                              {fest.adminComments}
+                            </p>
+                            {fest.status === 'changes_requested' && (
+                              <p className="mt-2 text-xs text-orange-600">
+                                Please edit your fest to address the admin's feedback and resubmit for approval.
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
@@ -228,13 +268,15 @@ const Dashboard = () => {
                             {fest.festName}
                           </h3>
                           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            fest.status === 'published' 
+                            fest.status === 'published' || fest.status === 'approved'
                               ? 'bg-green-100 text-green-800' 
                               : fest.status === 'pending'
                               ? 'bg-yellow-100 text-yellow-800'
+                              : fest.status === 'changes_requested'
+                              ? 'bg-orange-100 text-orange-800'
                               : 'bg-red-100 text-red-800'
                           }`}>
-                            {fest.status.toUpperCase()}
+                            {fest.status === 'changes_requested' ? 'CHANGES REQUESTED' : fest.status.toUpperCase()}
                           </span>
                         </div>
                         <p className="text-gray-600 mb-1">{fest.collegeName}</p>
@@ -244,12 +286,28 @@ const Dashboard = () => {
                         <p className="text-gray-700 line-clamp-2">{fest.description}</p>
                       </div>
                       <div className="flex gap-2 ml-4">
-                        {fest.status === 'published' && (
+                        {(fest.status === 'published' || fest.status === 'approved') && (
+                          <>
+                            <Link
+                              to={`/fest/${fest.id}`}
+                              className="btn-secondary text-sm"
+                            >
+                              View
+                            </Link>
+                            <Link
+                              to={`/fest/${fest.id}/manage`}
+                              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg text-sm"
+                            >
+                              Manage
+                            </Link>
+                          </>
+                        )}
+                        {fest.status === 'changes_requested' && (
                           <Link
-                            to={`/fest/${fest.id}`}
-                            className="btn-secondary text-sm"
+                            to={`/fest/${fest.id}/edit`}
+                            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg text-sm inline-flex items-center gap-1"
                           >
-                            View
+                            ✏️ Edit & Resubmit
                           </Link>
                         )}
                         <button
@@ -264,81 +322,6 @@ const Dashboard = () => {
                 ))}
               </div>
             )}
-
-            {/* Registrations Section */}
-            <div className="mt-12">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Student Registrations</h2>
-              {registrations.length === 0 ? (
-                <div className="text-center py-12 bg-white rounded-lg shadow">
-                  <p className="text-gray-600">No student registrations yet</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {data.map(fest => {
-                    const festRegistrations = registrations.filter(reg => reg.festId === fest.id);
-                    if (festRegistrations.length === 0) return null;
-                    
-                    return (
-                      <div key={fest.id} className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">
-                          {fest.festName} - {festRegistrations.length} {festRegistrations.length === 1 ? 'Registration' : 'Registrations'}
-                        </h3>
-                        <div className="overflow-x-auto">
-                          <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                              <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                  Student Name
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                  Email
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                  Phone
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                  College
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                  Registered At
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                              {festRegistrations.map((reg) => (
-                                <tr key={reg.id} className="hover:bg-gray-50">
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {reg.studentName}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    {reg.studentEmail}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    {reg.studentPhone}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    {reg.studentCollege}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    {new Date(reg.registeredAt).toLocaleDateString('en-IN', {
-                                      year: 'numeric',
-                                      month: 'short',
-                                      day: 'numeric',
-                                      hour: '2-digit',
-                                      minute: '2-digit'
-                                    })}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
           </div>
         )}
 

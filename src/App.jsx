@@ -10,7 +10,13 @@ import Signup from './pages/Signup';
 import VerifyEmail from './pages/VerifyEmail';
 import ResendVerification from './pages/ResendVerification';
 import FestDetails from './pages/FestDetails';
+import EventDetails from './pages/EventDetails';
 import CreateFest from './pages/CreateFest';
+import EditFest from './pages/EditFest';
+import CreateEvent from './pages/CreateEvent';
+import EditEvent from './pages/EditEvent';
+import ManageFest from './pages/ManageFest';
+import StudentProfile from './pages/StudentProfile';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import Profile from './pages/Profile';
@@ -35,6 +41,7 @@ const AppContent = () => {
         <Route path="/resend-verification" element={<ResendVerification />} />
         <Route path="/role-selection" element={<RoleSelection />} />
         <Route path="/fest/:id" element={<FestDetails />} />
+        <Route path="/event/:eventId" element={<EventDetails />} />
         
         {/* Protected Routes */}
         <Route
@@ -50,6 +57,46 @@ const AppContent = () => {
           element={
             <ProtectedRoute requiredRole="organizer">
               <CreateFest />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/fest/:festId/edit"
+          element={
+            <ProtectedRoute requiredRole="organizer">
+              <EditFest />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/fest/:festId/manage"
+          element={
+            <ProtectedRoute requiredRole="organizer">
+              <ManageFest />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/fest/:festId/create-event"
+          element={
+            <ProtectedRoute requiredRole="organizer">
+              <CreateEvent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/event/:eventId/edit"
+          element={
+            <ProtectedRoute requiredRole="organizer">
+              <EditEvent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-profile/:userId"
+          element={
+            <ProtectedRoute requiredRole="organizer">
+              <StudentProfile />
             </ProtectedRoute>
           }
         />

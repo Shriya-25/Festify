@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,228 +9,74 @@ const FestDetails = () => {
   const { currentUser, userRole } = useAuth();
   const navigate = useNavigate();
   const [fest, setFest] = useState(null);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [registering, setRegistering] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [message, setMessage] = useState('');
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [selectedDomain, setSelectedDomain] = useState('All');
 
   useEffect(() => {
-    fetchFestDetails();
-    if (currentUser) {
-      checkRegistrationStatus();
-    }
-  }, [id, currentUser]);
+    fetchFestAndEvents();
+  }, [id]);
 
-  const fetchFestDetails = async () => {
+  const fetchFestAndEvents = async () => {
     try {
+      setLoading(true);
+      
+      // Fetch fest details
       const festDoc = await getDoc(doc(db, 'fests', id));
       if (festDoc.exists()) {
         setFest({ id: festDoc.id, ...festDoc.data() });
       } else {
-        setMessage('Fest not found');
+        console.error('Fest not found');
+        navigate('/');
+        return;
       }
+
+      // Fetch events for this fest
+      const eventsQuery = query(
+        collection(db, 'events'),
+        where('festId', '==', id)
+      );
+      const eventsSnapshot = await getDocs(eventsQuery);
+      let eventsData = eventsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Filter events based on user role
+      // Students: only see approved events
+      // Organizers who own the fest: see all events
+      // Other users: only see approved events
+      if (userRole !== 'organizer' || festDoc.data().createdBy !== currentUser?.uid) {
+        eventsData = eventsData.filter(event => event.status === 'approved');
+      }
+
+      // Sort by date
+      eventsData.sort((a, b) => new Date(a.date) - new Date(b.date));
+      setEvents(eventsData);
+
     } catch (error) {
-      console.error('Error fetching fest:', error);
-      setMessage('Error loading fest details');
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const checkRegistrationStatus = async () => {
-    try {
-      const registrationsQuery = query(
-        collection(db, 'registrations'),
-        where('festId', '==', id),
-        where('userId', '==', currentUser.uid)
-      );
-      const querySnapshot = await getDocs(registrationsQuery);
-      setIsRegistered(!querySnapshot.empty);
-    } catch (error) {
-      console.error('Error checking registration:', error);
-    }
+  const isRegistrationOpen = (event) => {
+    const now = new Date();
+    const deadline = new Date(event.registrationDeadline);
+    return now < deadline;
   };
 
-  const openRegistrationModal = async () => {
-    if (!currentUser) {
-      navigate('/login');
-      return;
-    }
-
-    // Check if email is verified for email/password users
-    if (!currentUser.emailVerified && currentUser.providerData[0]?.providerId === 'password') {
-      setMessage('Please verify your email before registering for fests');
-      setTimeout(() => navigate('/verify-email'), 2000);
-      return;
-    }
-
-    if (userRole !== 'student') {
-      setMessage('Only students can register for fests');
-      return;
-    }
-
-    // Fetch user data for prefill
-    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-    const userData = userDoc.data();
-
-    // Initialize form with prefilled data or empty values
-    const initialFormData = {};
-    
-    if (fest.prefillUserData) {
-      initialFormData.name = userData?.name || currentUser.displayName || '';
-      initialFormData.email = userData?.email || currentUser.email || '';
-      initialFormData.phone = userData?.phone || '';
-      initialFormData.college = userData?.college || '';
-    }
-
-    // Initialize custom fields with empty values
-    if (fest.registrationForm && fest.registrationForm.length > 0) {
-      fest.registrationForm.forEach(field => {
-        initialFormData[field.id] = field.type === 'checkbox' ? false : '';
-      });
-    }
-
-    setFormData(initialFormData);
-    setShowRegistrationModal(true);
-    setMessage('');
-  };
-
-  const handleFormChange = (e, fieldId) => {
-    const { type, value, checked, files } = e.target;
-    
-    if (type === 'checkbox') {
-      setFormData({ ...formData, [fieldId]: checked });
-    } else if (type === 'file') {
-      setFormData({ ...formData, [fieldId]: files[0] });
-    } else {
-      setFormData({ ...formData, [fieldId]: value });
-    }
-  };
-
-  const validateForm = () => {
-    // Validate basic fields if prefill is enabled
-    if (fest.prefillUserData) {
-      if (!formData.name || !formData.email || !formData.phone || !formData.college) {
-        setMessage('Please fill in all required basic fields');
-        return false;
-      }
-
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        setMessage('Please enter a valid email address');
-        return false;
-      }
-
-      // Phone validation (basic)
-      const phoneRegex = /^[0-9]{10,}$/;
-      if (!phoneRegex.test(formData.phone.replace(/[^0-9]/g, ''))) {
-        setMessage('Please enter a valid phone number (at least 10 digits)');
-        return false;
-      }
-    }
-
-    // Validate custom fields
-    if (fest.registrationForm && fest.registrationForm.length > 0) {
-      for (const field of fest.registrationForm) {
-        if (field.required && !formData[field.id]) {
-          setMessage(`Please fill in the required field: ${field.label}`);
-          return false;
-        }
-
-        // Email field validation
-        if (field.type === 'email' && formData[field.id]) {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(formData[field.id])) {
-            setMessage(`Please enter a valid email for: ${field.label}`);
-            return false;
-          }
-        }
-
-        // Phone field validation
-        if (field.type === 'phone' && formData[field.id]) {
-          const phoneRegex = /^[0-9]{10,}$/;
-          if (!phoneRegex.test(formData[field.id].replace(/[^0-9]/g, ''))) {
-            setMessage(`Please enter a valid phone number for: ${field.label}`);
-            return false;
-          }
-        }
-
-        // File validation
-        if (field.type === 'file' && formData[field.id]) {
-          const file = formData[field.id];
-          if (file.size > 5 * 1024 * 1024) { // 5MB limit
-            setMessage(`File size for ${field.label} should be less than 5MB`);
-            return false;
-          }
-        }
-      }
-    }
-
-    return true;
-  };
-
-  const handleSubmitRegistration = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      setRegistering(true);
-      setMessage('');
-
-      // Prepare registration data
-      const registrationData = {
-        festId: id,
-        userId: currentUser.uid,
-        festName: fest.festName,
-        collegeName: fest.collegeName,
-        registeredAt: new Date().toISOString()
-      };
-
-      // Add basic fields if prefill is enabled
-      if (fest.prefillUserData) {
-        registrationData.name = formData.name;
-        registrationData.email = formData.email;
-        registrationData.phone = formData.phone;
-        registrationData.college = formData.college;
-      }
-
-      // Add custom field responses
-      if (fest.registrationForm && fest.registrationForm.length > 0) {
-        const customResponses = {};
-        fest.registrationForm.forEach(field => {
-          if (field.type === 'file' && formData[field.id]) {
-            // For file uploads, store file name (in production, upload to storage)
-            customResponses[field.label] = formData[field.id].name;
-          } else {
-            customResponses[field.label] = formData[field.id] || '';
-          }
-        });
-        registrationData.customFields = customResponses;
-      }
-
-      await addDoc(collection(db, 'registrations'), registrationData);
-      
-      setIsRegistered(true);
-      setShowRegistrationModal(false);
-      setMessage('🎉 Successfully registered for the fest!');
-    } catch (error) {
-      console.error('Error registering:', error);
-      setMessage('Failed to register. Please try again.');
-    } finally {
-      setRegistering(false);
-    }
-  };
+  const domains = ['All', ...new Set(events.map(e => e.domain))];
+  
+  const filteredEvents = selectedDomain === 'All' 
+    ? events 
+    : events.filter(e => e.domain === selectedDomain);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Loading fest details...</p>
+        <p className="text-gray-600">Loading...</p>
       </div>
     );
   }
@@ -250,7 +96,7 @@ const FestDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Banner Image */}
         {fest.bannerUrl && (
           <div className="mb-8">
@@ -262,316 +108,145 @@ const FestDetails = () => {
           </div>
         )}
 
-        {/* Fest Details Card */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
-          <div className="flex justify-between items-start mb-4">
-            <h1 className="text-4xl font-bold text-gray-800">{fest.festName}</h1>
-            <span className="px-4 py-2 bg-primary text-white rounded-full">
+        {/* Fest Details */}
+        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-800 mb-2">{fest.festName}</h1>
+              <p className="text-xl text-gray-600">{fest.collegeName}</p>
+            </div>
+            <span className="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold">
               {fest.category}
             </span>
           </div>
 
-          <div className="space-y-4 mb-8">
-            <div className="flex items-center text-gray-700">
-              <span className="font-semibold mr-2">🏫 College:</span>
-              <span>{fest.collegeName}</span>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="flex items-center text-gray-700">
               <span className="font-semibold mr-2">📍 Venue:</span>
-              <span>{fest.venue || fest.location || 'Not specified'}</span>
+              <span>{fest.venue || fest.location || 'TBA'}</span>
             </div>
             <div className="flex items-center text-gray-700">
               <span className="font-semibold mr-2">📅 Date:</span>
-              <span>{new Date(fest.date).toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}</span>
+              <span>{new Date(fest.date).toLocaleDateString()}</span>
+            </div>
+            <div className="flex items-center text-gray-700">
+              <span className="font-semibold mr-2">🎯 Events:</span>
+              <span>{events.length}</span>
             </div>
           </div>
 
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">About the Fest</h2>
-            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-3">About</h2>
+            <p className="text-gray-700 leading-relaxed">
               {fest.description}
             </p>
           </div>
+        </div>
 
-          {/* Registration Section */}
-          {message && (
-            <div className={`mb-4 p-4 rounded-lg ${
-              message.includes('Success') || message.includes('🎉') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-            }`}>
-              {message}
-            </div>
-          )}
-
-          <div>
-            {!currentUser ? (
-              <button onClick={() => navigate('/login')} className="btn-primary w-full">
-                Login to Register
-              </button>
-            ) : isRegistered ? (
-              <button disabled className="w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-lg">
-                ✓ Already Registered
-              </button>
-            ) : userRole === 'student' ? (
-              <button
-                onClick={openRegistrationModal}
-                className="btn-primary w-full"
-              >
-                Register for this Fest
-              </button>
-            ) : (
-              <div className="text-center text-gray-600">
-                Only students can register for fests
+        {/* Events Section */}
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold text-gray-800">Events</h2>
+            
+            {/* Domain Filter */}
+            {events.length > 0 && (
+              <div className="flex gap-2">
+                {domains.map(domain => (
+                  <button
+                    key={domain}
+                    onClick={() => setSelectedDomain(domain)}
+                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition ${
+                      selectedDomain === domain
+                        ? 'bg-primary text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    {domain}
+                  </button>
+                ))}
               </div>
             )}
           </div>
+
+          {filteredEvents.length === 0 ? (
+            <div className="bg-white rounded-lg shadow p-12 text-center">
+              <p className="text-gray-600 mb-4">
+                {events.length === 0 
+                  ? 'No events have been added yet. Check back soon!' 
+                  : 'No events in this category'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredEvents.map(event => (
+                <div key={event.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-xl font-bold text-gray-800 pr-2">
+                        {event.eventName}
+                      </h3>
+                      {isRegistrationOpen(event) ? (
+                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded font-semibold whitespace-nowrap">
+                          Open
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold whitespace-nowrap">
+                          Closed
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="mb-3">
+                      <span className="inline-block px-3 py-1 bg-blue-100 text-primary text-sm rounded-full font-semibold">
+                        {event.domain}
+                      </span>
+                    </div>
+
+                    <p className="text-gray-700 text-sm mb-4 line-clamp-3">
+                      {event.description}
+                    </p>
+
+                    <div className="space-y-2 text-sm text-gray-600 mb-4">
+                      <div className="flex items-center">
+                        <span className="font-semibold mr-2">📅</span>
+                        {new Date(event.date).toLocaleDateString()} at {event.time}
+                      </div>
+                      <div className="flex items-center">
+                        <span className="font-semibold mr-2">📍</span>
+                        {event.venue}
+                      </div>
+                      <div className="flex items-center">
+                        <span className="font-semibold mr-2">👥</span>
+                        {event.participantCount || 0} registered
+                        {event.maxParticipants && ` / ${event.maxParticipants}`}
+                      </div>
+                      <div className="flex items-center">
+                        <span className="font-semibold mr-2">⏰</span>
+                        Deadline: {new Date(event.registrationDeadline).toLocaleString()}
+                      </div>
+                    </div>
+
+                    <Link
+                      to={`/event/${event.id}`}
+                      className="btn-primary w-full text-center block"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Registration Modal */}
-        {showRegistrationModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Registration Form - {fest.festName}
-                </h2>
-                <button
-                  onClick={() => setShowRegistrationModal(false)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmitRegistration} className="p-6 space-y-4">
-                {/* Basic Fields (if prefill enabled) */}
-                {fest.prefillUserData && (
-                  <div className="space-y-4 pb-4 border-b">
-                    <h3 className="font-semibold text-gray-700">Basic Information</h3>
-                    
-                    <div>
-                      <label className="label">
-                        Full Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.name || ''}
-                        onChange={(e) => handleFormChange(e, 'name')}
-                        className="input-field"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="label">
-                        Email <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        value={formData.email || ''}
-                        onChange={(e) => handleFormChange(e, 'email')}
-                        className="input-field"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="label">
-                        Phone Number <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="tel"
-                        value={formData.phone || ''}
-                        onChange={(e) => handleFormChange(e, 'phone')}
-                        className="input-field"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="label">
-                        College Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.college || ''}
-                        onChange={(e) => handleFormChange(e, 'college')}
-                        className="input-field"
-                        required
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Custom Fields */}
-                {fest.registrationForm && fest.registrationForm.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-700">Additional Information</h3>
-                    
-                    {fest.registrationForm.map((field) => (
-                      <div key={field.id}>
-                        <label className="label">
-                          {field.label}
-                          {field.required && <span className="text-red-500"> *</span>}
-                        </label>
-
-                        {field.type === 'text' && (
-                          <input
-                            type="text"
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            placeholder={field.placeholder}
-                            className="input-field"
-                            required={field.required}
-                          />
-                        )}
-
-                        {field.type === 'email' && (
-                          <input
-                            type="email"
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            placeholder={field.placeholder}
-                            className="input-field"
-                            required={field.required}
-                          />
-                        )}
-
-                        {field.type === 'phone' && (
-                          <input
-                            type="tel"
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            placeholder={field.placeholder}
-                            className="input-field"
-                            required={field.required}
-                          />
-                        )}
-
-                        {field.type === 'number' && (
-                          <input
-                            type="number"
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            placeholder={field.placeholder}
-                            className="input-field"
-                            required={field.required}
-                          />
-                        )}
-
-                        {field.type === 'date' && (
-                          <input
-                            type="date"
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            className="input-field"
-                            required={field.required}
-                          />
-                        )}
-
-                        {field.type === 'textarea' && (
-                          <textarea
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            placeholder={field.placeholder}
-                            rows="4"
-                            className="input-field"
-                            required={field.required}
-                          />
-                        )}
-
-                        {field.type === 'dropdown' && (
-                          <select
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            className="input-field"
-                            required={field.required}
-                          >
-                            <option value="">Select an option</option>
-                            {field.options.map((option, idx) => (
-                              <option key={idx} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-
-                        {field.type === 'radio' && (
-                          <div className="space-y-2">
-                            {field.options.map((option, idx) => (
-                              <label key={idx} className="flex items-center space-x-2">
-                                <input
-                                  type="radio"
-                                  name={`field-${field.id}`}
-                                  value={option}
-                                  checked={formData[field.id] === option}
-                                  onChange={(e) => handleFormChange(e, field.id)}
-                                  required={field.required}
-                                  className="w-4 h-4"
-                                />
-                                <span>{option}</span>
-                              </label>
-                            ))}
-                          </div>
-                        )}
-
-                        {field.type === 'checkbox' && (
-                          <label className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              checked={formData[field.id] || false}
-                              onChange={(e) => handleFormChange(e, field.id)}
-                              required={field.required}
-                              className="w-4 h-4"
-                            />
-                            <span>{field.placeholder || 'I agree'}</span>
-                          </label>
-                        )}
-
-                        {field.type === 'file' && (
-                          <input
-                            type="file"
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            className="input-field"
-                            required={field.required}
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="pt-4 flex space-x-4">
-                  <button
-                    type="submit"
-                    disabled={registering}
-                    className="btn-primary flex-1"
-                  >
-                    {registering ? 'Submitting...' : 'Submit Registration'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowRegistrationModal(false)}
-                    className="btn-secondary flex-1"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={() => navigate('/')}
-          className="btn-secondary"
-        >
-          ← Back to All Fests
-        </button>
+        <div className="mt-8">
+          <button
+            onClick={() => navigate('/')}
+            className="btn-secondary"
+          >
+            ← Back to All Fests
+          </button>
+        </div>
       </div>
     </div>
   );

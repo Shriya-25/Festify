@@ -7,6 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   sendEmailVerification,
+  updateProfile,
   reload
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
@@ -34,6 +35,11 @@ export const AuthProvider = ({ children }) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
+      // Update user profile with displayName
+      await updateProfile(user, {
+        displayName: name
+      });
+      
       // Send email verification
       await sendEmailVerification(user);
       
@@ -48,6 +54,9 @@ export const AuthProvider = ({ children }) => {
       };
 
       await setDoc(doc(db, 'users', user.uid), userData);
+      
+      console.log('User created with name:', name);
+      console.log('Firebase Auth displayName:', user.displayName);
       
       // Keep user logged in so they can verify email
       return user;

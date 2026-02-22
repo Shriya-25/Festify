@@ -37,10 +37,15 @@ const RoleSelection = () => {
       setError('');
       setLoading(true);
       
+      console.log('Updating user role to:', selectedRole);
+      console.log('Current user:', currentUser);
+      
       // Update user document with role and student-specific fields
       const updateData = {
         role: selectedRole,
-        roleSetAt: new Date().toISOString()
+        roleSetAt: new Date().toISOString(),
+        // Preserve name from auth if not already in Firestore
+        name: currentUser.displayName || currentUser.email?.split('@')[0] || 'User'
       };
 
       if (selectedRole === 'student') {
@@ -48,11 +53,17 @@ const RoleSelection = () => {
         updateData.college = college;
       }
 
+      console.log('Update data:', updateData);
+
       await setDoc(doc(db, 'users', currentUser.uid), updateData, { merge: true });
+      
+      console.log('User document updated successfully');
+      
       await setUserRoleInDB(selectedRole);
       
       navigate('/');
     } catch (error) {
+      console.error('Error setting role:', error);
       setError('Failed to set role: ' + error.message);
     } finally {
       setLoading(false);

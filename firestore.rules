@@ -75,5 +75,47 @@ service cloud.firestore {
       // Admins have full access
       allow read, write: if hasRole('admin');
     }
+    
+    // Events collection rules
+    match /events/{eventId} {
+      // Anyone can read events
+      allow read: if true;
+      
+      // Only organizers can create events
+      allow create: if hasRole('organizer') || hasRole('admin');
+      
+      // Organizers can update their own events, admins can update any
+      allow update: if hasRole('organizer') || hasRole('admin');
+      
+      // Allow students to increment participantCount only (for registration)
+      allow update: if isAuthenticated() && 
+                      hasRole('student') &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount']) &&
+                      request.resource.data.participantCount == resource.data.participantCount + 1;
+      
+      // Only admins can delete events
+      allow delete: if hasRole('admin');
+    }
+    
+    // Event Registrations collection rules
+    match /eventRegistrations/{registrationId} {
+      // Users can read their own registrations
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      // Students can create registrations (with deadline validation in app logic)
+      allow create: if hasRole('student') && request.resource.data.userId == request.auth.uid;
+      
+      // Users can update their own registrations
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      // Users can delete their own registrations
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      // Organizers can read all event registrations (for their events)
+      allow read: if hasRole('organizer');
+      
+      // Admins have full access
+      allow read, write: if hasRole('admin');
+    }
   }
 }
