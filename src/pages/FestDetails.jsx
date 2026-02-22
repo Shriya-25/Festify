@@ -180,6 +180,17 @@ const FestDetails = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredEvents.map(event => (
                 <div key={event.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+                  {/* Event Banner */}
+                  {event.bannerUrl && (
+                    <div className="w-full h-48 overflow-hidden bg-gray-200">
+                      <img 
+                        src={event.bannerUrl} 
+                        alt={event.eventName}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="text-xl font-bold text-gray-800 pr-2">

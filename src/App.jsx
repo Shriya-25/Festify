@@ -14,6 +14,7 @@ import EventDetails from './pages/EventDetails';
 import CreateFest from './pages/CreateFest';
 import EditFest from './pages/EditFest';
 import CreateEvent from './pages/CreateEvent';
+import PaymentSetup from './pages/PaymentSetup';
 import EditEvent from './pages/EditEvent';
 import ManageFest from './pages/ManageFest';
 import StudentProfile from './pages/StudentProfile';
@@ -81,6 +82,14 @@ const AppContent = () => {
           element={
             <ProtectedRoute requiredRole="organizer">
               <CreateEvent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/fest/:festId/create-event/payment-setup"
+          element={
+            <ProtectedRoute requiredRole="organizer">
+              <PaymentSetup />
             </ProtectedRoute>
           }
         />

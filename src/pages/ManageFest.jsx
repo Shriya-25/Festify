@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,6 +15,8 @@ const ManageFest = () => {
   const [registrations, setRegistrations] = useState([]);
   const [loadingRegistrations, setLoadingRegistrations] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showPaymentProof, setShowPaymentProof] = useState(null);
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
 
   useEffect(() => {
     fetchFestAndEvents();
@@ -95,11 +97,89 @@ const ManageFest = () => {
     fetchEventRegistrations(event.id);
   };
 
+  const handleVerifyPayment = async (registrationId, registrationData) => {
+    if (!window.confirm('Are you sure you want to verify this payment?')) {
+      return;
+    }
+
+    try {
+      setVerifyingPayment(true);
+      await updateDoc(doc(db, 'eventRegistrations', registrationId), {
+        paymentVerified: true,
+        'paymentProof.paymentStatus': 'verified',
+        verifiedAt: new Date().toISOString()
+      });
+
+      // Update local state
+      setRegistrations(prev => prev.map(reg => 
+        reg.id === registrationId 
+          ? { 
+              ...reg, 
+              paymentVerified: true, 
+              paymentProof: { 
+                ...reg.paymentProof, 
+                paymentStatus: 'verified' 
+              } 
+            }
+          : reg
+      ));
+
+      alert('Payment verified successfully!');
+    } catch (error) {
+      console.error('Error verifying payment:', error);
+      alert('Failed to verify payment. Please try again.');
+    } finally {
+      setVerifyingPayment(false);
+    }
+  };
+
+  const handleRejectPayment = async (registrationId) => {
+    const reason = window.prompt('Enter reason for rejection (optional):');
+    if (reason === null) return; // User cancelled
+
+    try {
+      setVerifyingPayment(true);
+      await updateDoc(doc(db, 'eventRegistrations', registrationId), {
+        paymentVerified: false,
+        'paymentProof.paymentStatus': 'rejected',
+        'paymentProof.rejectionReason': reason || 'Payment verification failed',
+        rejectedAt: new Date().toISOString()
+      });
+
+      // Update local state
+      setRegistrations(prev => prev.map(reg => 
+        reg.id === registrationId 
+          ? { 
+              ...reg, 
+              paymentVerified: false, 
+              paymentProof: { 
+                ...reg.paymentProof, 
+                paymentStatus: 'rejected',
+                rejectionReason: reason || 'Payment verification failed'
+              } 
+            }
+          : reg
+      ));
+
+      alert('Payment rejected.');
+    } catch (error) {
+      console.error('Error rejecting payment:', error);
+      alert('Failed to reject payment. Please try again.');
+    } finally {
+      setVerifyingPayment(false);
+    }
+  };
+
   const handleDownloadCSV = () => {
     if (!selectedEvent || registrations.length === 0) return;
 
     // Prepare CSV data
     const headers = ['Name', 'Email', 'Phone', 'College', 'Branch', 'Year', 'Gender', 'Registration Date'];
+    
+    // Add payment headers if event is paid
+    if (selectedEvent.isPaid) {
+      headers.push('Payment Status', 'Payment Method', 'Transaction ID', 'Razorpay Payment ID', 'Payment Verified');
+    }
     
     // Add custom field headers if they exist
     if (registrations[0]?.customFields) {
@@ -121,6 +201,17 @@ const ManageFest = () => {
         new Date(reg.registeredAt).toLocaleString()
       ];
 
+      // Add payment data if event is paid
+      if (selectedEvent.isPaid) {
+        row.push(
+          reg.paymentProof?.paymentStatus || 'N/A',
+          reg.paymentProof?.paymentMethod || 'manual',
+          reg.paymentProof?.transactionId || 'N/A',
+          reg.paymentProof?.razorpay_payment_id || 'N/A',
+          reg.paymentVerified ? 'Yes' : 'No'
+        );
+      }
+
       // Add custom field values
       if (reg.customFields) {
         Object.values(reg.customFields).forEach(value => {
@@ -139,6 +230,30 @@ const ManageFest = () => {
     a.download = `${selectedEvent.eventName}_registrations.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
+  };
+
+  // Calculate total funds collected for selected event
+  const calculateTotalFunds = () => {
+    if (!selectedEvent || !selectedEvent.isPaid) return 0;
+    
+    // Count only verified/successful payments
+    const verifiedCount = registrations.filter(reg => 
+      reg.paymentProof && 
+      (reg.paymentProof.paymentStatus === 'verified' || reg.paymentProof.paymentStatus === 'success')
+    ).length;
+    
+    return verifiedCount * selectedEvent.entryFee;
+  };
+
+  // Calculate funds for a specific event (for event card display)
+  const calculateEventFunds = (event) => {
+    if (!event.isPaid) return 0;
+    
+    // This is a rough estimate based on participant count
+    // In reality, we'd need to query registrations, but that would be expensive
+    // So we're assuming all participants have paid (verified)
+    // For more accuracy, you'd cache this value when verifying payments
+    return event.participantCount * event.entryFee;
   };
 
   const filteredRegistrations = registrations.filter(reg => 
@@ -205,10 +320,21 @@ const ManageFest = () => {
                   {events.map(event => (
                     <div
                       key={event.id}
-                      className="p-4 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition"
+                      className="rounded-lg border-2 border-gray-200 hover:border-gray-300 transition overflow-hidden"
                     >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
+                      <div className="flex items-start">
+                        {/* Event Banner Thumbnail */}
+                        {event.bannerUrl && (
+                          <div className="w-32 h-32 flex-shrink-0 bg-gray-200 overflow-hidden">
+                            <img 
+                              src={event.bannerUrl} 
+                              alt={event.eventName}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        
+                        <div className="flex-1 p-4">
                           <div
                             onClick={() => handleEventClick(event)}
                             className="cursor-pointer"
@@ -250,11 +376,16 @@ const ManageFest = () => {
                               )}
                             </div>
                             <p className="text-sm text-gray-600 mt-2">
-                              📅 {new Date(event.date).toLocaleDateString()} • 💰 ₹{event.fees || 0}
+                              📅 {new Date(event.date).toLocaleDateString()} • 💰 {event.isPaid ? `₹${event.entryFee}` : 'Free'}
                             </p>
                             <p className="text-sm text-gray-600">
                               👥 {event.participantCount || 0} registered
                             </p>
+                            {event.isPaid && event.participantCount > 0 && (
+                              <p className="text-sm font-semibold text-green-600 mt-1">
+                                💵 Funds: ₹{calculateEventFunds(event)}
+                              </p>
+                            )}
                             {event.adminComments && (
                               <div className="mt-2 bg-yellow-50 p-2 rounded text-xs text-yellow-800">
                                 <strong>Admin:</strong> {event.adminComments}
@@ -263,7 +394,8 @@ const ManageFest = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex gap-2 pt-2 border-t border-gray-200">
+                      
+                      <div className="flex gap-2 p-4 pt-2 border-t border-gray-200">
                         <button
                           onClick={() => handleEventClick(event)}
                           className={`flex-1 text-sm py-1 px-3 rounded ${
@@ -277,6 +409,11 @@ const ManageFest = () => {
                         <Link
                           to={`/event/${event.id}/edit`}
                           className="flex-1 text-sm py-1 px-3 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 text-center"
+                        >
+                          ✏️ Edit
+                        </Link>
+                      </div>
+                    </div>
                         >
                           ✏️ Edit
                         </Link>
@@ -303,9 +440,16 @@ const ManageFest = () => {
                     <h2 className="text-xl font-bold text-gray-800">
                       {selectedEvent.eventName} - Registrations
                     </h2>
-                    <p className="text-gray-600">
-                      Total: {registrations.length} students
-                    </p>
+                    <div className="flex items-center gap-4">
+                      <p className="text-gray-600">
+                        Total: {registrations.length} students
+                      </p>
+                      {selectedEvent.isPaid && registrations.length > 0 && (
+                        <p className="text-green-600 font-semibold">
+                          💵 Total Collected: ₹{calculateTotalFunds()}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   {registrations.length > 0 && (
                     <button
@@ -347,7 +491,7 @@ const ManageFest = () => {
                           className="block p-4 border rounded-lg bg-white"
                         >
                           <div className="flex justify-between items-start">
-                            <div>
+                            <div className="flex-1">
                               <h3 className="font-semibold text-gray-800">
                                 {reg.name}
                               </h3>
@@ -358,8 +502,80 @@ const ManageFest = () => {
                               {reg.phone && (
                                 <p className="text-sm text-gray-500 mt-1">📱 {reg.phone}</p>
                               )}
+                              
+                              {/* Payment Status */}
+                              {selectedEvent.isPaid && reg.paymentProof && (
+                                <div className="mt-3 space-y-2">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-sm font-medium text-gray-700">Payment Status:</span>
+                                    <span className={`text-xs px-2 py-1 rounded ${
+                                      reg.paymentProof.paymentStatus === 'verified' || reg.paymentProof.paymentStatus === 'success'
+                                        ? 'bg-green-100 text-green-800'
+                                        : reg.paymentProof.paymentStatus === 'rejected'
+                                        ? 'bg-red-100 text-red-800'
+                                        : 'bg-yellow-100 text-yellow-800'
+                                    }`}>
+                                      {(reg.paymentProof.paymentStatus === 'verified' || reg.paymentProof.paymentStatus === 'success') && '✓ Verified'}
+                                      {reg.paymentProof.paymentStatus === 'rejected' && '✗ Rejected'}
+                                      {reg.paymentProof.paymentStatus === 'pending_verification' && '⏳ Pending'}
+                                    </span>
+                                    {reg.paymentProof.paymentMethod === 'razorpay' && (
+                                      <span className="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded">
+                                        Razorpay
+                                      </span>
+                                    )}
+                                  </div>
+                                  
+                                  {reg.paymentProof.transactionId && (
+                                    <p className="text-xs text-gray-600">
+                                      Transaction ID: {reg.paymentProof.transactionId}
+                                    </p>
+                                  )}
+                                  
+                                  {reg.paymentProof.razorpay_payment_id && (
+                                    <p className="text-xs text-gray-600">
+                                      Razorpay ID: {reg.paymentProof.razorpay_payment_id}
+                                    </p>
+                                  )}
+                                  
+                                  {/* Verification buttons for pending payments */}
+                                  {reg.paymentProof.paymentStatus === 'pending_verification' && (
+                                    <div className="flex space-x-2 mt-2">
+                                      <button
+                                        onClick={() => setShowPaymentProof(reg)}
+                                        className="text-xs bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                                      >
+                                        View Proof
+                                      </button>
+                                      <button
+                                        onClick={() => handleVerifyPayment(reg.id, reg)}
+                                        disabled={verifyingPayment}
+                                        className="text-xs bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 disabled:opacity-50"
+                                      >
+                                        ✓ Verify
+                                      </button>
+                                      <button
+                                        onClick={() => handleRejectPayment(reg.id)}
+                                        disabled={verifyingPayment}
+                                        className="text-xs bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:opacity-50"
+                                      >
+                                        ✗ Reject
+                                      </button>
+                                    </div>
+                                  )}
+                                  
+                                  {reg.paymentProof.paymentStatus === 'verified' && (
+                                    <button
+                                      onClick={() => setShowPaymentProof(reg)}
+                                      className="text-xs text-blue-600 hover:underline"
+                                    >
+                                      View Payment Proof
+                                    </button>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                            <div className="text-right">
+                            <div className="text-right ml-4">
                               <p className="text-xs text-gray-500">
                                 {new Date(reg.registeredAt).toLocaleDateString()}
                               </p>
@@ -374,6 +590,100 @@ const ManageFest = () => {
             )}
           </div>
         </div>
+
+        {/* Payment Proof Modal */}
+        {showPaymentProof && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Payment Proof - {showPaymentProof.name}
+                </h2>
+                <button
+                  onClick={() => setShowPaymentProof(null)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div>
+                  <h3 className="font-semibold text-gray-700 mb-2">Student Details</h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p><strong>Name:</strong> {showPaymentProof.name}</p>
+                    <p><strong>Email:</strong> {showPaymentProof.email}</p>
+                    <p><strong>Phone:</strong> {showPaymentProof.phone}</p>
+                  </div>
+                </div>
+
+                {showPaymentProof.paymentProof && (
+                  <>
+                    <div>
+                      <h3 className="font-semibold text-gray-700 mb-2">Transaction Details</h3>
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <p><strong>Transaction ID:</strong> {showPaymentProof.paymentProof.transactionId}</p>
+                        <p><strong>Status:</strong> 
+                          <span className={`ml-2 px-2 py-1 rounded text-sm ${
+                            showPaymentProof.paymentProof.paymentStatus === 'verified' 
+                              ? 'bg-green-100 text-green-800'
+                              : showPaymentProof.paymentProof.paymentStatus === 'rejected'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {showPaymentProof.paymentProof.paymentStatus}
+                          </span>
+                        </p>
+                        <p><strong>Submitted:</strong> {new Date(showPaymentProof.paymentProof.submittedAt).toLocaleString()}</p>
+                        {showPaymentProof.paymentProof.rejectionReason && (
+                          <p className="text-red-600 mt-2">
+                            <strong>Rejection Reason:</strong> {showPaymentProof.paymentProof.rejectionReason}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold text-gray-700 mb-2">Payment Screenshot</h3>
+                      <div className="border rounded-lg p-4 bg-gray-50">
+                        <img
+                          src={showPaymentProof.paymentProof.screenshotURL}
+                          alt="Payment proof"
+                          className="w-full h-auto rounded"
+                        />
+                      </div>
+                    </div>
+
+                    {showPaymentProof.paymentProof.paymentStatus === 'pending_verification' && (
+                      <div className="flex space-x-4 pt-4 border-t">
+                        <button
+                          onClick={() => {
+                            handleVerifyPayment(showPaymentProof.id, showPaymentProof);
+                            setShowPaymentProof(null);
+                          }}
+                          disabled={verifyingPayment}
+                          className="btn-primary flex-1 disabled:opacity-50"
+                        >
+                          ✓ Verify Payment
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleRejectPayment(showPaymentProof.id);
+                            setShowPaymentProof(null);
+                          }}
+                          disabled={verifyingPayment}
+                          className="bg-red-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-red-600 flex-1 disabled:opacity-50"
+                        >
+                          ✗ Reject Payment
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

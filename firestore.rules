@@ -108,6 +108,11 @@ service cloud.firestore {
       // Users can update their own registrations
       allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
       
+      // Organizers can update payment verification for their events
+      allow update: if hasRole('organizer') && 
+                      resource.data.eventCreatedBy == request.auth.uid &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['paymentVerified', 'paymentProof', 'verifiedAt', 'rejectedAt']);
+      
       // Users can delete their own registrations
       allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
       

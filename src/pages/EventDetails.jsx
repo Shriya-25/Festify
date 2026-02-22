@@ -4,6 +4,8 @@ import { doc, getDoc, collection, addDoc, query, where, getDocs, updateDoc, incr
 import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 
+const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY;
+
 const EventDetails = () => {
   const { eventId } = useParams();
   const { currentUser, userRole } = useAuth();
@@ -15,6 +17,15 @@ const EventDetails = () => {
   const [message, setMessage] = useState('');
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const [formData, setFormData] = useState({});
+  
+  // Payment-related states
+  const [showPaymentStep, setShowPaymentStep] = useState(false);
+  const [paymentScreenshot, setPaymentScreenshot] = useState(null);
+  const [paymentScreenshotPreview, setPaymentScreenshotPreview] = useState('');
+  const [transactionId, setTransactionId] = useState('');
+  const [uploadingScreenshot, setUploadingScreenshot] = useState(false);
+  const [razorpayPaymentData, setRazorpayPaymentData] = useState(null);
+  const [processingRazorpay, setProcessingRazorpay] = useState(false);
 
   useEffect(() => {
     fetchEventDetails();
@@ -103,6 +114,7 @@ const EventDetails = () => {
         return;
       }
 
+      // Always show registration form first (regardless of free/paid)
       // Initialize form data
       const initialFormData = {};
       
@@ -131,6 +143,175 @@ const EventDetails = () => {
     }
   };
 
+  const handleScreenshotChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setMessage('Screenshot must be less than 5MB');
+        return;
+      }
+      setPaymentScreenshot(file);
+      setPaymentScreenshotPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const uploadScreenshotToImgBB = async () => {
+    if (!paymentScreenshot) return null;
+
+    try {
+      setUploadingScreenshot(true);
+      const formData = new FormData();
+      formData.append('image', paymentScreenshot);
+
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        return data.data.url;
+      } else {
+        throw new Error('Failed to upload screenshot');
+      }
+    } catch (error) {
+      console.error('Error uploading screenshot:', error);
+      throw error;
+    } finally {
+      setUploadingScreenshot(false);
+    }
+  };
+
+  const handleRegistrationFormSubmit = async (e) => {
+    e.preventDefault();
+
+    // Check deadline again
+    if (!isRegistrationOpen()) {
+      setMessage('Registration deadline has passed or event is full');
+      return;
+    }
+
+    // If event is paid, show payment step
+    if (event.isPaid && event.paymentConfig) {
+      setShowRegistrationModal(false);
+      setShowPaymentStep(true);
+      setMessage('');
+      return;
+    }
+
+    // If free event, submit registration directly
+    await handleSubmitRegistration(e);
+  };
+
+  // Load Razorpay script dynamically
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      // Check if already loaded
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  // Handle Razorpay payment
+  const handleRazorpayPayment = async () => {
+    try {
+      setProcessingRazorpay(true);
+      setMessage('Loading payment gateway...');
+
+      // Load Razorpay script
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        setMessage('Failed to load Razorpay. Please check your internet connection.');
+        setProcessingRazorpay(false);
+        return;
+      }
+
+      const options = {
+        key: event.paymentConfig.apiKey,
+        amount: event.entryFee * 100, // Amount in paise
+        currency: 'INR',
+        name: event.paymentConfig.businessName || event.festName,
+        description: `Payment for ${event.eventName}`,
+        image: event.bannerUrl || '',
+        handler: async function (response) {
+          // Payment successful
+          console.log('Razorpay payment success:', response);
+          
+          const paymentData = {
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id || '',
+            razorpay_signature: response.razorpay_signature || '',
+            paymentStatus: 'success',
+            paidAt: new Date().toISOString()
+          };
+
+          setRazorpayPaymentData(paymentData);
+          setMessage('Payment successful! Completing registration...');
+          
+          // Submit registration after successful payment with payment data
+          await handleSubmitRegistration(null, paymentData);
+        },
+        modal: {
+          ondismiss: function() {
+            setMessage('Payment cancelled. Please try again.');
+            setProcessingRazorpay(false);
+          }
+        },
+        prefill: {
+          name: formData.name || '',
+          email: formData.email || '',
+          contact: formData.phone || ''
+        },
+        theme: {
+          color: '#4F46E5' // Indigo color matching the theme
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      
+      razorpay.on('payment.failed', function (response) {
+        console.error('Razorpay payment failed:', response.error);
+        setMessage(`Payment failed: ${response.error.description}. Please try again.`);
+        setProcessingRazorpay(false);
+      });
+
+      razorpay.open();
+      setProcessingRazorpay(false);
+      setMessage(''); // Clear loading message when checkout opens
+      
+    } catch (error) {
+      console.error('Error initiating Razorpay payment:', error);
+      setMessage('Error initiating payment. Please try again.');
+      setProcessingRazorpay(false);
+    }
+  };
+
+  const handleFinalSubmit = async () => {
+    // Validate payment proof for manual payments
+    if (event.paymentConfig.method === 'manual') {
+      if (!paymentScreenshot) {
+        setMessage('Please upload payment screenshot');
+        return;
+      }
+      if (!transactionId.trim()) {
+        setMessage('Please enter transaction ID');
+        return;
+      }
+    }
+
+    // Submit the registration with payment info
+    await handleSubmitRegistration(null);
+  };
+
   const handleFormChange = (e, fieldId) => {
     const { type, value, checked, files } = e.target;
     
@@ -143,8 +324,8 @@ const EventDetails = () => {
     }
   };
 
-  const handleSubmitRegistration = async (e) => {
-    e.preventDefault();
+  const handleSubmitRegistration = async (e, razorpayPaymentDataParam = null) => {
+    if (e) e.preventDefault();
 
     // Check deadline again (backend validation)
     if (!isRegistrationOpen()) {
@@ -169,8 +350,47 @@ const EventDetails = () => {
         userId: currentUser.uid,
         eventName: event.eventName,
         festName: event.festName,
+        eventCreatedBy: event.createdBy,
         registeredAt: new Date().toISOString()
       };
+
+      // Add payment information for paid events
+      if (event.isPaid && event.paymentConfig) {
+        if (event.paymentConfig.method === 'manual') {
+          // Upload payment screenshot
+          setMessage('Uploading payment proof...');
+          const screenshotURL = await uploadScreenshotToImgBB();
+          if (!screenshotURL) {
+            setMessage('Failed to upload payment screenshot. Please try again.');
+            setRegistering(false);
+            return;
+          }
+
+          registrationData.paymentProof = {
+            screenshotURL,
+            transactionId,
+            paymentStatus: 'pending_verification',
+            submittedAt: new Date().toISOString()
+          };
+          registrationData.paymentVerified = false;
+        } else if (event.paymentConfig.method === 'razorpay') {
+          // For Razorpay, add payment details from successful transaction
+          const paymentDataToUse = razorpayPaymentDataParam || razorpayPaymentData;
+          
+          if (paymentDataToUse) {
+            registrationData.paymentProof = {
+              ...paymentDataToUse,
+              paymentMethod: 'razorpay'
+            };
+            registrationData.paymentVerified = true;
+            registrationData.paymentStatus = 'success';
+          } else {
+            setMessage('Payment information missing. Please try again.');
+            setRegistering(false);
+            return;
+          }
+        }
+      }
 
       if (event.prefillUserData) {
         registrationData.name = formData.name;
@@ -209,9 +429,22 @@ const EventDetails = () => {
 
       setIsRegistered(true);
       setShowRegistrationModal(false);
-      setMessage('🎉 Successfully registered for the event!');
+      setShowPaymentStep(false);
       
-      //Refresh event data
+      if (event.isPaid && event.paymentConfig.method === 'manual') {
+        setMessage('🎉 Registration submitted! Your payment is pending verification by the organizer.');
+      } else {
+        setMessage('🎉 Successfully registered for the event!');
+      }
+      
+      // Reset payment states
+      setPaymentScreenshot(null);
+      setPaymentScreenshotPreview('');
+      setTransactionId('');
+      setRazorpayPaymentData(null);
+      setProcessingRazorpay(false);
+      
+      // Refresh event data
       fetchEventDetails();
     } catch (error) {
       console.error('Error registering:', error);
@@ -304,7 +537,7 @@ const EventDetails = () => {
             <div>
               <p className="text-sm text-gray-600 mb-1">💰 Entry Fees</p>
               <p className="font-semibold text-gray-800">
-                {event.fees > 0 ? `₹${event.fees}` : 'Free'}
+                {event.isPaid ? `₹${event.entryFee}` : 'Free'}
               </p>
             </div>
             <div>
@@ -366,6 +599,171 @@ const EventDetails = () => {
           </div>
         </div>
 
+        {/* Payment Step Modal */}
+        {showPaymentStep && event.isPaid && event.paymentConfig && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Payment - {event.eventName}
+                  </h2>
+                  <p className="text-lg font-semibold text-primary mt-1">
+                    Amount: ₹{event.entryFee}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowPaymentStep(false);
+                    setShowRegistrationModal(true);
+                  }}
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-6">
+                {message && (
+                  <div className={`mb-4 p-4 rounded-lg ${
+                    message.includes('Success') || message.includes('🎉') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  }`}>
+                    {message}
+                  </div>
+                )}
+
+                {/* Manual QR Payment */}
+                {event.paymentConfig.method === 'manual' && (
+                  <div className="space-y-6">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h3 className="font-semibold text-blue-900 mb-2">📱 Payment Instructions</h3>
+                      <p className="text-blue-800 whitespace-pre-line">
+                        {event.paymentConfig.instructions}
+                      </p>
+                    </div>
+
+                    <div className="flex justify-center">
+                      <div className="border-2 border-gray-300 rounded-lg p-4">
+                        <img
+                          src={event.paymentConfig.qrImageURL}
+                          alt="Payment QR Code"
+                          className="w-64 h-64 object-contain"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border-t pt-6">
+                      <h3 className="font-semibold text-gray-800 mb-4">Upload Payment Proof</h3>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <label className="label">
+                            Payment Screenshot <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleScreenshotChange}
+                            className="input-field"
+                            required
+                          />
+                          {paymentScreenshotPreview && (
+                            <div className="mt-4">
+                              <img
+                                src={paymentScreenshotPreview}
+                                alt="Screenshot preview"
+                                className="w-full h-48 object-contain border rounded-lg"
+                              />
+                            </div>
+                          )}
+                          <p className="text-sm text-gray-500 mt-1">
+                            Upload screenshot of your payment (Max 5MB)
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="label">
+                            Transaction ID / UTR Number <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className="input-field"
+                            placeholder="Enter transaction ID from payment"
+                            value={transactionId}
+                            onChange={(e) => setTransactionId(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-4 pt-4">
+                      <button
+                        onClick={handleFinalSubmit}
+                        disabled={!paymentScreenshot || !transactionId.trim() || uploadingScreenshot || registering}
+                        className="btn-primary flex-1 disabled:opacity-50"
+                      >
+                        {registering ? 'Submitting...' : uploadingScreenshot ? 'Processing...' : 'Confirm & Register'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowPaymentStep(false);
+                          setShowRegistrationModal(true);
+                        }}
+                        className="btn-secondary flex-1"
+                        disabled={registering}
+                      >
+                        Back
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Razorpay Payment */}
+                {event.paymentConfig.method === 'razorpay' && (
+                  <div className="space-y-6">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h3 className="font-semibold text-blue-900 mb-2">💳 Razorpay Payment</h3>
+                      <p className="text-blue-800">
+                        You will be redirected to Razorpay to complete the payment securely.
+                      </p>
+                    </div>
+
+                    <div className="text-center py-8">
+                      <p className="text-gray-700 mb-6">
+                        Click the button below to proceed with payment of <strong>₹{event.entryFee}</strong>
+                      </p>
+                      <button
+                        onClick={handleRazorpayPayment}
+                        disabled={processingRazorpay || registering}
+                        className="btn-primary disabled:opacity-50"
+                      >
+                        {processingRazorpay ? 'Loading...' : 'Pay with Razorpay'}
+                      </button>
+                      <p className="text-sm text-gray-500 mt-4">
+                        🔒 Secure payment powered by Razorpay
+                      </p>
+                    </div>
+
+                    <div className="flex space-x-4 pt-4">
+                      <button
+                        onClick={() => {
+                          setShowPaymentStep(false);
+                          setShowRegistrationModal(true);
+                        }}
+                        className="btn-secondary w-full"
+                        disabled={processingRazorpay || registering}
+                      >
+                        Back
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Registration Modal */}
         {showRegistrationModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -382,7 +780,7 @@ const EventDetails = () => {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmitRegistration} className="p-6 space-y-4">
+              <form onSubmit={handleRegistrationFormSubmit} className="p-6 space-y-4">
                 {event.prefillUserData && (
                   <div className="space-y-4 pb-4 border-b">
                     <h3 className="font-semibold text-gray-700">Basic Information</h3>
@@ -579,7 +977,7 @@ const EventDetails = () => {
                     disabled={registering}
                     className="btn-primary flex-1"
                   >
-                    {registering ? 'Submitting...' : 'Submit Registration'}
+                    {registering ? 'Submitting...' : (event.isPaid ? 'Proceed to Payment' : 'Submit Registration')}
                   </button>
                   <button
                     type="button"

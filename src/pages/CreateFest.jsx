@@ -186,6 +186,13 @@ const CreateFest = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back Button */}
+        <div className="mb-6">
+          <button onClick={() => navigate('/dashboard')} className="text-primary hover:underline flex items-center">
+            ← Back to Dashboard
+          </button>
+        </div>
+        
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between">

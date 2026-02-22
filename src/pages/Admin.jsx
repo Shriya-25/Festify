@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import { useNavigate } from 'react-router-dom';
 
 function Admin() {
+  const navigate = useNavigate();
   const [fests, setFests] = useState([]);
   const [events, setEvents] = useState([]);
   const [users, setUsers] = useState([]);
@@ -14,6 +16,12 @@ function Admin() {
   const [adminComments, setAdminComments] = useState('');
   const [festStatusFilter, setFestStatusFilter] = useState('all'); // 'all', 'pending', 'approved', 'rejected', 'changes_requested'
   const [eventStatusFilter, setEventStatusFilter] = useState('all');
+  
+  // Registration viewing states
+  const [viewingRegistrations, setViewingRegistrations] = useState(null);
+  const [registrations, setRegistrations] = useState([]);
+  const [loadingRegistrations, setLoadingRegistrations] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchFests();
@@ -58,16 +66,114 @@ function Admin() {
 
   const fetchUsers = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'users'));
+      const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
       const usersData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+      console.log('Fetched users data:', usersData);
+      console.log('Total users:', usersData.length);
       setUsers(usersData);
     } catch (err) {
       console.error('Error fetching users:', err);
-      setError('Failed to load users');
+      // Fallback without ordering if createdAt field doesn't exist on all docs
+      try {
+        const querySnapshot = await getDocs(collection(db, 'users'));
+        const usersData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        console.log('Fetched users data (fallback):', usersData);
+        setUsers(usersData);
+      } catch (fallbackErr) {
+        console.error('Error in fallback fetch:', fallbackErr);
+        setError('Failed to load users');
+      }
     }
+  };
+
+  const fetchEventRegistrations = async (eventId) => {
+    try {
+      setLoadingRegistrations(true);
+      const q = query(
+        collection(db, 'eventRegistrations'),
+        where('eventId', '==', eventId),
+        orderBy('registeredAt', 'desc')
+      );
+      const querySnapshot = await getDocs(q);
+      const registrationsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      console.log('Fetched registrations:', registrationsData);
+      setRegistrations(registrationsData);
+    } catch (err) {
+      console.error('Error fetching registrations:', err);
+      // Fallback: Try without ordering if index doesn't exist
+      if (err.code === 'failed-precondition' || err.message?.includes('index')) {
+        try {
+          console.log('Retrying without ordering...');
+          const fallbackQuery = query(
+            collection(db, 'eventRegistrations'),
+            where('eventId', '==', eventId)
+          );
+          const querySnapshot = await getDocs(fallbackQuery);
+          const registrationsData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          // Sort manually by registeredAt
+          registrationsData.sort((a, b) => {
+            const dateA = new Date(a.registeredAt);
+            const dateB = new Date(b.registeredAt);
+            return dateB - dateA; // Descending order
+          });
+          console.log('Fetched registrations (fallback):', registrationsData);
+          setRegistrations(registrationsData);
+        } catch (fallbackErr) {
+          console.error('Fallback query also failed:', fallbackErr);
+          alert('Failed to load registrations. Please try again.');
+        }
+      } else {
+        alert('Failed to load registrations');
+      }
+    } finally {
+      setLoadingRegistrations(false);
+    }
+  };
+
+  const handleViewRegistrations = (event) => {
+    setViewingRegistrations(event);
+    fetchEventRegistrations(event.id);
+  };
+
+  const handleDownloadCSV = () => {
+    if (registrations.length === 0) return;
+
+    const headers = ['Name', 'Email', 'Phone', 'College', 'Branch', 'Year', 'Registered At'];
+    const csvData = registrations.map(reg => [
+      reg.name || '',
+      reg.email || '',
+      reg.phone || '',
+      reg.college || '',
+      reg.branch || '',
+      reg.year || '',
+      new Date(reg.registeredAt).toLocaleString('en-IN')
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${viewingRegistrations.eventName}_registrations.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   const handleApproveFest = async (festId, comments = '') => {
@@ -270,6 +376,13 @@ function Admin() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back Button */}
+        <div className="mb-4">
+          <button onClick={() => navigate('/')} className="text-primary hover:underline flex items-center">
+            ← Back to Home
+          </button>
+        </div>
+        
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">🔐 Admin Panel</h1>
@@ -763,7 +876,12 @@ function Admin() {
                         </span>
                         <span className="flex items-center gap-1">
                           <span className="font-semibold">💰 Fees:</span> 
-                          ₹{event.fees || '0'}
+                          {event.isPaid ? `₹${event.entryFee}` : 'Free'}
+                          {event.isPaid && event.paymentConfig && (
+                            <span className="text-xs text-gray-500 ml-2">
+                              ({event.paymentConfig.method === 'manual' ? 'Manual QR' : 'Razorpay'})
+                            </span>
+                          )}
                         </span>
                         <span className="flex items-center gap-1">
                           <span className="font-semibold">👥 Participants:</span> 
@@ -830,6 +948,12 @@ function Admin() {
                         </button>
                       )}
                       <button
+                        onClick={() => handleViewRegistrations(event)}
+                        className="px-5 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium shadow-sm"
+                      >
+                        👥 View Registrations
+                      </button>
+                      <button
                         onClick={() => handleDeleteEvent(event.id)}
                         className="px-5 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm"
                       >
@@ -893,23 +1017,184 @@ function Admin() {
           </div>
         )}
 
+        {/* View Registrations Modal */}
+        {viewingRegistrations && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b p-6 z-10">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-800">
+                      {viewingRegistrations.eventName} - Registrations
+                    </h2>
+                    <p className="text-gray-600 mt-1">
+                      Total: {registrations.length} student{registrations.length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    {registrations.length > 0 && (
+                      <button
+                        onClick={handleDownloadCSV}
+                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
+                      >
+                        📥 Download CSV
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        setViewingRegistrations(null);
+                        setRegistrations([]);
+                        setSearchTerm('');
+                      }}
+                      className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                    >
+                      ✕ Close
+                    </button>
+                  </div>
+                </div>
+
+                {/* Search */}
+                {registrations.length > 0 && (
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Search by name, email, or college..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="p-6">
+                {loadingRegistrations ? (
+                  <div className="text-center py-12">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
+                    <p className="text-gray-600 mt-4">Loading registrations...</p>
+                  </div>
+                ) : registrations.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-600 text-lg">No registrations yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {registrations
+                      .filter(reg => {
+                        if (!searchTerm) return true;
+                        const search = searchTerm.toLowerCase();
+                        return (
+                          reg.name?.toLowerCase().includes(search) ||
+                          reg.email?.toLowerCase().includes(search) ||
+                          reg.college?.toLowerCase().includes(search)
+                        );
+                      })
+                      .map(reg => (
+                        <div
+                          key={reg.id}
+                          className="block p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-800 text-lg">
+                                {reg.name || 'N/A'}
+                              </h3>
+                              <p className="text-sm text-gray-600 mt-1">
+                                📧 {reg.email || 'N/A'}
+                              </p>
+                              <p className="text-sm text-gray-600 mt-1">
+                                🏫 {reg.college || 'N/A'}
+                                {reg.branch && ` • ${reg.branch}`}
+                                {reg.year && ` • ${reg.year}`}
+                              </p>
+                              {reg.phone && (
+                                <p className="text-sm text-gray-600 mt-1">
+                                  📱 {reg.phone}
+                                </p>
+                              )}
+                              {reg.formData && Object.keys(reg.formData).length > 0 && (
+                                <div className="mt-2 pt-2 border-t border-gray-200">
+                                  <p className="text-xs font-semibold text-gray-700 mb-1">Additional Info:</p>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    {Object.entries(reg.formData).map(([key, value]) => (
+                                      <p key={key} className="text-xs text-gray-600">
+                                        <span className="font-medium">{key}:</span> {value || 'N/A'}
+                                      </p>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-right ml-4">
+                              <p className="text-xs text-gray-500">
+                                Registered on
+                              </p>
+                              <p className="text-sm font-medium text-gray-700">
+                                {new Date(reg.registeredAt).toLocaleDateString('en-IN', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric'
+                                })}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {new Date(reg.registeredAt).toLocaleTimeString('en-IN', {
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    {registrations.filter(reg => {
+                      if (!searchTerm) return true;
+                      const search = searchTerm.toLowerCase();
+                      return (
+                        reg.name?.toLowerCase().includes(search) ||
+                        reg.email?.toLowerCase().includes(search) ||
+                        reg.college?.toLowerCase().includes(search)
+                      );
+                    }).length === 0 && (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500">No registrations match your search</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Users Tab */}
         {activeTab === 'users' && (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-white rounded-lg shadow-md overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    User
+                    Name
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Phone
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    College
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Role
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Auth Provider
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email Verified
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created At
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -920,10 +1205,20 @@ function Admin() {
                 {users.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{user.name || 'N/A'}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {user.name || user.displayName || 'Not provided'}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{user.email}</div>
+                      <div className="text-sm text-gray-600">{user.email || 'N/A'}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-600">{user.phone || 'N/A'}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-600 max-w-xs truncate" title={user.college}>
+                        {user.college || 'N/A'}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
@@ -936,6 +1231,28 @@ function Admin() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-600">{user.authProvider || 'email'}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          user.emailVerified
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {user.emailVerified ? '✓ Verified' : '✗ Not Verified'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-600">
+                        {user.createdAt
+                          ? new Date(user.createdAt).toLocaleDateString('en-IN', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })
+                          : 'N/A'}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <select

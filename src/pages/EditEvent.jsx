@@ -24,7 +24,8 @@ const EditEvent = () => {
     venue: '',
     maxParticipants: '',
     registrationDeadline: '',
-    fees: '',
+    isPaid: false,
+    entryFee: '',
     bannerUrl: '',
     registrationForm: [],
     prefillUserData: true
@@ -33,6 +34,7 @@ const EditEvent = () => {
   const [bannerFile, setBannerFile] = useState(null);
   const [bannerPreview, setBannerPreview] = useState('');
   const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [originalPaymentConfig, setOriginalPaymentConfig] = useState(null);
 
   const domains = ['Technical', 'Cultural', 'Sports', 'Literary', 'Music', 'Dance', 'Gaming', 'Other'];
 
@@ -63,11 +65,17 @@ const EditEvent = () => {
           venue: data.venue || '',
           maxParticipants: data.maxParticipants || '',
           registrationDeadline: data.registrationDeadline || '',
-          fees: data.fees || '',
+          isPaid: data.isPaid || false,
+          entryFee: data.entryFee || '',
           bannerUrl: data.bannerUrl || '',
           registrationForm: data.registrationForm || [],
           prefillUserData: data.prefillUserData !== undefined ? data.prefillUserData : true
         });
+        
+        // Store original payment config to preserve it during updates
+        if (data.paymentConfig) {
+          setOriginalPaymentConfig(data.paymentConfig);
+        }
         
         if (data.bannerUrl) {
           setBannerPreview(data.bannerUrl);
@@ -141,8 +149,14 @@ const EditEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!eventData.eventName || !eventData.date || !eventData.time || !eventData.venue || !eventData.description || !eventData.registrationDeadline || eventData.fees === '') {
+    if (!eventData.eventName || !eventData.date || !eventData.time || !eventData.venue || !eventData.description || !eventData.registrationDeadline) {
       setMessage('Please fill in all required fields');
+      return;
+    }
+
+    // Validate entry fee for paid events
+    if (eventData.isPaid && (!eventData.entryFee || parseFloat(eventData.entryFee) <= 0)) {
+      setMessage('Please enter a valid entry fee amount for paid events');
       return;
     }
 
@@ -197,7 +211,8 @@ const EditEvent = () => {
         venue: eventData.venue,
         maxParticipants: eventData.maxParticipants ? parseInt(eventData.maxParticipants) : null,
         registrationDeadline: eventData.registrationDeadline,
-        fees: eventData.fees ? parseFloat(eventData.fees) : 0,
+        isPaid: eventData.isPaid,
+        entryFee: eventData.isPaid ? parseFloat(eventData.entryFee) : 0,
         bannerUrl: bannerUrl || '',
         registrationForm: cleanedRegistrationForm,
         prefillUserData: eventData.prefillUserData,
@@ -205,6 +220,11 @@ const EditEvent = () => {
         status: 'pending',  // Reset to pending after edit
         adminComments: ''    // Clear previous comments
       };
+
+      // Preserve payment config if it exists
+      if (originalPaymentConfig) {
+        updatedEventData.paymentConfig = originalPaymentConfig;
+      }
 
       console.log('Updating event with data:', updatedEventData);
 
@@ -321,26 +341,57 @@ const EditEvent = () => {
               </p>
             </div>
 
-            {/* Fees */}
+            {/* Entry Fee Options */}
             <div>
-              <label htmlFor="fees" className="label">
-                Entry Fees (₹) <span className="text-red-500">*</span>
+              <label className="label">
+                Entry Fee <span className="text-red-500">*</span>
               </label>
-              <input
-                type="number"
-                id="fees"
-                name="fees"
-                min="0"
-                step="0.01"
-                required
-                className="input-field"
-                placeholder="Enter 0 for free events"
-                value={eventData.fees}
-                onChange={handleChange}
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Set to 0 for free events
-              </p>
+              <div className="space-y-3">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="isPaid"
+                    checked={!eventData.isPaid}
+                    onChange={() => setEventData({...eventData, isPaid: false, entryFee: ''})}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-gray-700">Free Event</span>
+                </label>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="isPaid"
+                    checked={eventData.isPaid}
+                    onChange={() => setEventData({...eventData, isPaid: true})}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-gray-700">Paid Event</span>
+                </label>
+              </div>
+
+              {/* Entry Amount - shown only for paid events */}
+              {eventData.isPaid && (
+                <div className="mt-4">
+                  <label htmlFor="entryFee" className="label">
+                    Entry Amount (₹) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="entryFee"
+                    name="entryFee"
+                    min="1"
+                    step="0.01"
+                    required
+                    className="input-field"
+                    placeholder="Enter amount in rupees"
+                    value={eventData.entryFee}
+                    onChange={handleChange}
+                  />
+                  <p className="text-sm text-yellow-600 mt-1">
+                    ⚠️ Note: Changing payment settings may require admin re-approval
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Date and Time */}

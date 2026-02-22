@@ -24,7 +24,8 @@ const CreateEvent = () => {
     venue: '',
     maxParticipants: '',
     registrationDeadline: '',
-    fees: '',
+    isPaid: false,
+    entryFee: '',
     bannerUrl: '',
     registrationForm: [],
     prefillUserData: true
@@ -38,7 +39,40 @@ const CreateEvent = () => {
 
   useEffect(() => {
     fetchFestDetails();
+    restoreEventDataFromSession();
   }, [festId]);
+
+  const restoreEventDataFromSession = () => {
+    // Check if there's pending event data in sessionStorage
+    const savedData = sessionStorage.getItem('pendingEventData');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setEventData({
+          eventName: parsedData.eventName || '',
+          domain: parsedData.domain || 'Technical',
+          description: parsedData.description || '',
+          date: parsedData.date || '',
+          time: parsedData.time || '',
+          venue: parsedData.venue || '',
+          maxParticipants: parsedData.maxParticipants || '',
+          registrationDeadline: parsedData.registrationDeadline || '',
+          isPaid: parsedData.isPaid || false,
+          entryFee: parsedData.entryFee || '',
+          bannerUrl: parsedData.bannerUrl || '',
+          registrationForm: parsedData.registrationForm || [],
+          prefillUserData: parsedData.prefillUserData !== false
+        });
+        
+        // If there's a banner URL, set it as preview
+        if (parsedData.bannerUrl) {
+          setBannerPreview(parsedData.bannerUrl);
+        }
+      } catch (error) {
+        console.error('Error restoring event data:', error);
+      }
+    }
+  };
 
   const fetchFestDetails = async () => {
     try {
@@ -118,8 +152,14 @@ const CreateEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!eventData.eventName || !eventData.date || !eventData.time || !eventData.venue || !eventData.description || !eventData.registrationDeadline || eventData.fees === '') {
+    if (!eventData.eventName || !eventData.date || !eventData.time || !eventData.venue || !eventData.description || !eventData.registrationDeadline) {
       setMessage('Please fill in all required fields');
+      return;
+    }
+
+    // Validate entry fee for paid events
+    if (eventData.isPaid && (!eventData.entryFee || parseFloat(eventData.entryFee) <= 0)) {
+      setMessage('Please enter a valid entry fee amount for paid events');
       return;
     }
 
@@ -132,6 +172,45 @@ const CreateEvent = () => {
       return;
     }
 
+    // If event is paid, navigate to payment setup
+    if (eventData.isPaid) {
+      try {
+        setLoading(true);
+        setMessage('');
+
+        // Validate fest data
+        if (!fest || !fest.festName) {
+          setMessage('Error: Fest information not loaded properly');
+          setLoading(false);
+          return;
+        }
+
+        // Upload banner if provided
+        let bannerUrl = eventData.bannerUrl;
+        if (bannerFile) {
+          setMessage('Uploading banner...');
+          bannerUrl = await uploadBannerToImgBB();
+          if (!bannerUrl) {
+            setMessage('Failed to upload banner. Please try again.');
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Store event data in sessionStorage and navigate to payment setup
+        const eventDataWithBanner = { ...eventData, bannerUrl, festName: fest.festName };
+        sessionStorage.setItem('pendingEventData', JSON.stringify(eventDataWithBanner));
+        navigate(`/fest/${festId}/create-event/payment-setup`);
+      } catch (error) {
+        console.error('Error preparing event data:', error);
+        setMessage(`Failed to proceed: ${error.message || 'Please try again.'}`);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // If event is free, create it directly
     try {
       setLoading(true);
       setMessage('');
@@ -183,7 +262,8 @@ const CreateEvent = () => {
         venue: eventData.venue,
         maxParticipants: eventData.maxParticipants ? parseInt(eventData.maxParticipants) : null,
         registrationDeadline: eventData.registrationDeadline,
-        fees: eventData.fees ? parseFloat(eventData.fees) : 0,
+        isPaid: false,
+        entryFee: 0,
         bannerUrl: bannerUrl || '',
         registrationForm: cleanedRegistrationForm,
         prefillUserData: eventData.prefillUserData,
@@ -197,6 +277,9 @@ const CreateEvent = () => {
       console.log('Creating event with data:', newEventData);
 
       await addDoc(collection(db, 'events'), newEventData);
+
+      // Clear sessionStorage after successful creation
+      sessionStorage.removeItem('pendingEventData');
 
       setMessage('🎉 Event created successfully! It will be visible once approved by admin.');
       
@@ -307,26 +390,54 @@ const CreateEvent = () => {
               </p>
             </div>
 
-            {/* Fees */}
+            {/* Entry Fee Options */}
             <div>
-              <label htmlFor="fees" className="label">
-                Entry Fees (₹) <span className="text-red-500">*</span>
+              <label className="label">
+                Entry Fee <span className="text-red-500">*</span>
               </label>
-              <input
-                type="number"
-                id="fees"
-                name="fees"
-                min="0"
-                step="0.01"
-                required
-                className="input-field"
-                placeholder="Enter 0 for free events"
-                value={eventData.fees}
-                onChange={handleChange}
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Set to 0 for free events
-              </p>
+              <div className="space-y-3">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="isPaid"
+                    checked={!eventData.isPaid}
+                    onChange={() => setEventData({...eventData, isPaid: false, entryFee: ''})}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-gray-700">Free Event</span>
+                </label>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="isPaid"
+                    checked={eventData.isPaid}
+                    onChange={() => setEventData({...eventData, isPaid: true})}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-gray-700">Paid Event</span>
+                </label>
+              </div>
+
+              {/* Entry Amount - shown only for paid events */}
+              {eventData.isPaid && (
+                <div className="mt-4">
+                  <label htmlFor="entryFee" className="label">
+                    Entry Amount (₹) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="entryFee"
+                    name="entryFee"
+                    min="1"
+                    step="0.01"
+                    required
+                    className="input-field"
+                    placeholder="Enter amount in rupees"
+                    value={eventData.entryFee}
+                    onChange={handleChange}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Date and Time */}
@@ -464,11 +575,15 @@ const CreateEvent = () => {
                 disabled={loading || uploadingBanner}
                 className="btn-primary flex-1 disabled:opacity-50"
               >
-                {uploadingBanner ? 'Uploading Banner...' : loading ? 'Creating Event...' : '🚀 Create Event & Submit for Approval'}
+                {uploadingBanner ? 'Uploading Banner...' : loading ? (eventData.isPaid ? 'Processing...' : 'Creating Event...') : (eventData.isPaid ? '➡️ Next' : '🚀 Create Event & Submit for Approval')}
               </button>
               <button
                 type="button"
-                onClick={() => navigate(`/fest/${festId}/manage`)}
+                onClick={() => {
+                  // Clear sessionStorage when canceling
+                  sessionStorage.removeItem('pendingEventData');
+                  navigate(`/fest/${festId}/manage`);
+                }}
                 className="btn-secondary flex-1"
                 disabled={loading || uploadingBanner}
               >
