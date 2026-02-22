@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -19,6 +20,12 @@ const Dashboard = () => {
       setLoading(true);
       
       if (userRole === 'student') {
+        // Fetch user profile data
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        if (userDoc.exists()) {
+          setUserProfile(userDoc.data());
+        }
+        
         // Fetch student registrations
         const registrationsQuery = query(
           collection(db, 'registrations'),
@@ -133,33 +140,35 @@ const Dashboard = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-800 mb-4">My Registrations</h1>
             
-            {/* Profile completion reminder */}
-            <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3 flex-1">
-                  <h3 className="text-sm font-medium text-blue-800">Complete Your Profile</h3>
-                  <div className="mt-2 text-sm text-blue-700">
-                    <p>
-                      Make sure your profile has your phone number and college details before registering for fests. 
-                      Organizers need this information to contact you.
-                    </p>
+            {/* Profile completion reminder - only show if profile is incomplete */}
+            {(!userProfile?.phone || !userProfile?.college) && (
+              <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
                   </div>
-                  <div className="mt-3">
-                    <Link
-                      to="/profile"
-                      className="text-sm font-medium text-blue-800 hover:text-blue-900 underline"
-                    >
-                      Update Profile →
-                    </Link>
+                  <div className="ml-3 flex-1">
+                    <h3 className="text-sm font-medium text-blue-800">Complete Your Profile</h3>
+                    <div className="mt-2 text-sm text-blue-700">
+                      <p>
+                        Make sure your profile has your phone number and college details before registering for fests. 
+                        Organizers need this information to contact you.
+                      </p>
+                    </div>
+                    <div className="mt-3">
+                      <Link
+                        to="/profile"
+                        className="text-sm font-medium text-blue-800 hover:text-blue-900 underline"
+                      >
+                        Update Profile →
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {data.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg shadow">
@@ -230,7 +239,7 @@ const Dashboard = () => {
                         </div>
                         <p className="text-gray-600 mb-1">{fest.collegeName}</p>
                         <p className="text-sm text-gray-500 mb-2">
-                          📅 {new Date(fest.date).toLocaleDateString()} | 📍 {fest.location}
+                          📅 {new Date(fest.date).toLocaleDateString()} | 📍 {fest.venue || fest.location || 'Venue TBA'}
                         </p>
                         <p className="text-gray-700 line-clamp-2">{fest.description}</p>
                       </div>
@@ -360,7 +369,7 @@ const Dashboard = () => {
                           <span className="font-semibold">Date:</span> {new Date(fest.date).toLocaleDateString()}
                         </p>
                         <p className="text-gray-600 mb-1">
-                          <span className="font-semibold">Location:</span> {fest.location}
+                          <span className="font-semibold">Venue:</span> {fest.venue || fest.location || 'Not specified'}
                         </p>
                         <p className="text-gray-700 mt-3">{fest.description}</p>
                         {fest.bannerUrl && (

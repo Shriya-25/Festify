@@ -69,7 +69,7 @@ const Home = () => {
       filtered = filtered.filter(fest =>
         fest.festName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         fest.collegeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        fest.location.toLowerCase().includes(searchTerm.toLowerCase())
+        (fest.venue || fest.location || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 

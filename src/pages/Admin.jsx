@@ -225,8 +225,8 @@ function Admin() {
                           }) : 'Not set'}
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="font-semibold">📍 Location:</span> 
-                          {fest.location || 'Not specified'}
+                          <span className="font-semibold">📍 Venue:</span> 
+                          {fest.venue || fest.location || 'Not specified'}
                         </span>
                         <span className="flex items-center gap-1">
                           <span className="font-semibold">💰 Fee:</span> 

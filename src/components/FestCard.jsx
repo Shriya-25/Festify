@@ -18,7 +18,7 @@ const FestCard = ({ fest }) => {
         </span>
       </div>
       <p className="text-gray-600 mb-2">{fest.collegeName}</p>
-      <p className="text-sm text-gray-500 mb-2">📍 {fest.location}</p>
+      <p className="text-sm text-gray-500 mb-2">📍 {fest.venue || fest.location || 'Venue TBA'}</p>
       <p className="text-sm text-gray-500 mb-4">📅 {new Date(fest.date).toLocaleDateString()}</p>
       <p className="text-gray-700 mb-4 line-clamp-2">{fest.description}</p>
       <Link
