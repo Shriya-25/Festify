@@ -15,6 +15,9 @@ const Navbar = () => {
     }
   };
 
+  // Check if user needs email verification
+  const needsVerification = currentUser && !currentUser.emailVerified && currentUser.providerData[0]?.providerId === 'password';
+
   return (
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,36 +30,52 @@ const Navbar = () => {
 
           <div className="flex items-center space-x-4">
             {currentUser ? (
-              <>
-                <Link to="/" className="text-gray-700 hover:text-primary">
-                  Home
-                </Link>
-                <Link to="/dashboard" className="text-gray-700 hover:text-primary">
-                  Dashboard
-                </Link>
-                <Link to="/profile" className="text-gray-700 hover:text-primary">
-                  Profile
-                </Link>
-                {userRole === 'organizer' && (
-                  <Link to="/create-fest" className="text-gray-700 hover:text-primary">
-                    Create Fest
+              needsVerification ? (
+                // Unverified users: Only show logout
+                <>
+                  <span className="text-sm text-yellow-600 font-semibold">
+                    Please verify your email
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="btn-secondary text-sm"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                // Verified users: Show full navigation
+                <>
+                  <Link to="/" className="text-gray-700 hover:text-primary">
+                    Home
                   </Link>
-                )}
-                {userRole === 'admin' && (
-                  <Link to="/admin" className="text-indigo-600 hover:text-indigo-700 font-semibold">
-                    🔐 Admin Panel
+                  <Link to="/dashboard" className="text-gray-700 hover:text-primary">
+                    Dashboard
                   </Link>
-                )}
-                <span className="text-sm text-gray-500">
-                  ({userRole})
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="btn-secondary text-sm"
-                >
-                  Logout
-                </button>
-              </>
+                  <Link to="/profile" className="text-gray-700 hover:text-primary">
+                    Profile
+                  </Link>
+                  {userRole === 'organizer' && (
+                    <Link to="/create-fest" className="text-gray-700 hover:text-primary">
+                      Create Fest
+                    </Link>
+                  )}
+                  {userRole === 'admin' && (
+                    <Link to="/admin" className="text-indigo-600 hover:text-indigo-700 font-semibold">
+                      🔐 Admin Panel
+                    </Link>
+                  )}
+                  <span className="text-sm text-gray-500">
+                    ({userRole})
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="btn-secondary text-sm"
+                  >
+                    Logout
+                  </button>
+                </>
+              )
             ) : (
               <>
                 <Link to="/login" className="text-gray-700 hover:text-primary">

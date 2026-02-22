@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
 
 const VerifyEmail = () => {
   const { currentUser, reloadUser, resendVerificationEmail, logout } = useAuth();
@@ -11,10 +13,11 @@ const VerifyEmail = () => {
   const [checking, setChecking] = useState(false);
 
   useEffect(() => {
-    // If no user or email already verified, redirect
+    // If no user, redirect to login
     if (!currentUser) {
       navigate('/login');
     } else if (currentUser.emailVerified) {
+      // If already verified, redirect to home
       navigate('/');
     }
   }, [currentUser, navigate]);
@@ -25,15 +28,28 @@ const VerifyEmail = () => {
       setError('');
       setMessage('');
       
-      await reloadUser();
+      const updatedUser = await reloadUser();
       
-      if (currentUser.emailVerified) {
-        setMessage('Email verified successfully! Redirecting...');
-        setTimeout(() => {
-          navigate('/');
-        }, 2000);
+      if (updatedUser && updatedUser.emailVerified) {
+        setMessage('✓ Email verified successfully! Setting up your account...');
+        
+        // Check if user has a role set
+        const userDoc = await getDoc(doc(db, 'users', updatedUser.uid));
+        const userData = userDoc.data();
+        
+        if (!userData.role) {
+          // Redirect to role selection
+          setTimeout(() => {
+            navigate('/role-selection');
+          }, 1000);
+        } else {
+          // Role already set, go to home
+          setTimeout(() => {
+            navigate('/');
+          }, 1000);
+        }
       } else {
-        setError('Email not verified yet. Please check your inbox and click the verification link.');
+        setError('❌ Email not verified yet. Please check your inbox and click the verification link before proceeding.');
       }
     } catch (error) {
       setError('Failed to check verification status: ' + error.message);
@@ -49,7 +65,7 @@ const VerifyEmail = () => {
       setMessage('');
       
       await resendVerificationEmail();
-      setMessage('Verification email sent! Please check your inbox (and spam folder).');
+      setMessage('✓ Verification email sent! Please check your inbox (and spam folder).');
     } catch (error) {
       if (error.message.includes('too-many-requests')) {
         setError('Too many requests. Please wait a few minutes before trying again.');

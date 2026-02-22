@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
 
 const RoleSelection = () => {
   const [selectedRole, setSelectedRole] = useState('');
+  const [phone, setPhone] = useState('');
+  const [college, setCollege] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { setUserRoleInDB } = useAuth();
+  const { currentUser, setUserRoleInDB } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,10 +21,36 @@ const RoleSelection = () => {
       return;
     }
 
+    // Validate student-specific fields
+    if (selectedRole === 'student') {
+      if (!phone || !college) {
+        setError('Phone number and college are required for students');
+        return;
+      }
+      if (phone.length < 10) {
+        setError('Please enter a valid phone number');
+        return;
+      }
+    }
+
     try {
       setError('');
       setLoading(true);
+      
+      // Update user document with role and student-specific fields
+      const updateData = {
+        role: selectedRole,
+        roleSetAt: new Date().toISOString()
+      };
+
+      if (selectedRole === 'student') {
+        updateData.phone = phone;
+        updateData.college = college;
+      }
+
+      await setDoc(doc(db, 'users', currentUser.uid), updateData, { merge: true });
       await setUserRoleInDB(selectedRole);
+      
       navigate('/');
     } catch (error) {
       setError('Failed to set role: ' + error.message);
@@ -110,6 +140,43 @@ const RoleSelection = () => {
               </div>
             </div>
           </div>
+
+          {/* Additional fields for students */}
+          {selectedRole === 'student' && (
+            <div className="space-y-4 animate-fadeIn">
+              <div>
+                <label htmlFor="phone" className="label">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  className="input-field"
+                  placeholder="1234567890"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="college" className="label">
+                  College/University <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="college"
+                  name="college"
+                  type="text"
+                  required
+                  className="input-field"
+                  placeholder="Enter your college name"
+                  value={college}
+                  onChange={(e) => setCollege(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
 
           <button
             type="submit"

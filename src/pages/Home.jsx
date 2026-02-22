@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import FestCard from '../components/FestCard';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
@@ -12,12 +12,18 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   const categories = ['all', 'Cultural', 'Technical', 'Sports', 'Literary', 'Music', 'Dance', 'Other'];
 
   useEffect(() => {
+    // Check if user is logged in but email not verified (email/password users only)
+    if (currentUser && !currentUser.emailVerified && currentUser.providerData[0]?.providerId === 'password') {
+      navigate('/verify-email');
+      return;
+    }
     fetchFests();
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
     filterFests();

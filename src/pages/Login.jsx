@@ -17,14 +17,10 @@ const Login = () => {
     try {
       setError('');
       setLoading(true);
-      const user = await login(email, password);
+      await login(email, password);
       
-      // Check if email is verified
-      if (!user.emailVerified) {
-        navigate('/verify-email');
-      } else {
-        navigate('/');
-      }
+      // If login successful (email verified), navigate to home
+      navigate('/');
     } catch (error) {
       setError('Failed to login: ' + error.message);
     } finally {
@@ -37,6 +33,7 @@ const Login = () => {
       setError('');
       setGoogleLoading(true);
       await signInWithGoogle();
+      // Google users are auto-verified, direct access
       navigate('/');
     } catch (error) {
       setError('Failed to sign in with Google: ' + error.message);
@@ -60,6 +57,13 @@ const Login = () => {
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             {error}
+            {error.includes('verify your email') && (
+              <p className="mt-2 text-sm">
+                <Link to="/resend-verification" className="text-red-800 hover:text-red-900 font-semibold underline">
+                  Click here to resend verification email
+                </Link>
+              </p>
+            )}
           </div>
         )}
 

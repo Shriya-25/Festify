@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import VerifyEmail from './pages/VerifyEmail';
+import ResendVerification from './pages/ResendVerification';
 import FestDetails from './pages/FestDetails';
 import CreateFest from './pages/CreateFest';
 import Dashboard from './pages/Dashboard';
@@ -31,6 +32,8 @@ const AppContent = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/resend-verification" element={<ResendVerification />} />
+        <Route path="/role-selection" element={<RoleSelection />} />
         <Route path="/fest/:id" element={<FestDetails />} />
         
         {/* Protected Routes */}

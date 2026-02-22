@@ -57,6 +57,13 @@ const FestDetails = () => {
       return;
     }
 
+    // Check if email is verified for email/password users
+    if (!currentUser.emailVerified && currentUser.providerData[0]?.providerId === 'password') {
+      setMessage('Please verify your email before registering for fests');
+      setTimeout(() => navigate('/verify-email'), 2000);
+      return;
+    }
+
     if (userRole !== 'student') {
       setMessage('Only students can register for fests');
       return;

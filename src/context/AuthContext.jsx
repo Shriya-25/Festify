@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   const [needsRoleSelection, setNeedsRoleSelection] = useState(false);
 
   // Sign up function
-  const signup = async (email, password, name, role, phone = '', college = '') => {
+  const signup = async (email, password, name) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -37,25 +37,19 @@ export const AuthProvider = ({ children }) => {
       // Send email verification
       await sendEmailVerification(user);
       
-      // Create user document in Firestore
+      // Create user document in Firestore without role (will be set after verification)
       const userData = {
         name,
         email,
-        role,
+        role: null, // Will be set after email verification in role selection
         emailVerified: false,
         createdAt: new Date().toISOString(),
         authProvider: 'email'
       };
 
-      // Add phone and college for students
-      if (role === 'student' && phone && college) {
-        userData.phone = phone;
-        userData.college = college;
-      }
-
       await setDoc(doc(db, 'users', user.uid), userData);
       
-      setUserRole(role);
+      // Keep user logged in so they can verify email
       return user;
     } catch (error) {
       throw error;
@@ -70,6 +64,20 @@ export const AuthProvider = ({ children }) => {
       
       // Reload user to get latest emailVerified status
       await reload(user);
+      
+      // Check if email is verified for email/password authentication
+      if (!user.emailVerified) {
+        // Sign out immediately if email not verified
+        await signOut(auth);
+        throw new Error('Please verify your email before signing in. Check your inbox for the verification link.');
+      }
+      
+      // Update Firestore emailVerified status if verified
+      if (user.emailVerified) {
+        await setDoc(doc(db, 'users', user.uid), {
+          emailVerified: true
+        }, { merge: true });
+      }
       
       return user;
     } catch (error) {
@@ -91,18 +99,24 @@ export const AuthProvider = ({ children }) => {
   // Reload current user to check email verification status
   const reloadUser = async () => {
     try {
-      if (!currentUser) return;
+      if (!currentUser) return null;
       await reload(currentUser);
-      setCurrentUser({ ...currentUser });
+      
+      // Get the updated user object from auth
+      const updatedUser = auth.currentUser;
+      setCurrentUser(updatedUser);
       
       // Update Firestore emailVerified status
-      if (currentUser.emailVerified) {
-        await setDoc(doc(db, 'users', currentUser.uid), {
+      if (updatedUser && updatedUser.emailVerified) {
+        await setDoc(doc(db, 'users', updatedUser.uid), {
           emailVerified: true
         }, { merge: true });
       }
+      
+      return updatedUser;
     } catch (error) {
       console.error('Error reloading user:', error);
+      return null;
     }
   };
 
@@ -113,52 +127,39 @@ export const AuthProvider = ({ children }) => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
-      // Wait a moment for Firestore to be ready
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Check if user document exists
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
       
-      try {
-        // Check if user document exists
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) {
+        // New Google user - create document with verified status
+        // Google users are automatically verified
+        await setDoc(doc(db, 'users', user.uid), {
+          name: user.displayName,
+          email: user.email,
+          role: null, // Will be set after role selection
+          emailVerified: true, // Google users are pre-verified
+          createdAt: new Date().toISOString(),
+          authProvider: 'google'
+        });
         
-        if (!userDoc.exists()) {
-          // New user - create document with role as null
+        setNeedsRoleSelection(true);
+      } else {
+        // Existing user - check role
+        const userData = userDoc.data();
+        
+        // Update Firestore if not marked as verified
+        if (!userData.emailVerified) {
           await setDoc(doc(db, 'users', user.uid), {
-            name: user.displayName,
-            email: user.email,
-            role: null, // Will be set after role selection
-            emailVerified: true, // Google users are pre-verified
-            createdAt: new Date().toISOString(),
-            authProvider: 'google'
-          });
+            emailVerified: true
+          }, { merge: true });
+        }
+        
+        // Check role
+        if (!userData.role) {
           setNeedsRoleSelection(true);
         } else {
-          // Existing user - fetch role
-          const userData = userDoc.data();
-          if (!userData.role) {
-            setNeedsRoleSelection(true);
-          } else {
-            setUserRole(userData.role);
-            setNeedsRoleSelection(false);
-          }
-        }
-      } catch (firestoreError) {
-        console.error('Firestore error:', firestoreError);
-        // If Firestore fails, assume new user and create document
-        // This handles offline/network issues
-        try {
-          await setDoc(doc(db, 'users', user.uid), {
-            name: user.displayName,
-            email: user.email,
-            role: null,
-            emailVerified: true,
-            createdAt: new Date().toISOString(),
-            authProvider: 'google'
-          }, { merge: true }); // Use merge to not overwrite if exists
-          setNeedsRoleSelection(true);
-        } catch (setDocError) {
-          console.error('Failed to create user document:', setDocError);
-          // Even if Firestore fails, show role selection
-          setNeedsRoleSelection(true);
+          setUserRole(userData.role);
+          setNeedsRoleSelection(false);
         }
       }
       
