@@ -26,6 +26,11 @@ const CreateEvent = () => {
     registrationDeadline: '',
     isPaid: false,
     entryFee: '',
+    enableCoupon: false,
+    couponCode: '',
+    discountPercent: '',
+    couponExpiry: '',
+    maxCouponUsage: '',
     bannerUrl: '',
     registrationForm: [],
     prefillUserData: true
@@ -59,6 +64,11 @@ const CreateEvent = () => {
           registrationDeadline: parsedData.registrationDeadline || '',
           isPaid: parsedData.isPaid || false,
           entryFee: parsedData.entryFee || '',
+          enableCoupon: parsedData.enableCoupon || false,
+          couponCode: parsedData.couponCode || '',
+          discountPercent: parsedData.discountPercent || '',
+          couponExpiry: parsedData.couponExpiry || '',
+          maxCouponUsage: parsedData.maxCouponUsage || '',
           bannerUrl: parsedData.bannerUrl || '',
           registrationForm: parsedData.registrationForm || [],
           prefillUserData: parsedData.prefillUserData !== false
@@ -162,7 +172,17 @@ const CreateEvent = () => {
       setMessage('Please enter a valid entry fee amount for paid events');
       return;
     }
-
+    // Validate coupon fields if enabled
+    if (eventData.isPaid && eventData.enableCoupon) {
+      if (!eventData.couponCode || !eventData.couponCode.trim()) {
+        setMessage('Please enter a coupon code');
+        return;
+      }
+      if (!eventData.discountPercent || parseFloat(eventData.discountPercent) < 1 || parseFloat(eventData.discountPercent) > 100) {
+        setMessage('Discount percentage must be between 1% and 100%');
+        return;
+      }
+    }
     // Validate registration deadline
     const eventDateTime = new Date(`${eventData.date}T${eventData.time}`);
     const deadlineDateTime = new Date(eventData.registrationDeadline);
@@ -264,6 +284,9 @@ const CreateEvent = () => {
         registrationDeadline: eventData.registrationDeadline,
         isPaid: false,
         entryFee: 0,
+        coupon: {
+          enabled: false
+        },
         bannerUrl: bannerUrl || '',
         registrationForm: cleanedRegistrationForm,
         prefillUserData: eventData.prefillUserData,
@@ -420,22 +443,131 @@ const CreateEvent = () => {
 
               {/* Entry Amount - shown only for paid events */}
               {eventData.isPaid && (
-                <div className="mt-4">
-                  <label htmlFor="entryFee" className="label">
-                    Entry Amount (₹) <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    id="entryFee"
-                    name="entryFee"
-                    min="1"
-                    step="0.01"
-                    required
-                    className="input-field"
-                    placeholder="Enter amount in rupees"
-                    value={eventData.entryFee}
-                    onChange={handleChange}
-                  />
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label htmlFor="entryFee" className="label">
+                      Entry Amount (₹) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      id="entryFee"
+                      name="entryFee"
+                      min="1"
+                      step="0.01"
+                      required
+                      className="input-field"
+                      placeholder="Enter amount in rupees"
+                      value={eventData.entryFee}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* Coupon System */}
+                  <div className="border-t pt-4">
+                    <label className="label flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={eventData.enableCoupon}
+                        onChange={(e) => setEventData({
+                          ...eventData, 
+                          enableCoupon: e.target.checked,
+                          couponCode: e.target.checked ? eventData.couponCode : '',
+                          discountPercent: e.target.checked ? eventData.discountPercent : '',
+                          couponExpiry: e.target.checked ? eventData.couponExpiry : '',
+                          maxCouponUsage: e.target.checked ? eventData.maxCouponUsage : ''
+                        })}
+                        className="w-4 h-4"
+                      />
+                      <span>🎫 Enable Discount Coupon (Optional)</span>
+                    </label>
+                    <p className="text-sm text-gray-500 mt-1">Allow students to use a coupon code for discounts</p>
+                  </div>
+
+                  {/* Coupon Fields - shown only when enabled */}
+                  {eventData.enableCoupon && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="couponCode" className="label">
+                            Coupon Code <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="couponCode"
+                            name="couponCode"
+                            required
+                            className="input-field"
+                            placeholder="e.g., FEST2026"
+                            value={eventData.couponCode}
+                            onChange={(e) => setEventData({...eventData, couponCode: e.target.value.toUpperCase()})}
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="discountPercent" className="label">
+                            Discount Percentage (%) <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="number"
+                            id="discountPercent"
+                            name="discountPercent"
+                            min="1"
+                            max="100"
+                            required
+                            className="input-field"
+                            placeholder="e.g., 10"
+                            value={eventData.discountPercent}
+                            onChange={handleChange}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="couponExpiry" className="label">
+                            Coupon Expiry Date (Optional)
+                          </label>
+                          <input
+                            type="datetime-local"
+                            id="couponExpiry"
+                            name="couponExpiry"
+                            className="input-field"
+                            value={eventData.couponExpiry}
+                            onChange={handleChange}
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Leave empty for no expiry</p>
+                        </div>
+
+                        <div>
+                          <label htmlFor="maxCouponUsage" className="label">
+                            Max Usage Limit (Optional)
+                          </label>
+                          <input
+                            type="number"
+                            id="maxCouponUsage"
+                            name="maxCouponUsage"
+                            min="1"
+                            className="input-field"
+                            placeholder="e.g., 50"
+                            value={eventData.maxCouponUsage}
+                            onChange={handleChange}
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Leave empty for unlimited</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-blue-100 border border-blue-300 rounded p-3">
+                        <p className="text-sm text-blue-800">
+                          <strong>📊 Preview:</strong> Students using code <strong>{eventData.couponCode || 'CODE'}</strong> will get <strong>{eventData.discountPercent || 0}% OFF</strong>
+                          {eventData.entryFee && eventData.discountPercent && (
+                            <span>
+                              {' '}(₹{eventData.entryFee} → ₹{(parseFloat(eventData.entryFee) * (1 - parseFloat(eventData.discountPercent) / 100)).toFixed(2)})
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

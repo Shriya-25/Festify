@@ -178,7 +178,7 @@ const ManageFest = () => {
     
     // Add payment headers if event is paid
     if (selectedEvent.isPaid) {
-      headers.push('Payment Status', 'Payment Method', 'Transaction ID', 'Razorpay Payment ID', 'Payment Verified');
+      headers.push('Payment Status', 'Payment Method', 'Transaction ID', 'Razorpay Payment ID', 'Payment Verified', 'Original Amount', 'Coupon Code', 'Discount %', 'Discount Amount', 'Final Paid Amount');
     }
     
     // Add custom field headers if they exist
@@ -208,7 +208,12 @@ const ManageFest = () => {
           reg.paymentProof?.paymentMethod || 'manual',
           reg.paymentProof?.transactionId || 'N/A',
           reg.paymentProof?.razorpay_payment_id || 'N/A',
-          reg.paymentVerified ? 'Yes' : 'No'
+          reg.paymentVerified ? 'Yes' : 'No',
+          reg.couponUsed?.originalAmount || reg.paymentProof?.originalAmount || selectedEvent.entryFee || 'N/A',
+          reg.couponUsed?.code || 'None',
+          reg.couponUsed?.discountPercent || '0',
+          reg.couponUsed?.discountAmount || '0',
+          reg.couponUsed?.finalAmount || reg.paymentProof?.finalAmount || selectedEvent.entryFee || 'N/A'
         );
       }
 
@@ -414,11 +419,6 @@ const ManageFest = () => {
                         </Link>
                       </div>
                     </div>
-                        >
-                          ✏️ Edit
-                        </Link>
-                      </div>
-                    </div>
                   ))}
                 </div>
               )}
@@ -525,6 +525,19 @@ const ManageFest = () => {
                                       </span>
                                     )}
                                   </div>
+                                  
+                                  {/* Coupon Information */}
+                                  {reg.couponUsed && reg.couponUsed.code && (
+                                    <div className="bg-green-50 border border-green-200 rounded p-2 mt-2">
+                                      <p className="text-xs font-semibold text-green-800">🎟️ Coupon Applied: {reg.couponUsed.code}</p>
+                                      <div className="flex justify-between text-xs text-gray-700 mt-1">
+                                        <span>Original: ₹{reg.couponUsed.originalAmount}</span>
+                                        <span className="text-green-600 font-semibold">{reg.couponUsed.discountPercent}% OFF</span>
+                                        <span className="font-semibold">Paid: ₹{reg.couponUsed.finalAmount}</span>
+                                      </div>
+                                      <p className="text-xs text-green-600 mt-1">Saved: ₹{reg.couponUsed.discountAmount.toFixed(2)}</p>
+                                    </div>
+                                  )}
                                   
                                   {reg.paymentProof.transactionId && (
                                     <p className="text-xs text-gray-600">

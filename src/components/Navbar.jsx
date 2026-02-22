@@ -49,9 +49,11 @@ const Navbar = () => {
                   <Link to="/" className="text-gray-700 hover:text-primary">
                     Home
                   </Link>
-                  <Link to="/dashboard" className="text-gray-700 hover:text-primary">
-                    Dashboard
-                  </Link>
+                  {userRole !== 'admin' && (
+                    <Link to="/dashboard" className="text-gray-700 hover:text-primary">
+                      Dashboard
+                    </Link>
+                  )}
                   <Link to="/profile" className="text-gray-700 hover:text-primary">
                     Profile
                   </Link>

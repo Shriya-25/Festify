@@ -190,6 +190,16 @@ const PaymentSetup = () => {
         isPaid: true,
         entryFee: parseFloat(eventData.entryFee),
         paymentConfig,
+        coupon: eventData.enableCoupon ? {
+          enabled: true,
+          code: eventData.couponCode.toUpperCase(),
+          discountPercent: parseFloat(eventData.discountPercent),
+          expiryDate: eventData.couponExpiry || null,
+          maxUsage: eventData.maxCouponUsage ? parseInt(eventData.maxCouponUsage) : null,
+          usedCount: 0
+        } : {
+          enabled: false
+        },
         bannerUrl: eventData.bannerUrl || '',
         registrationForm: cleanedRegistrationForm,
         prefillUserData: eventData.prefillUserData !== false,

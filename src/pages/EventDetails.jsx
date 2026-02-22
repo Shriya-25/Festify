@@ -26,6 +26,14 @@ const EventDetails = () => {
   const [uploadingScreenshot, setUploadingScreenshot] = useState(false);
   const [razorpayPaymentData, setRazorpayPaymentData] = useState(null);
   const [processingRazorpay, setProcessingRazorpay] = useState(false);
+  
+  // Coupon-related states
+  const [couponCode, setCouponCode] = useState('');
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [originalAmount, setOriginalAmount] = useState(0);
+  const [finalAmount, setFinalAmount] = useState(0);
+  const [couponError, setCouponError] = useState('');
 
   useEffect(() => {
     fetchEventDetails();
@@ -194,6 +202,10 @@ const EventDetails = () => {
 
     // If event is paid, show payment step
     if (event.isPaid && event.paymentConfig) {
+      // Set original and final amounts
+      setOriginalAmount(event.entryFee);
+      setFinalAmount(event.entryFee);
+      
       setShowRegistrationModal(false);
       setShowPaymentStep(true);
       setMessage('');
@@ -202,6 +214,67 @@ const EventDetails = () => {
 
     // If free event, submit registration directly
     await handleSubmitRegistration(e);
+  };
+
+  // Apply coupon code
+  const handleApplyCoupon = () => {
+    setCouponError('');
+    
+    if (!couponCode.trim()) {
+      setCouponError('Please enter a coupon code');
+      return;
+    }
+
+    // Check if coupon is enabled
+    if (!event.coupon || !event.coupon.enabled) {
+      setCouponError('No coupon available for this event');
+      return;
+    }
+
+    // Validate coupon code
+    if (couponCode.toUpperCase() !== event.coupon.code) {
+      setCouponError('Invalid coupon code');
+      return;
+    }
+
+    // Check expiry date
+    if (event.coupon.expiryDate) {
+      const now = new Date();
+      const expiry = new Date(event.coupon.expiryDate);
+      if (now > expiry) {
+        setCouponError('This coupon has expired');
+        return;
+      }
+    }
+
+    // Check usage limit
+    if (event.coupon.maxUsage && event.coupon.usedCount >= event.coupon.maxUsage) {
+      setCouponError('Coupon usage limit reached');
+      return;
+    }
+
+    // Apply discount
+    const discount = originalAmount * (event.coupon.discountPercent / 100);
+    const discountedAmount = originalAmount - discount;
+    
+    setFinalAmount(discountedAmount);
+    setAppliedCoupon({
+      code: event.coupon.code,
+      discountPercent: event.coupon.discountPercent,
+      discountAmount: discount
+    });
+    setCouponApplied(true);
+    setMessage(`Coupon applied! You save ₹${discount.toFixed(2)}`);
+  };
+
+  // Remove applied coupon
+  const handleRemoveCoupon = () => {
+    setCouponApplied(false);
+    setAppliedCoupon(null);
+    setFinalAmount(originalAmount);
+    setCouponCode('');
+    setCouponError('');
+    setMessage('');
   };
 
   // Load Razorpay script dynamically
@@ -237,7 +310,7 @@ const EventDetails = () => {
 
       const options = {
         key: event.paymentConfig.apiKey,
-        amount: event.entryFee * 100, // Amount in paise
+        amount: finalAmount * 100, // Amount in paise (use discounted amount if coupon applied)
         currency: 'INR',
         name: event.paymentConfig.businessName || event.festName,
         description: `Payment for ${event.eventName}`,
@@ -354,6 +427,21 @@ const EventDetails = () => {
         registeredAt: new Date().toISOString()
       };
 
+      // Add coupon information if applied (for paid events)
+      if (event.isPaid && couponApplied && appliedCoupon) {
+        registrationData.couponUsed = {
+          code: appliedCoupon.code,
+          discountPercent: appliedCoupon.discountPercent,
+          discountAmount: appliedCoupon.discountAmount,
+          originalAmount: originalAmount,
+          finalAmount: finalAmount
+        };
+      } else if (event.isPaid) {
+        registrationData.couponUsed = null;
+        registrationData.originalAmount = originalAmount;
+        registrationData.finalAmount = finalAmount;
+      }
+
       // Add payment information for paid events
       if (event.isPaid && event.paymentConfig) {
         if (event.paymentConfig.method === 'manual') {
@@ -370,7 +458,8 @@ const EventDetails = () => {
             screenshotURL,
             transactionId,
             paymentStatus: 'pending_verification',
-            submittedAt: new Date().toISOString()
+            submittedAt: new Date().toISOString(),
+            amountPaid: finalAmount
           };
           registrationData.paymentVerified = false;
         } else if (event.paymentConfig.method === 'razorpay') {
@@ -380,7 +469,8 @@ const EventDetails = () => {
           if (paymentDataToUse) {
             registrationData.paymentProof = {
               ...paymentDataToUse,
-              paymentMethod: 'razorpay'
+              paymentMethod: 'razorpay',
+              amountPaid: finalAmount
             };
             registrationData.paymentVerified = true;
             registrationData.paymentStatus = 'success';
@@ -420,12 +510,22 @@ const EventDetails = () => {
 
       console.log('Registration document created successfully');
 
-      // Update participant count
-      await updateDoc(doc(db, 'events', eventId), {
+      // Update participant count and coupon usage
+      const eventUpdateData = {
         participantCount: increment(1)
-      });
+      };
+      
+      // Increment coupon usage if coupon was applied
+      if (event.isPaid && couponApplied && appliedCoupon) {
+        eventUpdateData['coupon.usedCount'] = increment(1);
+      }
+      
+      await updateDoc(doc(db, 'events', eventId), eventUpdateData);
       
       console.log('Participant count updated');
+      if (couponApplied) {
+        console.log('Coupon usage count incremented');
+      }
 
       setIsRegistered(true);
       setShowRegistrationModal(false);
@@ -608,9 +708,23 @@ const EventDetails = () => {
                   <h2 className="text-2xl font-bold text-gray-800">
                     Payment - {event.eventName}
                   </h2>
-                  <p className="text-lg font-semibold text-primary mt-1">
-                    Amount: ₹{event.entryFee}
-                  </p>
+                  <div className="mt-2">
+                    {couponApplied && appliedCoupon ? (
+                      <div>
+                        <p className="text-sm text-gray-600 line-through">Original: ₹{originalAmount}</p>
+                        <p className="text-lg font-semibold text-green-600">
+                          Final Amount: ₹{finalAmount.toFixed(2)}
+                        </p>
+                        <p className="text-xs text-green-600">
+                          🎊 {appliedCoupon.discountPercent}% discount applied - You save ₹{appliedCoupon.discountAmount.toFixed(2)}!
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-lg font-semibold text-primary mt-1">
+                        Amount: ₹{originalAmount}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <button
                   onClick={() => {
@@ -624,9 +738,61 @@ const EventDetails = () => {
               </div>
 
               <div className="p-6">
+                {/* Coupon Section - Show if coupons are enabled */}
+                {event.coupon && event.coupon.enabled && !couponApplied && (
+                  <div className="mb-6 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-purple-900 mb-3 flex items-center">
+                      🎟️ Have a Discount Coupon?
+                    </h3>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        className="input-field flex-1"
+                        placeholder="Enter coupon code"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      />
+                      <button
+                        onClick={handleApplyCoupon}
+                        className="btn-primary whitespace-nowrap"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                    {couponError && (
+                      <p className="text-sm text-red-600 mt-2">{couponError}</p>
+                    )}
+                    <p className="text-xs text-gray-600 mt-2">
+                      Get {event.coupon.discountPercent}% off with the right code!
+                    </p>
+                  </div>
+                )}
+
+                {/* Show applied coupon with remove option */}
+                {couponApplied && appliedCoupon && (
+                  <div className="mb-6 bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="font-semibold text-green-900 flex items-center">
+                          ✅ Coupon Applied: {appliedCoupon.code}
+                        </h3>
+                        <p className="text-sm text-green-800 mt-1">
+                          {appliedCoupon.discountPercent}% discount - You save ₹{appliedCoupon.discountAmount.toFixed(2)}
+                        </p>
+                      </div>
+                      <button
+                        onClick={handleRemoveCoupon}
+                        className="text-red-600 hover:text-red-800 text-sm font-semibold"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
                 {message && (
                   <div className={`mb-4 p-4 rounded-lg ${
-                    message.includes('Success') || message.includes('🎉') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    message.includes('Success') || message.includes('🎉') || message.includes('save') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                   }`}>
                     {message}
                   </div>
