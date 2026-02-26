@@ -129,10 +129,6 @@ const FestDetails = () => {
               <span>{fest.city || 'TBA'}</span>
             </div>
             <div className="flex items-center text-gray-300 text-sm sm:text-base">
-              <span className="font-semibold mr-2">Venue:</span>
-              <span>{fest.venue || 'TBA'}</span>
-            </div>
-            <div className="flex items-center text-gray-300 text-sm sm:text-base">
               <span className="font-semibold mr-2">Date:</span>
               <span>{new Date(fest.date).toLocaleDateString()}</span>
             </div>

@@ -22,7 +22,6 @@ const CreateFest = () => {
     category: 'Technical',
     description: '',
     date: '',
-    venue: '',
     bannerUrl: '',
     socialMedia: {
       instagram: '',
@@ -45,6 +44,9 @@ const CreateFest = () => {
   const [uploadingGalleryImage, setUploadingGalleryImage] = useState(false);
 
   const categories = ['Technical', 'Cultural', 'Sports'];
+  
+  // Predefined metro cities
+  const metroCities = ['Pune', 'Mumbai', 'Hyderabad', 'Bangalore', 'Delhi'];
 
   const handleChange = (e) => {
     setFestData({
@@ -234,7 +236,7 @@ const CreateFest = () => {
   const handleNext = () => {
     // Validation for each step
     if (currentStep === 1) {
-      if (!festData.festName || !festData.collegeName || !festData.city || !festData.date || !festData.venue || !festData.description) {
+      if (!festData.festName || !festData.collegeName || !festData.city || !festData.date || !festData.description) {
         setMessage('Please fill in all required fields');
         return;
       }
@@ -311,7 +313,6 @@ const CreateFest = () => {
         category: festData.category,
         description: festData.description,
         date: festData.date,
-        venue: festData.venue,
         bannerUrl: festData.bannerUrl,
         socialMedia: festData.socialMedia,
         sponsors: festData.sponsors,
@@ -435,17 +436,22 @@ const CreateFest = () => {
                   <label htmlFor="city" className="label text-sm">
                     City <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
+                  <select
                     id="city"
                     name="city"
                     required
                     className="input-field"
-                    placeholder="e.g., Pune"
                     value={festData.city}
                     onChange={handleChange}
-                  />
-                  <p className="text-xs text-gray-400 mt-1">City will be displayed on the fest card</p>
+                  >
+                    <option value="">Select City</option>
+                    {metroCities.map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-400 mt-1">City will be displayed on the fest card and used for filtering</p>
                 </div>
 
                 <div>
@@ -459,22 +465,6 @@ const CreateFest = () => {
                     required
                     className="input-field"
                     value={festData.date}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="venue" className="label text-sm">
-                    Venue <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="venue"
-                    name="venue"
-                    required
-                    className="input-field"
-                    placeholder="e.g., Main Auditorium"
-                    value={festData.venue}
                     onChange={handleChange}
                   />
                 </div>
@@ -853,7 +843,6 @@ const CreateFest = () => {
                     <p className="text-gray-300"><span className="font-semibold text-white">College:</span> {festData.collegeName}</p>
                     <p className="text-gray-300"><span className="font-semibold text-white">City:</span> {festData.city}</p>
                     <p className="text-gray-300"><span className="font-semibold text-white">Date:</span> {festData.date}</p>
-                    <p className="text-gray-300"><span className="font-semibold text-white">Venue:</span> {festData.venue}</p>
                     <p className="text-gray-300">
                       <span className="font-semibold text-white">Category:</span> 
                       <span className={`ml-2 badge ${

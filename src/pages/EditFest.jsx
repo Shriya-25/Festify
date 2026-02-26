@@ -20,16 +20,19 @@ const EditFest = () => {
   const [festData, setFestData] = useState({
     festName: '',
     collegeName: '',
+    city: '',
     category: 'Cultural',
     description: '',
     date: '',
-    venue: '',
     bannerUrl: '',
     registrationForm: [],
     prefillUserData: true
   });
 
   const categories = ['Cultural', 'Technical', 'Sports', 'Literary', 'Music', 'Dance', 'Other'];
+  
+  // Predefined metro cities
+  const metroCities = ['Pune', 'Mumbai', 'Hyderabad', 'Bangalore', 'Delhi'];
 
   useEffect(() => {
     fetchFestDetails();
@@ -58,10 +61,10 @@ const EditFest = () => {
       setFestData({
         festName: fest.festName || '',
         collegeName: fest.collegeName || '',
+        city: fest.city || '',
         category: fest.category || 'Cultural',
         description: fest.description || '',
         date: fest.date || '',
-        venue: fest.venue || '',
         bannerUrl: fest.bannerUrl || '',
         registrationForm: fest.registrationForm || [],
         prefillUserData: fest.prefillUserData !== undefined ? fest.prefillUserData : true
@@ -154,7 +157,7 @@ const EditFest = () => {
   const handleNext = () => {
     // Validation for each step
     if (currentStep === 1) {
-      if (!festData.festName || !festData.collegeName || !festData.date || !festData.venue || !festData.description) {
+      if (!festData.festName || !festData.collegeName || !festData.city || !festData.date || !festData.description) {
         setMessage('Please fill in all required fields');
         return;
       }
@@ -203,10 +206,10 @@ const EditFest = () => {
       await updateDoc(doc(db, 'fests', festId), {
         festName: festData.festName,
         collegeName: festData.collegeName,
+        city: festData.city,
         category: festData.category,
         description: festData.description,
         date: festData.date,
-        venue: festData.venue,
         bannerUrl: festData.bannerUrl,
         registrationForm: cleanedRegistrationForm,
         prefillUserData: festData.prefillUserData,
@@ -355,19 +358,25 @@ const EditFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="venue" className="label text-sm">
-                    Venue <span className="text-red-500">*</span>
+                  <label htmlFor="city" className="label text-sm">
+                    City <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
-                    id="venue"
-                    name="venue"
+                  <select
+                    id="city"
+                    name="city"
                     required
                     className="input-field"
-                    placeholder="e.g., Main Auditorium"
-                    value={festData.venue}
+                    value={festData.city}
                     onChange={handleChange}
-                  />
+                  >
+                    <option value="">Select City</option>
+                    {metroCities.map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-400 mt-1">City will be displayed on the fest card and used for filtering</p>
                 </div>
 
                 <div>
@@ -523,8 +532,8 @@ const EditFest = () => {
                   <div className="bg-white/5 p-4 rounded-lg space-y-2 text-gray-300">
                     <p><strong>Name:</strong> {festData.festName}</p>
                     <p><strong>College:</strong> {festData.collegeName}</p>
+                    <p><strong>City:</strong> {festData.city}</p>
                     <p><strong>Date:</strong> {festData.date}</p>
-                    <p><strong>Venue:</strong> {festData.venue}</p>
                     <p><strong>Category:</strong> {festData.category}</p>
                     <p><strong>Description:</strong> {festData.description}</p>
                   </div>

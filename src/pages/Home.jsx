@@ -11,11 +11,25 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [cityFilter, setCityFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   // Only 3 categories: Technical, Cultural, Sports
   const categories = ['all', 'Technical', 'Cultural', 'Sports'];
+  
+  // Date filter options
+  const dateFilters = [
+    { value: 'all', label: 'All Dates' },
+    { value: 'within2days', label: 'Within 2 Days' },
+    { value: 'thisweek', label: 'This Week' },
+    { value: 'nextweek', label: 'Next Week' },
+    { value: 'nextmonth', label: 'Next Month' }
+  ];
+  
+  // Predefined metro cities
+  const metroCities = ['Pune', 'Mumbai', 'Hyderabad', 'Bangalore', 'Delhi'];
 
   useEffect(() => {
     // Check if user is logged in but email not verified (email/password users only)
@@ -28,7 +42,7 @@ const Home = () => {
 
   useEffect(() => {
     filterFests();
-  }, [searchTerm, selectedCategory, fests]);
+  }, [searchTerm, selectedCategory, cityFilter, dateFilter, fests]);
 
   const fetchFests = async () => {
     try {
@@ -57,12 +71,61 @@ const Home = () => {
     }
   };
 
+  // Helper function to check if date matches filter
+  const isDateInRange = (festDate, filterType) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const fest = new Date(festDate);
+    fest.setHours(0, 0, 0, 0);
+    
+    switch (filterType) {
+      case 'within2days': {
+        const twoDaysLater = new Date(today);
+        twoDaysLater.setDate(today.getDate() + 2);
+        return fest >= today && fest <= twoDaysLater;
+      }
+      case 'thisweek': {
+        const dayOfWeek = today.getDay();
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - dayOfWeek);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+        return fest >= weekStart && fest <= weekEnd;
+      }
+      case 'nextweek': {
+        const dayOfWeek = today.getDay();
+        const nextWeekStart = new Date(today);
+        nextWeekStart.setDate(today.getDate() + (7 - dayOfWeek));
+        const nextWeekEnd = new Date(nextWeekStart);
+        nextWeekEnd.setDate(nextWeekStart.getDate() + 6);
+        return fest >= nextWeekStart && fest <= nextWeekEnd;
+      }
+      case 'nextmonth': {
+        const nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+        const nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+        return fest >= nextMonthStart && fest <= nextMonthEnd;
+      }
+      default:
+        return true;
+    }
+  };
+
   const filterFests = () => {
     let filtered = fests;
 
     // Filter by category
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(fest => fest.category === selectedCategory);
+    }
+
+    // Filter by city
+    if (cityFilter !== 'all') {
+      filtered = filtered.filter(fest => fest.city === cityFilter);
+    }
+
+    // Filter by date range
+    if (dateFilter !== 'all' && dateFilter) {
+      filtered = filtered.filter(fest => fest.date && isDateInRange(fest.date, dateFilter));
     }
 
     // Filter by search term
@@ -124,6 +187,57 @@ const Home = () => {
                   {category === 'all' ? 'All Categories' : category}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Advanced Filters */}
+          <div className="max-w-4xl mx-auto mt-6 px-2">
+            <div className="glass-container p-4 sm:p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* City Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">City</label>
+                  <select
+                    value={cityFilter}
+                    onChange={(e) => setCityFilter(e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="all">All Cities</option>
+                    {metroCities.map((city) => (
+                      <option key={city} value={city}>{city}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Date Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Date Range</label>
+                  <select
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    {dateFilters.map((filter) => (
+                      <option key={filter.value} value={filter.value}>{filter.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Clear Filters Button */}
+              {(cityFilter !== 'all' || dateFilter !== 'all') && (
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={() => {
+                      setCityFilter('all');
+                      setDateFilter('all');
+                    }}
+                    className="text-sm text-primary hover:text-primary/80 transition-colors"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
