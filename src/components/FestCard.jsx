@@ -12,6 +12,30 @@ const FestCard = ({ fest }) => {
     return badges[category] || 'badge-tech';
   };
 
+  // Get fest status
+  const getFestStatus = () => {
+    if (!fest.registrationStartDate || !fest.registrationEndDate) {
+      return null;
+    }
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const regStart = new Date(fest.registrationStartDate);
+    regStart.setHours(0, 0, 0, 0);
+    const regEnd = new Date(fest.registrationEndDate);
+    regEnd.setHours(0, 0, 0, 0);
+    
+    if (today < regStart) {
+      return { label: 'Opening Soon', class: 'bg-blue-500/90' };
+    } else if (today >= regStart && today <= regEnd) {
+      return { label: 'Live Now', class: 'bg-green-500/90' };
+    } else {
+      return { label: 'Closed', class: 'bg-gray-500/90' };
+    }
+  };
+
+  const status = getFestStatus();
+
   return (
     <div className="card p-0 group cursor-pointer hover:transform hover:-translate-y-2 transition-all duration-300">
       {/* Image Section */}
@@ -38,6 +62,15 @@ const FestCard = ({ fest }) => {
             {fest.category}
           </span>
         </div>
+
+        {/* Status Badge */}
+        {status && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+            <span className={`${status.class} text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg`}>
+              {status.label}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content Section - White Card Effect */}
@@ -65,7 +98,7 @@ const FestCard = ({ fest }) => {
             <svg className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span>{new Date(fest.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            <span>{fest.festStartDate ? new Date(fest.festStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date TBA'}</span>
           </div>
         </div>
 

@@ -21,15 +21,17 @@ const EditFest = () => {
     festName: '',
     collegeName: '',
     city: '',
-    category: 'Cultural',
+    category: 'Technical',
     description: '',
-    date: '',
+    festStartDate: '',
+    registrationStartDate: '',
+    registrationEndDate: '',
     bannerUrl: '',
     registrationForm: [],
     prefillUserData: true
   });
 
-  const categories = ['Cultural', 'Technical', 'Sports', 'Literary', 'Music', 'Dance', 'Other'];
+  const categories = ['Technical', 'Cultural', 'Sports'];
   
   // Predefined metro cities
   const metroCities = ['Pune', 'Mumbai', 'Hyderabad', 'Bangalore', 'Delhi'];
@@ -62,9 +64,11 @@ const EditFest = () => {
         festName: fest.festName || '',
         collegeName: fest.collegeName || '',
         city: fest.city || '',
-        category: fest.category || 'Cultural',
+        category: fest.category || 'Technical',
         description: fest.description || '',
-        date: fest.date || '',
+        festStartDate: fest.festStartDate || '',
+        registrationStartDate: fest.registrationStartDate || '',
+        registrationEndDate: fest.registrationEndDate || '',
         bannerUrl: fest.bannerUrl || '',
         registrationForm: fest.registrationForm || [],
         prefillUserData: fest.prefillUserData !== undefined ? fest.prefillUserData : true
@@ -157,8 +161,23 @@ const EditFest = () => {
   const handleNext = () => {
     // Validation for each step
     if (currentStep === 1) {
-      if (!festData.festName || !festData.collegeName || !festData.city || !festData.date || !festData.description) {
+      if (!festData.festName || !festData.collegeName || !festData.city || !festData.festStartDate || !festData.registrationStartDate || !festData.registrationEndDate || !festData.description) {
         setMessage('Please fill in all required fields');
+        return;
+      }
+      
+      // Validate date logic
+      const regStart = new Date(festData.registrationStartDate);
+      const regEnd = new Date(festData.registrationEndDate);
+      const festStart = new Date(festData.festStartDate);
+      
+      if (regStart >= regEnd) {
+        setMessage('Registration end date must be after registration start date');
+        return;
+      }
+      
+      if (regEnd > festStart) {
+        setMessage('Registration must end before or on fest start date');
         return;
       }
     }
@@ -209,7 +228,9 @@ const EditFest = () => {
         city: festData.city,
         category: festData.category,
         description: festData.description,
-        date: festData.date,
+        festStartDate: festData.festStartDate,
+        registrationStartDate: festData.registrationStartDate,
+        registrationEndDate: festData.registrationEndDate,
         bannerUrl: festData.bannerUrl,
         registrationForm: cleanedRegistrationForm,
         prefillUserData: festData.prefillUserData,
@@ -343,18 +364,51 @@ const EditFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="date" className="label text-sm">
-                    Date <span className="text-red-500">*</span>
+                  <label htmlFor="festStartDate" className="label text-sm">
+                    Fest Start Date <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
-                    id="date"
-                    name="date"
+                    id="festStartDate"
+                    name="festStartDate"
                     required
                     className="input-field"
-                    value={festData.date}
+                    value={festData.festStartDate}
                     onChange={handleChange}
                   />
+                  <p className="text-xs text-gray-400 mt-1">When the fest begins</p>
+                </div>
+
+                <div>
+                  <label htmlFor="registrationStartDate" className="label text-sm">
+                    Registration Start Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="registrationStartDate"
+                    name="registrationStartDate"
+                    required
+                    className="input-field"
+                    value={festData.registrationStartDate}
+                    onChange={handleChange}
+                  />
+                  <p className="text-xs text-gray-400 mt-1">When registrations open</p>
+                </div>
+
+                <div>
+                  <label htmlFor="registrationEndDate" className="label text-sm">
+                    Registration End Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="registrationEndDate"
+                    name="registrationEndDate"
+                    required
+                    className="input-field"
+                    value={festData.registrationEndDate}
+                    onChange={handleChange}
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Last date to register</p>
                 </div>
 
                 <div>
@@ -533,7 +587,8 @@ const EditFest = () => {
                     <p><strong>Name:</strong> {festData.festName}</p>
                     <p><strong>College:</strong> {festData.collegeName}</p>
                     <p><strong>City:</strong> {festData.city}</p>
-                    <p><strong>Date:</strong> {festData.date}</p>
+                    <p><strong>Fest Start Date:</strong> {festData.festStartDate}</p>
+                    <p><strong>Registration Period:</strong> {festData.registrationStartDate} to {festData.registrationEndDate}</p>
                     <p><strong>Category:</strong> {festData.category}</p>
                     <p><strong>Description:</strong> {festData.description}</p>
                   </div>

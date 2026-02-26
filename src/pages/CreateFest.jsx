@@ -21,7 +21,9 @@ const CreateFest = () => {
     city: '',
     category: 'Technical',
     description: '',
-    date: '',
+    festStartDate: '',
+    registrationStartDate: '',
+    registrationEndDate: '',
     bannerUrl: '',
     socialMedia: {
       instagram: '',
@@ -236,8 +238,23 @@ const CreateFest = () => {
   const handleNext = () => {
     // Validation for each step
     if (currentStep === 1) {
-      if (!festData.festName || !festData.collegeName || !festData.city || !festData.date || !festData.description) {
+      if (!festData.festName || !festData.collegeName || !festData.city || !festData.festStartDate || !festData.registrationStartDate || !festData.registrationEndDate || !festData.description) {
         setMessage('Please fill in all required fields');
+        return;
+      }
+      
+      // Validate date logic
+      const regStart = new Date(festData.registrationStartDate);
+      const regEnd = new Date(festData.registrationEndDate);
+      const festStart = new Date(festData.festStartDate);
+      
+      if (regStart >= regEnd) {
+        setMessage('Registration end date must be after registration start date');
+        return;
+      }
+      
+      if (regEnd > festStart) {
+        setMessage('Registration must end before or on fest start date');
         return;
       }
     }
@@ -312,7 +329,9 @@ const CreateFest = () => {
         city: festData.city,
         category: festData.category,
         description: festData.description,
-        date: festData.date,
+        festStartDate: festData.festStartDate,
+        registrationStartDate: festData.registrationStartDate,
+        registrationEndDate: festData.registrationEndDate,
         bannerUrl: festData.bannerUrl,
         socialMedia: festData.socialMedia,
         sponsors: festData.sponsors,
@@ -455,18 +474,51 @@ const CreateFest = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="date" className="label text-sm">
-                    Date <span className="text-red-500">*</span>
+                  <label htmlFor="festStartDate" className="label text-sm">
+                    Fest Start Date <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
-                    id="date"
-                    name="date"
+                    id="festStartDate"
+                    name="festStartDate"
                     required
                     className="input-field"
-                    value={festData.date}
+                    value={festData.festStartDate}
                     onChange={handleChange}
                   />
+                  <p className="text-xs text-gray-400 mt-1">When the fest begins</p>
+                </div>
+
+                <div>
+                  <label htmlFor="registrationStartDate" className="label text-sm">
+                    Registration Start Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="registrationStartDate"
+                    name="registrationStartDate"
+                    required
+                    className="input-field"
+                    value={festData.registrationStartDate}
+                    onChange={handleChange}
+                  />
+                  <p className="text-xs text-gray-400 mt-1">When registrations open</p>
+                </div>
+
+                <div>
+                  <label htmlFor="registrationEndDate" className="label text-sm">
+                    Registration End Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="registrationEndDate"
+                    name="registrationEndDate"
+                    required
+                    className="input-field"
+                    value={festData.registrationEndDate}
+                    onChange={handleChange}
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Last date to register</p>
                 </div>
 
                 <div>
@@ -842,7 +894,8 @@ const CreateFest = () => {
                     <p className="text-gray-300"><span className="font-semibold text-white">Name:</span> {festData.festName}</p>
                     <p className="text-gray-300"><span className="font-semibold text-white">College:</span> {festData.collegeName}</p>
                     <p className="text-gray-300"><span className="font-semibold text-white">City:</span> {festData.city}</p>
-                    <p className="text-gray-300"><span className="font-semibold text-white">Date:</span> {festData.date}</p>
+                    <p className="text-gray-300"><span className="font-semibold text-white">Fest Start Date:</span> {festData.festStartDate}</p>
+                    <p className="text-gray-300"><span className="font-semibold text-white">Registration Period:</span> {festData.registrationStartDate} to {festData.registrationEndDate}</p>
                     <p className="text-gray-300">
                       <span className="font-semibold text-white">Category:</span> 
                       <span className={`ml-2 badge ${

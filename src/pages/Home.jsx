@@ -58,8 +58,8 @@ const Home = () => {
         ...doc.data()
       }));
       
-      // Sort by date on client side
-      festsData.sort((a, b) => new Date(b.date) - new Date(a.date));
+      // Sort by fest start date
+      festsData.sort((a, b) => new Date(a.festStartDate) - new Date(b.festStartDate));
       
       console.log('Fetched published fests:', festsData);
       setFests(festsData);
@@ -68,6 +68,28 @@ const Home = () => {
       console.error('Error fetching fests:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Helper function to get fest status
+  const getFestStatus = (fest) => {
+    if (!fest.registrationStartDate || !fest.registrationEndDate) {
+      return 'unknown';
+    }
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const regStart = new Date(fest.registrationStartDate);
+    regStart.setHours(0, 0, 0, 0);
+    const regEnd = new Date(fest.registrationEndDate);
+    regEnd.setHours(0, 0, 0, 0);
+    
+    if (today < regStart) {
+      return 'upcoming'; // Registration hasn't started yet
+    } else if (today >= regStart && today <= regEnd) {
+      return 'live'; // Registration is open
+    } else {
+      return 'closed'; // Registration closed
     }
   };
 
@@ -125,7 +147,7 @@ const Home = () => {
 
     // Filter by date range
     if (dateFilter !== 'all' && dateFilter) {
-      filtered = filtered.filter(fest => fest.date && isDateInRange(fest.date, dateFilter));
+      filtered = filtered.filter(fest => fest.festStartDate && isDateInRange(fest.festStartDate, dateFilter));
     }
 
     // Filter by search term
@@ -252,41 +274,74 @@ const Home = () => {
       </div>
 
       {/* Fests Grid */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 lg:py-12">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-2">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
-            {selectedCategory === 'all' ? 'All Fests' : `${selectedCategory} Fests`}
-          </h2>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-primary rounded-full"></div>
-            <p className="text-sm sm:text-base text-gray-400">
-              {filteredFests.length} {filteredFests.length === 1 ? 'fest' : 'fests'} found
-            </p>
-          </div>
-        </div>
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 lg:py-12 space-y-12">
+        
+        {/* Upcoming Fests Section */}
+        {(() => {
+          const upcomingFests = filteredFests.filter(fest => getFestStatus(fest) === 'upcoming');
+          return upcomingFests.length > 0 && (
+            <div>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-2">
+                <div>
+                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                    Upcoming Fests
+                  </h2>
+                  <p className="text-gray-400 text-sm mt-1">Registrations opening soon</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <p className="text-sm sm:text-base text-gray-400">
+                    {upcomingFests.length} {upcomingFests.length === 1 ? 'fest' : 'fests'}
+                  </p>
+                </div>
+              </div>
 
-        {loading ? (
-          <div className="text-center py-12 sm:py-20">
-            <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-gray-600 border-t-primary"></div>
-            <p className="text-gray-400 mt-4 text-sm sm:text-base">Loading fests...</p>
-          </div>
-        ) : filteredFests.length === 0 ? (
-          <div className="text-center py-12 sm:py-20">
-            <div className="glass-container p-6 sm:p-12 max-w-md mx-auto">
-              <svg className="w-12 h-12 sm:w-16 sm:h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-gray-400 text-base sm:text-lg mb-2">No fests found</p>
-              <p className="text-gray-500 text-xs sm:text-sm">Try adjusting your search or filters</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                {upcomingFests.map(fest => (
+                  <FestCard key={fest.id} fest={fest} />
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* All Fests Section */}
+        <div>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-2">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+              {selectedCategory === 'all' ? 'All Fests' : `${selectedCategory} Fests`}
+            </h2>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-primary rounded-full"></div>
+              <p className="text-sm sm:text-base text-gray-400">
+                {filteredFests.length} {filteredFests.length === 1 ? 'fest' : 'fests'} found
+              </p>
             </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            {filteredFests.map(fest => (
-              <FestCard key={fest.id} fest={fest} />
-            ))}
-          </div>
-        )}
+
+          {loading ? (
+            <div className="text-center py-12 sm:py-20">
+              <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-gray-600 border-t-primary"></div>
+              <p className="text-gray-400 mt-4 text-sm sm:text-base">Loading fests...</p>
+            </div>
+          ) : filteredFests.length === 0 ? (
+            <div className="text-center py-12 sm:py-20">
+              <div className="glass-container p-6 sm:p-12 max-w-md mx-auto">
+                <svg className="w-12 h-12 sm:w-16 sm:h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-gray-400 text-base sm:text-lg mb-2">No fests found</p>
+                <p className="text-gray-500 text-xs sm:text-sm">Try adjusting your search or filters</p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+              {filteredFests.map(fest => (
+                <FestCard key={fest.id} fest={fest} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
