@@ -59,7 +59,7 @@ const FestCard = ({ fest }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span className="line-clamp-1">{fest.venue || fest.location || 'Venue TBA'}</span>
+            <span className="line-clamp-1">{fest.city || 'City TBA'}</span>
           </div>
           <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-400">
             <svg className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

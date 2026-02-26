@@ -42,6 +42,13 @@ const Navbar = () => {
             </Link>
             {currentUser && !needsVerification && (
               <>
+                <Link 
+                  to="/dashboard" 
+                  className="text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
+                >
+                  Dashboard
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-200"></span>
+                </Link>
                 {userRole === 'organizer' && (
                   <Link 
                     to="/create-fest" 
@@ -166,6 +173,13 @@ const Navbar = () => {
                   className="sm:hidden block px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium"
                 >
                   Profile ({userRole})
+                </Link>
+                <Link 
+                  to="/dashboard" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium"
+                >
+                  Dashboard
                 </Link>
                 {userRole === 'organizer' && (
                   <Link 
