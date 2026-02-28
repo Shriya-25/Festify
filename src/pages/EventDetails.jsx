@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, collection, addDoc, query, where, getDocs, updateDoc, increment } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
+import { sendRegistrationConfirmationEmail, formatCustomFieldsForEmail, formatContactsForEmail } from '../services/emailService';
 
 const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY;
 
@@ -544,6 +545,51 @@ const EventDetails = () => {
         setMessage('🎉 Registration submitted! Your payment is pending verification by the organizer.');
       } else {
         setMessage('🎉 Successfully registered for the event!');
+      }
+      
+      // Send confirmation email to the student
+      try {
+        const emailData = {
+          studentEmail: registrationData.email || currentUser.email,
+          studentName: registrationData.name || currentUser.displayName || 'Student',
+          studentPhone: registrationData.phone || 'N/A',
+          studentCollege: registrationData.college || 'N/A',
+          studentBranch: registrationData.branch || 'N/A',
+          studentYear: registrationData.year || 'N/A',
+          studentGender: registrationData.gender || 'N/A',
+          eventName: event.eventName,
+          festName: event.festName,
+          eventDate: new Date(event.date).toLocaleDateString('en-IN', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          eventTime: event.time,
+          eventVenue: event.venue,
+          registrationDate: new Date().toLocaleString('en-IN', {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+          }),
+          customFields: registrationData.customFields ? formatCustomFieldsForEmail(registrationData.customFields) : 'None',
+          paymentStatus: event.isPaid 
+            ? (event.paymentConfig.method === 'manual' 
+                ? `Pending Verification - ₹${finalAmount}` 
+                : `Paid - ₹${finalAmount}`)
+            : 'Free Event',
+          paymentAmount: event.isPaid ? `₹${finalAmount}` : 'Free',
+          organizerContacts: event.contacts ? formatContactsForEmail(event.contacts) : 'Will be provided soon',
+        };
+
+        const emailSent = await sendRegistrationConfirmationEmail(emailData);
+        if (emailSent) {
+          console.log('✅ Confirmation email sent successfully');
+        } else {
+          console.warn('⚠️ Registration successful but email was not sent');
+        }
+      } catch (emailError) {
+        console.error('⚠️ Failed to send confirmation email:', emailError);
+        // Don't fail the registration if email fails
       }
       
       // Reset payment states

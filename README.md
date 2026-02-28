@@ -9,7 +9,8 @@ A comprehensive event management platform for college fests where students can d
 - ✉️ **Email Verification** for email/password sign-ups
 - 🎪 **Browse & Discover Fests** - Search by name, college, or location
 - 🎯 **Event Registration** - Register for free or paid events
-- 💳 **Multiple Payment Options**:
+- � **Email Confirmation** - Automatic confirmation email after registration with all event and registration details
+- �💳 **Multiple Payment Options**:
   - Manual QR Payment (UPI, PhonePe, GPay, etc.)
   - Razorpay Payment Gateway (Instant verification)
 - 📱 **Payment Proof Upload** - Submit screenshot and transaction ID for manual payments
@@ -109,7 +110,19 @@ See detailed guides in:
 
 See: [IMGBB_SETUP.md](IMGBB_SETUP.md)
 
-### 5. Run Development Server
+### 5. EmailJS Setup (Optional - For Email Confirmations)
+
+1. Create free account at https://www.emailjs.com/
+2. Configure email service and create template
+3. Add to `.env`:
+   - `VITE_EMAILJS_SERVICE_ID`
+   - `VITE_EMAILJS_TEMPLATE_ID`
+   - `VITE_EMAILJS_PUBLIC_KEY`
+4. Students will receive automatic confirmation emails after registering for events
+
+See: [EMAILJS_SETUP.md](EMAILJS_SETUP.md) for detailed setup guide
+
+### 6. Run Development Server
 
 ```bash
 npm run dev
