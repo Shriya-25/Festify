@@ -262,14 +262,6 @@ const Home = () => {
               )}
             </div>
           </div>
-
-          {!currentUser && (
-            <div className="mt-6 sm:mt-10 px-2">
-              <Link to="/signup" className="btn-primary text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 inline-block">
-                Get Started
-              </Link>
-            </div>
-          )}
         </div>
       </div>
 

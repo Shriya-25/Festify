@@ -33,15 +33,15 @@ const Navbar = () => {
 
           {/* Center Navigation - Desktop */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link 
-              to="/" 
-              className="text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
-            >
-              Discover
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-200"></span>
-            </Link>
             {currentUser && !needsVerification && (
               <>
+                <Link 
+                  to="/" 
+                  className="text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
+                >
+                  Discover
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-200"></span>
+                </Link>
                 <Link 
                   to="/dashboard" 
                   className="text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
@@ -66,22 +66,22 @@ const Navbar = () => {
                     Admin Panel
                   </Link>
                 )}
+                <Link 
+                  to="/about" 
+                  className="text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
+                >
+                  About
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-200"></span>
+                </Link>
+                <Link 
+                  to="/contact" 
+                  className="text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
+                >
+                  Contact
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-200"></span>
+                </Link>
               </>
             )}
-            <Link 
-              to="/about" 
-              className="text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
-            >
-              About
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-200"></span>
-            </Link>
-            <Link 
-              to="/contact" 
-              className="text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
-            >
-              Contact
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-200"></span>
-            </Link>
           </div>
 
           {/* Right Side - Auth */}
@@ -158,15 +158,15 @@ const Navbar = () => {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-white/10">
           <div className="px-4 pt-2 pb-3 space-y-1 bg-black/30 backdrop-blur-xl">
-            <Link 
-              to="/" 
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium"
-            >
-              Discover
-            </Link>
             {currentUser && !needsVerification && (
               <>
+                <Link 
+                  to="/" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium"
+                >
+                  Discover
+                </Link>
                 <Link 
                   to="/profile" 
                   onClick={() => setMobileMenuOpen(false)}
@@ -199,22 +199,22 @@ const Navbar = () => {
                     Admin Panel
                   </Link>
                 )}
+                <Link 
+                  to="/about" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium"
+                >
+                  About
+                </Link>
+                <Link 
+                  to="/contact" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium"
+                >
+                  Contact
+                </Link>
               </>
             )}
-            <Link 
-              to="/about" 
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium"
-            >
-              About
-            </Link>
-            <Link 
-              to="/contact" 
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium"
-            >
-              Contact
-            </Link>
             {currentUser && !needsVerification && (
               <button
                 onClick={handleLogout}
