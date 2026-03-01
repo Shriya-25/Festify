@@ -95,7 +95,7 @@ const EventDetails = () => {
     const now = new Date();
     const deadline = new Date(event.registrationDeadline);
     return now < deadline &&
-(!event.maxParticipants || event.participantCount < event.maxParticipants);
+      (!event.maxParticipants || event.participantCount < event.maxParticipants);
   };
 
   const openRegistrationModal = async () => {
@@ -625,697 +625,524 @@ const EventDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-white">Loading event details...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!event) {
-    return null;
-  }
+  if (!event) return null;
 
   const registrationStatus = !isRegistrationOpen() ? 'closed' : isRegistered ? 'registered' : 'open';
 
   return (
-    <div className="min-h-screen py-4 sm:py-8">
-      <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8">
-        {/* Banner Image */}
-        {event.bannerUrl && (
-          <div className="mb-4 sm:mb-6">
-            <img
-              src={event.bannerUrl}
+    <div className="min-h-screen bg-background text-white pb-20">
+      {/* Hero Section */}
+      <div className="relative h-[50vh] overflow-hidden">
+        {/* Banner with gradient overlay */}
+        <div className="absolute inset-0 w-full h-full">
+          {event.bannerUrl ? (
+            <img 
+              src={event.bannerUrl} 
               alt={event.eventName}
-              className="w-full h-48 sm:h-64 md:h-80 object-cover rounded-lg shadow-lg"
+              className="w-full h-full object-cover"
             />
-          </div>
-        )}
+          ) : (
+            <div className="w-full h-full bg-surface-dark bg-grid-pattern opacity-20"></div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+        </div>
 
-        {/* Event Details Card */}
-        <div className="glass-container p-4 sm:p-6 lg:p-8 mb-4 sm:mb-6">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4 space-y-3 md:space-y-0">
-            <div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">{event.eventName}</h1>
-              <p className="text-lg sm:text-xl text-gray-300">{event.festName}</p>
-            </div>
-            <div className="md:text-right">
-              <span className={`inline-block px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold ${
+        {/* Hero Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-8 z-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="animate-fade-in-up">
+              <span className={`inline-block px-3 py-1 mb-4 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-lg border ${
                 registrationStatus === 'closed' 
-                  ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                  ? 'bg-red-500/20 text-red-400 border-red-500/30'
                   : registrationStatus === 'registered'
-                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                  : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                  ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                  : 'bg-primary text-white border-transparent'
               }`}>
-                {registrationStatus === 'closed' ? 'Registrations Closed' 
+                {registrationStatus === 'closed' ? 'Closed' 
                   : registrationStatus === 'registered' ? 'Registered' 
                   : 'Open for Registration'}
               </span>
-              <div className="mt-2">
-                <span className="inline-block px-2 py-1 sm:px-3 bg-white/5 text-gray-300 rounded text-xs sm:text-sm">
-                  {event.domain}
-                </span>
+              <h1 className="text-4xl md:text-6xl font-black mb-2 tracking-tight drop-shadow-lg text-white">
+                {event.eventName}
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 mb-6 font-light">{event.festName}</p>
+
+              <div className="flex flex-wrap items-center gap-6 text-sm md:text-base text-gray-300">
+                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg backdrop-blur-sm">
+                  <span className="text-primary">📅</span>
+                  {new Date(event.date).toLocaleDateString()} at {event.time}
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg backdrop-blur-sm">
+                  <span className="text-accent">📍</span>
+                  {event.venue}
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg backdrop-blur-sm border border-primary/20">
+                  <span className="text-green-400">💵</span>
+                  <span className="font-bold text-white">{event.isPaid ? `₹${event.entryFee}` : 'Free'}</span>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6 p-3 sm:p-4 bg-white/5 rounded-lg">
-            <div>
-              <p className="text-xs sm:text-sm text-gray-400 mb-1">Date & Time</p>
-              <p className="font-semibold text-white text-sm sm:text-base">
-                {new Date(event.date).toLocaleDateString()} at {event.time}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm text-gray-400 mb-1">Venue</p>
-              <p className="font-semibold text-white text-sm sm:text-base">{event.venue}</p>
-              {event.googleMapsLink && (
-                <a
-                  href={event.googleMapsLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-primary hover:text-orange-400 text-xs sm:text-sm mt-1"
-                >
-                  <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  View on Google Maps
-                </a>
-              )}
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm text-gray-400 mb-1">Entry Fees</p>
-              <p className="font-semibold text-white text-lg sm:text-xl md:text-2xl">
-                {event.isPaid ? `₹${event.entryFee}` : 'Free'}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm text-gray-400 mb-1">Participants</p>
-              <p className="font-semibold text-white text-sm sm:text-base">
-                {event.participantCount || 0}
-                {event.maxParticipants && ` / ${event.maxParticipants}`}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm text-gray-400 mb-1">Registration Deadline</p>
-              <p className="font-semibold text-white text-sm sm:text-base">
-                {new Date(event.registrationDeadline).toLocaleString()}
-              </p>
-            </div>
-          </div>
-
-          <div className="mb-4 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">About This Event</h2>
-            <p className="text-gray-300 text-sm sm:text-base leading-relaxed whitespace-pre-line">
-              {event.description}
-            </p>
-          </div>
-
-          {/* Rules Section */}
-          {event.rules && (
-            <div className="mb-4 sm:mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">Event Rules</h2>
-              <div className="bg-white/5 p-4 sm:p-6 rounded-xl border border-white/10">
-                <p className="text-gray-300 text-sm sm:text-base leading-relaxed whitespace-pre-line">
-                  {event.rules}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Contact Information */}
-          {event.contacts && event.contacts.length > 0 && (
-            <div className="mb-4 sm:mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">Contact Information</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {event.contacts.map(contact => (
-                  <div key={contact.id} className="bg-white/5 p-4 rounded-xl border border-white/10">
-                    <p className="text-white font-semibold text-lg mb-1">{contact.name}</p>
-                    <div className="space-y-1">
-                      <a href={`tel:${contact.phone}`} className="flex items-center gap-2 text-primary hover:text-orange-400 text-sm">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        {contact.phone}
-                      </a>
-                      {contact.email && (
-                        <a href={`mailto:${contact.email}`} className="flex items-center gap-2 text-gray-400 hover:text-gray-300 text-sm">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                          </svg>
-                          {contact.email}
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Special Guests */}
-          {event.guests && event.guests.length > 0 && (
-            <div className="mb-4 sm:mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">Special Guests</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {event.guests.map(guest => (
-                  <div key={guest.id} className="bg-white/5 p-4 rounded-xl border border-white/10">
-                    {guest.photo && (
-                      <img 
-                        src={guest.photo} 
-                        alt={guest.name}
-                        className="w-20 h-20 rounded-full object-cover mx-auto mb-3"
-                      />
-                    )}
-                    <h3 className="text-white font-semibold text-lg text-center">{guest.name}</h3>
-                    <p className="text-primary text-sm text-center mb-2">{guest.designation}</p>
-                    {guest.appearanceDateTime && (
-                      <p className="text-gray-400 text-xs text-center mb-2">
-                        {new Date(guest.appearanceDateTime).toLocaleString()}
-                      </p>
-                    )}
-                    {guest.description && (
-                      <p className="text-gray-300 text-sm text-center leading-relaxed">
-                        {guest.description}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Fest Social Media */}
-          {fest && fest.socialMedia && Object.values(fest.socialMedia).some(val => val) && (
-            <div className="mb-4 sm:mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">Connect With Fest</h2>
-              <div className="flex flex-wrap gap-3 sm:gap-4">
-                {fest.socialMedia.instagram && (
-                  <a
-                    href={fest.socialMedia.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/50 rounded-lg transition-colors text-pink-400"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                    <span className="text-sm">Instagram</span>
-                  </a>
-                )}
-                {fest.socialMedia.linkedin && (
-                  <a
-                    href={fest.socialMedia.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50 rounded-lg transition-colors text-blue-400"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                    </svg>
-                    <span className="text-sm">LinkedIn</span>
-                  </a>
-                )}
-                {fest.socialMedia.website && (
-                  <a
-                    href={fest.socialMedia.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 rounded-lg transition-colors text-green-400"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-                    </svg>
-                    <span className="text-sm">Website</span>
-                  </a>
-                )}
-                {fest.socialMedia.youtube && (
-                  <a
-                    href={fest.socialMedia.youtube}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 rounded-lg transition-colors text-red-400"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-                    </svg>
-                    <span className="text-sm">YouTube</span>
-                  </a>
-                )}
-                {fest.socialMedia.twitter && (
-                  <a
-                    href={fest.socialMedia.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-500/20 hover:bg-gray-500/30 border border-gray-500/50 rounded-lg transition-colors text-gray-400"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                    <span className="text-sm">Twitter/X</span>
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Registration Section */}
-          {message && (
-            <div className={`mb-4 p-4 rounded-lg ${
-              message.includes('Success') || message.includes('🎉') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-            }`}>
-              {message}
-            </div>
-          )}
-
-          <div>
-            {!currentUser ? (
-              <button onClick={() => navigate('/login')} className="btn-primary w-full text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6">
-                Login to Register
-              </button>
-            ) : !isRegistrationOpen() ? (
-              <button disabled className="w-full bg-red-500 text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg cursor-not-allowed text-sm sm:text-base">
-                🔒 Registration Closed
-              </button>
-            ) : isRegistered ? (
-              <button disabled className="w-full bg-green-500 text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-sm sm:text-base">
-                ✓ Already Registered
-              </button>
-            ) : userRole === 'student' ? (
-              <button
-                onClick={openRegistrationModal}
-                className="btn-primary w-full text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6"
-              >
-                Register for this Event
-              </button>
-            ) : (
-              <div className="text-center text-gray-400">
-                Only students can register for events
-              </div>
-            )}
           </div>
         </div>
+      </div>
 
-        {/* Payment Step Modal */}
-        {showPaymentStep && event.isPaid && event.paymentConfig && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-            <div className="glass-container max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 glass-container border-b border-white/10 p-4 sm:p-6 flex justify-between items-start">
-                <div className="flex-1 pr-2">
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                    Payment - {event.eventName}
-                  </h2>
-                  <div className="mt-2">
-                    {couponApplied && appliedCoupon ? (
-                      <div>
-                        <p className="text-xs sm:text-sm text-gray-400 line-through">Original: ₹{originalAmount}</p>
-                        <p className="text-base sm:text-lg md:text-xl font-semibold text-green-400">
-                          Final Amount: ₹{finalAmount.toFixed(2)}
-                        </p>
-                        <p className="text-xs sm:text-sm text-green-400">
-                          🎊 {appliedCoupon.discountPercent}% discount applied - You save ₹{appliedCoupon.discountAmount.toFixed(2)}!
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-base sm:text-lg md:text-xl font-semibold text-primary mt-1">
-                        Amount: ₹{originalAmount}
-                      </p>
-                    )}
-                  </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Main Content (Left Column) */}
+          <div className="lg:col-span-2 space-y-8">
+            
+            {/* Description Card */}
+            <div className="glass-card p-6 md:p-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <span className="w-1 h-8 bg-primary rounded-full"></span>
+                About This Event
+              </h2>
+              <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-line">
+                {event.description}
+              </p>
+            </div>
+
+            {/* Rules Section */}
+            {event.rules && (
+              <div className="glass-card p-6 md:p-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <span className="w-1 h-8 bg-red-500 rounded-full"></span>
+                  Rules & Regulations
+                </h2>
+                <div className="bg-white/5 p-6 rounded-xl border-l-4 border-red-500/50">
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-line">
+                    {event.rules}
+                  </p>
                 </div>
-                <button
-                  onClick={() => {
-                    setShowPaymentStep(false);
-                    setShowRegistrationModal(true);
-                  }}
-                  className="text-gray-400 hover:text-white text-2xl"
-                >
-                  ✕
-                </button>
               </div>
+            )}
 
-              <div className="p-4 sm:p-6">
-                {/* Coupon Section - Show if coupons are enabled */}
-                {event.coupon && event.coupon.enabled && !couponApplied && (
-                  <div className="mb-4 sm:mb-6 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-3 sm:p-4">
-                    <h3 className="font-semibold text-purple-900 mb-2 sm:mb-3 flex items-center text-sm sm:text-base">
-                      🎟️ Have a Discount Coupon?
-                    </h3>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <input
-                        type="text"
-                        className="input-field flex-1 text-sm sm:text-base"
-                        placeholder="Enter coupon code"
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                      />
-                      <button
-                        onClick={handleApplyCoupon}
-                        className="btn-primary whitespace-nowrap py-2 px-4 sm:px-6 text-sm sm:text-base"
-                      >
-                        Apply
-                      </button>
+            {/* Special Guests */}
+            {event.guests && event.guests.length > 0 && (
+              <div className="glass-card p-6 md:p-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                  <span className="w-1 h-8 bg-accent rounded-full"></span>
+                  Special Guests
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {event.guests.map(guest => (
+                    <div key={guest.id} className="bg-surface-dark p-6 rounded-xl border border-white/10 hover:border-primary/50 transition-colors group text-center">
+                      {guest.photo && (
+                        <div className="w-24 h-24 mx-auto mb-4 relative">
+                          <img 
+                            src={guest.photo} 
+                            alt={guest.name}
+                            className="w-full h-full rounded-full object-cover border-2 border-white/20 group-hover:border-primary transition-colors"
+                          />
+                          <div className="absolute inset-0 rounded-full bg-primary/20 transform scale-110 blur-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
+                        </div>
+                      )}
+                      
+                      <h3 className="text-xl font-bold text-white mb-1">{guest.name}</h3>
+                      <p className="text-primary text-sm font-medium mb-3">{guest.designation}</p>
+                      
+                      {guest.appearanceDateTime && (
+                        <div className="inline-block px-3 py-1 bg-white/5 rounded text-xs text-gray-400 mb-2">
+                          {new Date(guest.appearanceDateTime).toLocaleString()}
+                        </div>
+                      )}
+                      
+                      {guest.description && (
+                         <p className="text-gray-400 text-sm mt-2 line-clamp-3 hover:line-clamp-none transition-all">
+                           {guest.description}
+                         </p>
+                      )}
                     </div>
-                    {couponError && (
-                      <p className="text-sm text-red-600 mt-2">{couponError}</p>
-                    )}
-                    <p className="text-xs text-gray-400 mt-2">
-                      Get {event.coupon.discountPercent}% off with the right code!
-                    </p>
-                  </div>
-                )}
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Back Button */}
+            <button
+               onClick={() => navigate(`/fest/${event.festId}`)}
+               className="btn-secondary text-sm sm:text-base px-6 py-3 flex items-center gap-2 group"
+             >
+               <span className="group-hover:-translate-x-1 transition-transform">←</span> 
+               Back to {event.festName}
+             </button>
+          </div>
 
-                {/* Show applied coupon with remove option */}
-                {couponApplied && appliedCoupon && (
-                  <div className="mb-4 sm:mb-6 bg-green-50 border-2 border-green-200 rounded-lg p-3 sm:p-4">
-                    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-green-900 flex items-center text-sm sm:text-base">
-                          ✅ Coupon Applied: {appliedCoupon.code}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-green-800 mt-1">
-                          {appliedCoupon.discountPercent}% discount - You save ₹{appliedCoupon.discountAmount.toFixed(2)}
-                        </p>
-                      </div>
-                      <button
-                        onClick={handleRemoveCoupon}
-                        className="text-red-600 hover:text-red-800 text-sm font-semibold"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                )}
+          {/* Sidebar (Right Column) */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="sticky top-24 space-y-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+              
+              {/* Registration Card */}
+              <div className="glass-panel p-6 border-t-4 border-primary shadow-[0_0_30px_rgba(0,0,0,0.3)]">
+                <h3 className="font-bold text-xl mb-6 text-white text-center">Event Details</h3>
                 
+                <div className="space-y-4 mb-8">
+                  <div className="flex justify-between items-center py-2 border-b border-white/5">
+                    <span className="text-gray-400 text-sm">Status</span>
+                    <span className={`text-sm font-bold uppercase ${
+                      registrationStatus === 'closed' ? 'text-red-400' : 
+                      registrationStatus === 'registered' ? 'text-green-400' : 'text-primary'
+                    }`}>
+                      {registrationStatus.toUpperCase()}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 border-b border-white/5">
+                    <span className="text-gray-400 text-sm">Fees</span>
+                    <span className="text-white font-bold">{event.isPaid ? `₹${event.entryFee}` : 'Free'}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 border-b border-white/5">
+                    <span className="text-gray-400 text-sm">Available Spots</span>
+                    <span className="text-white font-bold">
+                       {event.maxParticipants 
+                         ? `${event.maxParticipants - (event.participantCount || 0)}` 
+                         : 'Unlimited'}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 border-b border-white/5">
+                    <span className="text-gray-400 text-sm">Deadline</span>
+                    <span className="text-white text-sm text-right font-medium">
+                      {new Date(event.registrationDeadline).toLocaleDateString()}
+                    </span>
+                  </div>
+                  
+                  {event.googleMapsLink && (
+                    <a
+                      href={event.googleMapsLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 text-primary hover:text-white text-sm mt-2 transition-colors py-2 bg-primary/10 rounded-lg hover:bg-primary/20"
+                    >
+                      <span>📍</span> View Venue on Maps
+                    </a>
+                  )}
+                </div>
+
                 {message && (
-                  <div className={`mb-4 p-4 rounded-lg ${
-                    message.includes('Success') || message.includes('🎉') || message.includes('save') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  <div className={`mb-4 p-3 rounded text-sm text-center ${
+                    message.includes('Success') || message.includes('🎉') ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
                   }`}>
                     {message}
                   </div>
                 )}
 
-                {/* Manual QR Payment */}
-                {event.paymentConfig.method === 'manual' && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3 sm:p-4">
-                      <h3 className="font-semibold text-blue-300 mb-2 text-sm sm:text-base">Payment Instructions</h3>
-                      <p className="text-blue-200 whitespace-pre-line text-xs sm:text-sm">
-                        {event.paymentConfig.instructions}
-                      </p>
-                    </div>
-
-                    <div className="flex justify-center">
-                      <div className="border-2 border-white/10 rounded-lg p-2 sm:p-4">
-                        <img
-                          src={event.paymentConfig.qrImageURL}
-                          alt="Payment QR Code"
-                          className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 object-contain"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="border-t border-white/10 pt-4 sm:pt-6">
-                      <h3 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Upload Payment Proof</h3>
-                      
-                      <div className="space-y-4">
-                        <div>
-                          <label className="label">
-                            Payment Screenshot <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleScreenshotChange}
-                            className="input-field"
-                            required
-                          />
-                          {paymentScreenshotPreview && (
-                            <div className="mt-3 sm:mt-4">
-                              <img
-                                src={paymentScreenshotPreview}
-                                alt="Screenshot preview"
-                                className="w-full h-32 sm:h-40 md:h-48 object-contain border rounded-lg"
-                              />
-                            </div>
-                          )}
-                          <p className="text-sm text-gray-400 mt-1">
-                            Upload screenshot of your payment (Max 5MB)
-                          </p>
-                        </div>
-
-                        <div>
-                          <label className="label">
-                            Transaction ID / UTR Number <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            className="input-field"
-                            placeholder="Enter transaction ID from payment"
-                            value={transactionId}
-                            onChange={(e) => setTransactionId(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 pt-4">
-                      <button
-                        onClick={handleFinalSubmit}
-                        disabled={!paymentScreenshot || !transactionId.trim() || uploadingScreenshot || registering}
-                        className="btn-primary flex-1 disabled:opacity-50 py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
-                      >
-                        {registering ? 'Submitting...' : uploadingScreenshot ? 'Processing...' : 'Confirm & Register'}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowPaymentStep(false);
-                          setShowRegistrationModal(true);
-                        }}
-                        className="btn-secondary flex-1 py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
-                        disabled={registering}
-                      >
-                        Back
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Razorpay Payment */}
-                {event.paymentConfig.method === 'razorpay' && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3 sm:p-4">
-                      <h3 className="font-semibold text-blue-300 mb-2 text-sm sm:text-base">Razorpay Payment</h3>
-                      <p className="text-blue-200 text-xs sm:text-sm">
-                        You will be redirected to Razorpay to complete the payment securely.
-                      </p>
-                    </div>
-
-                    <div className="text-center py-6 sm:py-8">
-                      <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
-                        Click the button below to proceed with payment of <strong className="text-lg sm:text-xl">₹{event.entryFee}</strong>
-                      </p>
-                      <button
-                        onClick={handleRazorpayPayment}
-                        disabled={processingRazorpay || registering}
-                        className="btn-primary disabled:opacity-50 py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
-                      >
-                        {processingRazorpay ? 'Loading...' : 'Pay with Razorpay'}
-                      </button>
-                      <p className="text-sm text-gray-400 mt-4">
-                        Secure payment powered by Razorpay
-                      </p>
-                    </div>
-
-                    <div className="flex pt-4">
-                      <button
-                        onClick={() => {
-                          setShowPaymentStep(false);
-                          setShowRegistrationModal(true);
-                        }}
-                        className="btn-secondary w-full py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
-                        disabled={processingRazorpay || registering}
-                      >
-                        Back
-                      </button>
-                    </div>
+                {!currentUser ? (
+                  <button onClick={() => navigate('/login')} className="btn-primary w-full py-3 shadow-[0_0_20px_rgba(255,122,24,0.3)] hover:shadow-[0_0_30px_rgba(255,122,24,0.5)]">
+                    Login to Register
+                  </button>
+                ) : !isRegistrationOpen() ? (
+                  <button disabled className="w-full bg-surface-dark border border-white/10 text-gray-400 font-semibold py-3 rounded-lg cursor-not-allowed">
+                    Registration Closed
+                  </button>
+                ) : isRegistered ? (
+                  <button disabled className="w-full bg-green-600/20 border border-green-500/50 text-green-400 font-semibold py-3 rounded-lg flex items-center justify-center gap-2">
+                    <span>✓</span> Already Registered
+                  </button>
+                ) : userRole === 'student' ? (
+                  <button
+                    onClick={openRegistrationModal}
+                    className="btn-primary w-full py-3 text-lg font-bold shadow-[0_0_20px_rgba(255,122,24,0.3)] hover:shadow-[0_0_30px_rgba(255,122,24,0.5)] animate-pulse"
+                  >
+                    Register Now
+                  </button>
+                ) : (
+                  <div className="text-center p-3 bg-white/5 rounded-lg text-gray-400 text-sm">
+                    Only students can register for events
                   </div>
                 )}
               </div>
+
+              {/* Contact Info (Compact) */}
+              {event.contacts && event.contacts.length > 0 && (
+                <div className="glass-panel p-6">
+                  <h3 className="font-bold text-lg mb-4 text-white">Contact Organizers</h3>
+                  <div className="space-y-4">
+                    {event.contacts.map(contact => (
+                      <div key={contact.id} className="flex items-start gap-3 text-sm p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 text-primary font-bold">
+                           {contact.name.charAt(0)}
+                        </div>
+                        <div className="overflow-hidden">
+                          <p className="text-white font-semibold truncate">{contact.name}</p>
+                          <a href={`tel:${contact.phone}`} className="text-gray-400 hover:text-primary block text-xs mt-1">
+                            📞 {contact.phone}
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* Registration Modal */}
-        {showRegistrationModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-            <div className="glass-container max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 glass-container border-b border-white/10 p-4 sm:p-6 flex justify-between items-start">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white pr-2">
-                  Registration Form - {event.eventName}
-                </h2>
-                <button
-                  onClick={() => setShowRegistrationModal(false)}
-                  className="text-gray-400 hover:text-white text-2xl"
-                >
-                  ✕
-                </button>
+      {/* Payment Step Modal */}
+      {showPaymentStep && event.isPaid && event.paymentConfig && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 animate-fade-in">
+          <div className="glass-container max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/20 shadow-2xl bg-[#0A0F1F]">
+            <div className="sticky top-0 bg-[#0A0F1F]/90 backdrop-blur-md border-b border-white/10 p-6 flex justify-between items-center z-10">
+              <div>
+                <h2 className="text-xl font-bold text-white">Complete Payment</h2>
+                <div className="flex items-center gap-2 text-sm mt-1">
+                  <span className="text-gray-400">Total Amount:</span>
+                  <span className="text-primary font-bold text-lg">
+                    ₹{finalAmount.toFixed(2)}
+                  </span>
+                   {couponApplied && (
+                     <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">
+                       Code {appliedCoupon.code} applied
+                     </span>
+                   )}
+                </div>
               </div>
+              <button
+                onClick={() => {
+                  setShowPaymentStep(false);
+                  setShowRegistrationModal(true);
+                }}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-red-500/20 hover:text-red-400 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
 
-              <form onSubmit={handleRegistrationFormSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                {event.prefillUserData && (
-                  <div className="space-y-3 sm:space-y-4 pb-4 border-b border-white/10">
-                    <h3 className="font-semibold text-white text-sm sm:text-base">Basic Information</h3>
+            <div className="p-6 space-y-6">
+              {/* Coupon Section */}
+              {event.coupon && event.coupon.enabled && !couponApplied && (
+                <div className="p-4 rounded-xl bg-gradient-to-r from-purple-900/40 to-pink-900/40 border border-purple-500/30">
+                  <h3 className="text-sm font-semibold text-purple-200 mb-3 flex items-center gap-2">
+                    🎟️ Have a Discount Coupon?
+                  </h3>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      className="input-field py-2 text-sm"
+                      placeholder="Enter code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    />
+                    <button
+                      onClick={handleApplyCoupon}
+                      className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {couponError && <p className="text-xs text-red-400 mt-2">{couponError}</p>}
+                </div>
+              )}
+
+              {/* Manual QR Payment */}
+              {event.paymentConfig.method === 'manual' && (
+                <div className="space-y-6">
+                  <div className="text-center p-6 bg-white/5 rounded-xl border border-white/10">
+                    <div className="mx-auto w-48 h-48 bg-white p-2 rounded-lg mb-4">
+                      <img
+                        src={event.paymentConfig.qrImageURL}
+                        alt="Payment QR Code"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <p className="text-sm text-blue-200 bg-blue-500/20 p-3 rounded-lg border border-blue-500/30 inline-block">
+                      Scan to pay ₹{finalAmount.toFixed(2)}
+                    </p>
+                  </div>
+
+                  <div className="border-t border-white/10 pt-6 space-y-4">
+                    <h3 className="font-semibold text-white">Upload Payment Proof</h3>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="label">Name <span className="text-red-500">*</span></label>
-                        <input
-                          type="text"
-                          value={formData.name || ''}
-                          onChange={(e) => handleFormChange(e, 'name')}
-                          className="input-field"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="label">Email <span className="text-red-500">*</span></label>
-                        <input
-                          type="email"
-                          value={formData.email || ''}
-                          onChange={(e) => handleFormChange(e, 'email')}
-                          className="input-field"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="label">Phone <span className="text-red-500">*</span></label>
-                        <input
-                          type="tel"
-                          value={formData.phone || ''}
-                          onChange={(e) => handleFormChange(e, 'phone')}
-                          className="input-field"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="label">College <span className="text-red-500">*</span></label>
-                        <input
-                          type="text"
-                          value={formData.college || ''}
-                          onChange={(e) => handleFormChange(e, 'college')}
-                          className="input-field"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="label">Branch</label>
-                        <input
-                          type="text"
-                          value={formData.branch || ''}
-                          onChange={(e) => handleFormChange(e, 'branch')}
-                          className="input-field"
-                          placeholder="e.g., Computer Science"
-                        />
-                      </div>
-                      <div>
-                        <label className="label">Year</label>
-                        <select
-                          value={formData.year || ''}
-                          onChange={(e) => handleFormChange(e, 'year')}
-                          className="input-field"
-                        >
-                          <option value="">Select Year</option>
-                          <option>1st Year</option>
-                          <option>2nd Year</option>
-                          <option>3rd Year</option>
-                          <option>4th Year</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="label">Gender</label>
-                        <select
-                          value={formData.gender || ''}
-                          onChange={(e) => handleFormChange(e, 'gender')}
-                          className="input-field"
-                        >
-                          <option value="">Select Gender</option>
-                          <option>Male</option>
-                          <option>Female</option>
-                          <option>Other</option>
-                          <option>Prefer not to say</option>
-                        </select>
-                      </div>
+                    <div>
+                      <label className="label">Transaction ID / UTR <span className="text-red-500">*</span></label>
+                      <input
+                        type="text"
+                        className="input-field"
+                        placeholder="Enter 12-digit UTR number"
+                        value={transactionId}
+                        onChange={(e) => setTransactionId(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="label">Screenshot <span className="text-red-500">*</span></label>
+                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-xl cursor-pointer hover:border-primary/50 hover:bg-white/5 transition-all">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                           {paymentScreenshotPreview ? (
+                             <img src={paymentScreenshotPreview} className="h-28 object-contain" alt="Preview"/>
+                           ) : (
+                             <>
+                               <svg className="w-8 h-8 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                               <p className="mb-2 text-sm text-gray-400"><span className="font-semibold">Click to upload</span> payment screenshot</p>
+                             </>
+                           )}
+                        </div>
+                        <input type="file" className="hidden" accept="image/*" onChange={handleScreenshotChange} required />
+                      </label>
                     </div>
                   </div>
-                )}
 
-                {/* Custom Fields */}
-                {event.registrationForm && event.registrationForm.length > 0 && (
-                  <div className="space-y-3 sm:space-y-4">
-                    <h3 className="font-semibold text-white text-sm sm:text-base">Additional Information</h3>
-                    
-                    {event.registrationForm.map((field) => (
-                      <div key={field.id}>
-                        <label className="label">
-                          {field.label}
-                          {field.required && <span className="text-red-500"> *</span>}
-                        </label>
+                  <button
+                    onClick={handleFinalSubmit}
+                    disabled={!paymentScreenshot || !transactionId.trim() || uploadingScreenshot || registering}
+                    className="btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {registering ? 'Verifying...' : uploadingScreenshot ? 'Uploading Proof...' : 'Submit Payment Proof'}
+                  </button>
+                </div>
+              )}
 
-                        {['text', 'email', 'phone', 'number'].includes(field.type) && (
-                          <input
-                            type={field.type}
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            placeholder={field.placeholder}
-                            className="input-field"
-                            required={field.required}
-                          />
-                        )}
+              {/* Razorpay Payment */}
+              {event.paymentConfig.method === 'razorpay' && (
+                <div className="text-center space-y-6 py-4">
+                  <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                    <p className="text-blue-300">Secure Payment Gateway</p>
+                  </div>
+                  <button
+                    onClick={handleRazorpayPayment}
+                    disabled={processingRazorpay || registering}
+                    className="btn-primary w-full py-4 text-lg shadow-[0_0_20px_rgba(255,122,24,0.3)]"
+                  >
+                    {processingRazorpay ? 'Processing...' : `Pay ₹${finalAmount.toFixed(2)} Securely`}
+                  </button>
+                  <p className="text-xs text-gray-500 uppercase tracking-widest">Powered by Razorpay</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
-                        {field.type === 'date' && (
-                          <input
-                            type="date"
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            className="input-field"
-                            required={field.required}
-                          />
-                        )}
+      {/* Registration Modal */}
+      {showRegistrationModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 animate-fade-in">
+          <div className="glass-container max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/20 shadow-2xl bg-[#0A0F1F]">
+            <div className="sticky top-0 bg-[#0A0F1F]/90 backdrop-blur-md border-b border-white/10 p-6 flex justify-between items-center z-10">
+              <h2 className="text-xl font-bold text-white">Event Registration</h2>
+              <button
+                onClick={() => setShowRegistrationModal(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
 
-                        {field.type === 'textarea' && (
-                          <textarea
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            placeholder={field.placeholder}
-                            rows="4"
-                            className="input-field"
-                            required={field.required}
-                          />
-                        )}
+            <form onSubmit={handleRegistrationFormSubmit} className="p-6 space-y-6">
+              {/* Basic Info */}
+              {event.prefillUserData && (
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">Participant Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="group">
+                      <label className="label text-xs">Full Name</label>
+                      <input
+                        type="text"
+                        value={formData.name || ''}
+                        onChange={(e) => handleFormChange(e, 'name')}
+                        className="input-field"
+                        required
+                      />
+                    </div>
+                    <div className="group">
+                      <label className="label text-xs">Email Address</label>
+                      <input
+                        type="email"
+                        value={formData.email || ''}
+                        onChange={(e) => handleFormChange(e, 'email')}
+                        className="input-field"
+                        required
+                      />
+                    </div>
+                    <div className="group">
+                      <label className="label text-xs">Phone Number</label>
+                      <input
+                        type="tel"
+                        value={formData.phone || ''}
+                        onChange={(e) => handleFormChange(e, 'phone')}
+                        className="input-field"
+                        required
+                      />
+                    </div>
+                    <div className="group">
+                      <label className="label text-xs">College Name</label>
+                      <input
+                        type="text"
+                        value={formData.college || ''}
+                        onChange={(e) => handleFormChange(e, 'college')}
+                        className="input-field"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
-                        {field.type === 'dropdown' && (
-                          <select
-                            value={formData[field.id] || ''}
-                            onChange={(e) => handleFormChange(e, field.id)}
-                            className="input-field"
-                            required={field.required}
-                          >
-                            <option value="">Select an option</option>
+              {/* Additional Custom Fields */}
+              {event.registrationForm && event.registrationForm.length > 0 && (
+                <div className="space-y-4 border-t border-white/10 pt-6">
+                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">Additional Information</h3>
+                  
+                  {event.registrationForm.map((field) => (
+                    <div key={field.id} className="space-y-1">
+                      <label className="label text-xs">
+                        {field.label} {field.required && <span className="text-red-500">*</span>}
+                      </label>
+
+                      {['text', 'email', 'phone', 'number'].includes(field.type) && (
+                        <input
+                          type={field.type}
+                          value={formData[field.id] || ''}
+                          onChange={(e) => handleFormChange(e, field.id)}
+                          placeholder={field.placeholder}
+                          className="input-field"
+                          required={field.required}
+                        />
+                      )}
+
+                      {field.type === 'textarea' && (
+                        <textarea
+                          value={formData[field.id] || ''}
+                          onChange={(e) => handleFormChange(e, field.id)}
+                          placeholder={field.placeholder}
+                          rows="3"
+                          className="input-field"
+                          required={field.required}
+                        />
+                      )}
+
+                      {field.type === 'dropdown' && (
+                        <select
+                          value={formData[field.id] || ''}
+                          onChange={(e) => handleFormChange(e, field.id)}
+                          className="input-field"
+                          required={field.required}
+                        >
+                          <option value="">Select option</option>
+                          {field.options?.map((option, idx) => (
+                            <option key={idx} value={option}>{option}</option>
+                          ))}
+                        </select>
+                      )}
+                      
+                      {field.type === 'radio' && (
+                          <div className="flex flex-wrap gap-4 mt-2">
                             {field.options?.map((option, idx) => (
-                              <option key={idx} value={option}>{option}</option>
-                            ))}
-                          </select>
-                        )}
-
-                        {field.type === 'radio' && (
-                          <div className="space-y-2">
-                            {field.options?.map((option, idx) => (
-                              <label key={idx} className="flex items-center space-x-2">
+                              <label key={idx} className="flex items-center space-x-2 cursor-pointer">
                                 <input
                                   type="radio"
                                   name={`field-${field.id}`}
@@ -1323,28 +1150,28 @@ const EventDetails = () => {
                                   checked={formData[field.id] === option}
                                   onChange={(e) => handleFormChange(e, field.id)}
                                   required={field.required}
-                                  className="w-4 h-4"
+                                  className="form-radio text-primary focus:ring-primary bg-white/10 border-white/20"
                                 />
-                                <span>{option}</span>
+                                <span className="text-sm text-gray-300">{option}</span>
                               </label>
                             ))}
                           </div>
                         )}
-
+                        
                         {field.type === 'checkbox' && (
-                          <label className="flex items-center space-x-2">
+                          <label className="flex items-center space-x-2 mt-2 cursor-pointer p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
                             <input
                               type="checkbox"
                               checked={formData[field.id] || false}
                               onChange={(e) => handleFormChange(e, field.id)}
                               required={field.required}
-                              className="w-4 h-4"
+                              className="w-5 h-5 rounded text-primary border-gray-500 focus:ring-primary bg-transparent"
                             />
-                            <span>{field.placeholder || 'I agree'}</span>
+                            <span className="text-sm text-gray-200">{field.placeholder || 'I Confirm'}</span>
                           </label>
                         )}
-
-                        {field.type === 'file' && (
+                        
+                         {field.type === 'file' && (
                           <input
                             type="file"
                             onChange={(e) => handleFormChange(e, field.id)}
@@ -1352,39 +1179,31 @@ const EventDetails = () => {
                             required={field.required}
                           />
                         )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="pt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                  <button
-                    type="submit"
-                    disabled={registering}
-                    className="btn-primary flex-1 py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
-                  >
-                    {registering ? 'Submitting...' : (event.isPaid ? 'Proceed to Payment' : 'Submit Registration')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowRegistrationModal(false)}
-                    className="btn-secondary flex-1 py-2 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
-                  >
-                    Cancel
-                  </button>
+                    </div>
+                  ))}
                 </div>
-              </form>
-            </div>
-          </div>
-        )}
+              )}
 
-        <button
-          onClick={() => navigate(`/fest/${event.festId}`)}
-          className="btn-secondary text-sm sm:text-base py-2 sm:py-3 px-3 sm:px-4"
-        >
-          ← Back to Fest
-        </button>
-      </div>
+              <div className="pt-6 border-t border-white/10 flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowRegistrationModal(false)}
+                  className="flex-1 btn-secondary py-3 text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={registering}
+                  className="flex-1 btn-primary py-3 text-sm font-bold shadow-lg shadow-primary/20"
+                >
+                  {registering ? 'Processing...' : (event.isPaid ? 'Proceed to Payment →' : 'Confirm Registration')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

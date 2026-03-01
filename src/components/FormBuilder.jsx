@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 const FormBuilder = ({ fields, onUpdate }) => {
   const [editingField, setEditingField] = useState(null);
+  const [newOptionValue, setNewOptionValue] = useState('');
   const [newField, setNewField] = useState({
     label: '',
     type: 'text',
@@ -57,6 +58,7 @@ const FormBuilder = ({ fields, onUpdate }) => {
       placeholder: '',
       options: []
     });
+    setNewOptionValue('');
   };
 
   const removeField = (fieldId) => {
@@ -79,12 +81,12 @@ const FormBuilder = ({ fields, onUpdate }) => {
   };
 
   const addOption = () => {
-    const option = prompt('Enter option text:');
-    if (option && option.trim()) {
+    if (newOptionValue && newOptionValue.trim()) {
       setNewField({
         ...newField,
-        options: [...newField.options, option.trim()]
+        options: [...newField.options, newOptionValue.trim()]
       });
+      setNewOptionValue('');
     }
   };
 
@@ -175,10 +177,10 @@ const FormBuilder = ({ fields, onUpdate }) => {
             <select
               value={newField.type}
               onChange={(e) => setNewField({ ...newField, type: e.target.value, options: [] })}
-              className="input-field"
+              className="input-field appearance-none"
             >
               {fieldTypes.map(ft => (
-                <option key={ft.value} value={ft.value}>
+                <option key={ft.value} value={ft.value} className="bg-[#121A2F] text-white">
                   {ft.label}
                 </option>
               ))}
@@ -215,18 +217,15 @@ const FormBuilder = ({ fields, onUpdate }) => {
           {['dropdown', 'radio'].includes(newField.type) && (
             <div>
               <label className="label">Options *</label>
-              <div className="space-y-2">
+              <div className="space-y-3 p-4 bg-white/5 rounded-xl border border-white/10">
                 {newField.options.map((option, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      value={option}
-                      readOnly
-                      className="input-field flex-1"
-                    />
+                  <div key={index} className="flex items-center space-x-2 animate-fade-in">
+                    <div className="flex-1 bg-white/5 px-3 py-2 rounded-lg text-sm text-gray-300 border border-white/5">
+                      {option}
+                    </div>
                     <button
                       onClick={() => removeOption(index)}
-                      className="text-red-400 hover:text-red-300 transition-colors"
+                      className="text-red-400 hover:text-red-300 p-2 hover:bg-red-500/10 rounded-lg transition-colors"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -234,12 +233,23 @@ const FormBuilder = ({ fields, onUpdate }) => {
                     </button>
                   </div>
                 ))}
-                <button
-                  onClick={addOption}
-                  className="btn-secondary w-full"
-                >
-                  + Add Option
-                </button>
+                
+                <div className="flex gap-2 mt-2">
+                    <input
+                        type="text"
+                        value={newOptionValue}
+                        onChange={(e) => setNewOptionValue(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && addOption()}
+                        className="input-field py-2 text-sm"
+                        placeholder="Type option and press Enter"
+                    />
+                    <button
+                        onClick={addOption}
+                        className="btn-secondary py-2 px-4 whitespace-nowrap text-sm"
+                    >
+                        + Add
+                    </button>
+                </div>
               </div>
             </div>
           )}

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const RoleSelection = ({ selectedRole, onSelect }) => {
+const RoleSelector = ({ selectedRole, onSelect }) => {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div 
@@ -89,4 +89,4 @@ const RoleSelection = ({ selectedRole, onSelect }) => {
   );
 };
 
-export default RoleSelection;
+export default RoleSelector;

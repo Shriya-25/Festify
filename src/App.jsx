@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
-import RoleSelection from './components/RoleSelection';
+import RoleSelection from './pages/RoleSelection';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';

@@ -13,9 +13,9 @@ const EditFest = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [fetchingFest, setFetchingFest] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [message, setMessage] = useState('');
-  const [fetchingFest, setFetchingFest] = useState(true);
   
   const [festData, setFestData] = useState({
     festName: '',
@@ -27,9 +27,25 @@ const EditFest = () => {
     registrationStartDate: '',
     registrationEndDate: '',
     bannerUrl: '',
+    socialMedia: {
+      instagram: '',
+      linkedin: '',
+      website: '',
+      youtube: '',
+      twitter: ''
+    },
+    sponsors: [],
+    gallery: [],
     registrationForm: [],
     prefillUserData: true
   });
+
+  // States for sponsor management
+  const [currentSponsor, setCurrentSponsor] = useState({ name: '', logoUrl: '' });
+  const [uploadingSponsorLogo, setUploadingSponsorLogo] = useState(false);
+
+  // States for gallery management
+  const [uploadingGalleryImage, setUploadingGalleryImage] = useState(false);
 
   const categories = ['Technical', 'Cultural', 'Sports'];
   
@@ -38,7 +54,7 @@ const EditFest = () => {
 
   useEffect(() => {
     fetchFestDetails();
-  }, [festId]);
+  }, [festId, currentUser]);
 
   const fetchFestDetails = async () => {
     try {
@@ -47,6 +63,7 @@ const EditFest = () => {
       
       if (!festDoc.exists()) {
         setMessage('Fest not found');
+        setTimeout(() => navigate('/dashboard'), 2000);
         return;
       }
 
@@ -59,7 +76,7 @@ const EditFest = () => {
         return;
       }
 
-      // Populate form with existing data
+      // Populate form with existing data, handling new fields gracefully
       setFestData({
         festName: fest.festName || '',
         collegeName: fest.collegeName || '',
@@ -70,6 +87,15 @@ const EditFest = () => {
         registrationStartDate: fest.registrationStartDate || '',
         registrationEndDate: fest.registrationEndDate || '',
         bannerUrl: fest.bannerUrl || '',
+        socialMedia: fest.socialMedia || {
+            instagram: '',
+            linkedin: '',
+            website: '',
+            youtube: '',
+            twitter: ''
+        },
+        sponsors: fest.sponsors || [],
+        gallery: fest.gallery || [],
         registrationForm: fest.registrationForm || [],
         prefillUserData: fest.prefillUserData !== undefined ? fest.prefillUserData : true
       });
@@ -85,6 +111,117 @@ const EditFest = () => {
     setFestData({
       ...festData,
       [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSocialMediaChange = (e) => {
+    setFestData({
+      ...festData,
+      socialMedia: {
+        ...festData.socialMedia,
+        [e.target.name]: e.target.value
+      }
+    });
+  };
+
+  const isValidUrl = (string) => {
+    if (!string) return true; // Empty is valid (optional fields)
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const uploadToImgBB = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await response.json();
+    if (data.success) {
+      return data.data.url;
+    }
+    throw new Error('Failed to upload image');
+  };
+
+  const handleAddSponsor = async () => {
+    if (!currentSponsor.name.trim()) {
+      setMessage('Please enter sponsor name');
+      return;
+    }
+    if (!currentSponsor.logoUrl) {
+      setMessage('Please upload sponsor logo');
+      return;
+    }
+
+    setFestData({
+      ...festData,
+      sponsors: [...festData.sponsors, { ...currentSponsor, id: Date.now() }]
+    });
+    setCurrentSponsor({ name: '', logoUrl: '' });
+    setMessage('Sponsor added successfully');
+    setTimeout(() => setMessage(''), 2000);
+  };
+
+  const handleRemoveSponsor = (id) => {
+    setFestData({
+      ...festData,
+      sponsors: festData.sponsors.filter(s => s.id !== id)
+    });
+  };
+
+  const handleSponsorLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage('Image size should be less than 5MB');
+      return;
+    }
+    try {
+      setUploadingSponsorLogo(true);
+      const url = await uploadToImgBB(file);
+      setCurrentSponsor({ ...currentSponsor, logoUrl: url });
+      setMessage('Logo uploaded!');
+    } catch (error) {
+      setMessage('Failed to upload logo');
+    } finally {
+      setUploadingSponsorLogo(false);
+    }
+  };
+
+  const handleGalleryImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage('Image size should be less than 5MB');
+      return;
+    }
+    try {
+      setUploadingGalleryImage(true);
+      const url = await uploadToImgBB(file);
+      setFestData({
+        ...festData,
+        gallery: [...festData.gallery, { id: Date.now(), url }]
+      });
+      setMessage('Image added to gallery!');
+      setTimeout(() => setMessage(''), 2000);
+    } catch (error) {
+      setMessage('Failed to upload image');
+    } finally {
+      setUploadingGalleryImage(false);
+    }
+  };
+
+  const handleRemoveGalleryImage = (id) => {
+    setFestData({
+      ...festData,
+      gallery: festData.gallery.filter(img => img.id !== id)
     });
   };
 
@@ -142,15 +279,6 @@ const EditFest = () => {
     }
   };
 
-  const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-
   const handleFormUpdate = (formFields) => {
     setFestData({
       ...festData,
@@ -183,6 +311,31 @@ const EditFest = () => {
     }
 
     if (currentStep === 2) {
+      // Validate social media URLs if provided
+      const socialMedia = festData.socialMedia;
+      if (socialMedia.instagram && !isValidUrl(socialMedia.instagram)) {
+        setMessage('Please enter a valid Instagram URL');
+        return;
+      }
+      if (socialMedia.linkedin && !isValidUrl(socialMedia.linkedin)) {
+        setMessage('Please enter a valid LinkedIn URL');
+        return;
+      }
+      if (socialMedia.website && !isValidUrl(socialMedia.website)) {
+        setMessage('Please enter a valid Website URL');
+        return;
+      }
+      if (socialMedia.youtube && !isValidUrl(socialMedia.youtube)) {
+        setMessage('Please enter a valid YouTube URL');
+        return;
+      }
+      if (socialMedia.twitter && !isValidUrl(socialMedia.twitter)) {
+        setMessage('Please enter a valid Twitter/X URL');
+        return;
+      }
+    }
+
+    if (currentStep === 4) {
       if (!festData.bannerUrl) {
         setMessage('Please add a banner image');
         return;
@@ -221,7 +374,6 @@ const EditFest = () => {
         return cleanField;
       });
 
-      // Update fest with new data - reset status to pending for re-approval
       await updateDoc(doc(db, 'fests', festId), {
         festName: festData.festName,
         collegeName: festData.collegeName,
@@ -232,14 +384,15 @@ const EditFest = () => {
         registrationStartDate: festData.registrationStartDate,
         registrationEndDate: festData.registrationEndDate,
         bannerUrl: festData.bannerUrl,
+        socialMedia: festData.socialMedia,
+        sponsors: festData.sponsors,
+        gallery: festData.gallery,
         registrationForm: cleanedRegistrationForm,
         prefillUserData: festData.prefillUserData,
-        status: 'pending', // Reset to pending for re-approval
-        adminComments: '', // Clear previous admin comments
         updatedAt: new Date().toISOString()
       });
 
-      setMessage('🎉 Fest updated successfully! It has been sent for admin re-approval.');
+      setMessage('🎉 Fest updated successfully!');
 
       setTimeout(() => {
         navigate('/dashboard');
@@ -253,87 +406,96 @@ const EditFest = () => {
   };
 
   if (fetchingFest) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-white">Loading fest details...</p>
+     return (
+        <div className="min-h-screen bg-[#0A0F1F] flex items-center justify-center">
+            <div className="text-center">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <h2 className="text-xl font-bold text-white">Loading Fest Details...</h2>
+            </div>
         </div>
-      </div>
-    );
+     )
   }
 
   return (
-    <div className="min-h-screen py-4 sm:py-8">
-      <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8">
-        {/* Back Button */}
-        <div className="mb-4 sm:mb-6">
-          <button onClick={() => navigate('/dashboard')} className="text-primary hover:underline flex items-center gap-2 text-sm sm:text-base">
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Dashboard
-          </button>
-        </div>
-        
+    <div className="min-h-screen relative py-20 px-4 sm:px-6 lg:px-8">
+      {/* Background Ambience */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] animate-float"></div>
+        <div className="absolute bottom-[10%] left-[10%] w-[30%] h-[30%] bg-purple-500/10 rounded-full blur-[100px] animate-pulse"></div>
+      </div>
+
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Edit Fest</h1>
-          <div className="bg-yellow-500/20 border-l-4 border-yellow-400 p-4 rounded">
-            <p className="text-sm text-yellow-300">
-              ⚠️ <strong>Note:</strong> After editing, this fest will be sent back for admin approval. 
-              It will show as "Pending" until the admin reviews and approves it again.
-            </p>
-          </div>
+        <div className="mb-8 flex items-center justify-between">
+            <button onClick={() => navigate('/dashboard')} className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </div>
+                <span className="font-medium">Back to Dashboard</span>
+            </button>
         </div>
 
         {/* Progress Steps */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex items-center justify-between">
-            {[1, 2, 3, 4].map((step) => (
-              <div key={step} className="flex items-center flex-1">
+        <div className="mb-10 px-4">
+          <div className="flex items-center justify-between relative z-10">
+            {[1, 2, 3, 4, 5, 6].map((step) => (
+              <div key={step} className="flex flex-col items-center group relative">
                 <div
-                  className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-sm sm:text-base ${
-                    currentStep >= step ? 'bg-primary text-white' : 'bg-white/10 text-gray-400'
+                  className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 z-10 ${
+                    currentStep >= step 
+                      ? 'bg-gradient-to-br from-primary to-orange-600 text-white shadow-[0_0_15px_rgba(255,122,24,0.4)] scale-110' 
+                      : 'bg-[#121A2F] text-gray-500 border border-white/10 group-hover:border-white/30'
                   }`}
                 >
                   {step}
                 </div>
-                {step < 4 && (
-                  <div
-                    className={`w-full h-1 mx-1 sm:mx-2 ${
-                      currentStep > step ? 'bg-primary' : 'bg-white/10'
-                    }`}
-                  />
+                <span className={`absolute -bottom-8 text-xs font-medium whitespace-nowrap transition-colors duration-300 ${
+                  currentStep >= step ? 'text-white' : 'text-gray-600'
+                }`}>
+                  {step === 1 ? 'Details' : step === 2 ? 'Social' : step === 3 ? 'Enhance' : step === 4 ? 'Banner' : step === 5 ? 'Form' : 'Review'}
+                </span>
+                
+                {/* Connecting Line */}
+                {step < 6 && (
+                    <div className="absolute top-5 left-1/2 w-[calc(100vw/6)] max-w-[140px] h-[2px] -z-10">
+                        <div className={`h-full transition-all duration-500 ${currentStep > step ? 'bg-primary' : 'bg-white/5'}`}></div>
+                    </div>
                 )}
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-2 text-xs sm:text-sm">
-            <span className={currentStep >= 1 ? 'text-primary font-semibold' : 'text-gray-400'}>Basic Details</span>
-            <span className={currentStep >= 2 ? 'text-primary font-semibold' : 'text-gray-400'}>Banner</span>
-            <span className={currentStep >= 3 ? 'text-primary font-semibold' : 'text-gray-400'}>Registration Form</span>
-            <span className={currentStep >= 4 ? 'text-primary font-semibold' : 'text-gray-400'}>Review</span>
-          </div>
         </div>
 
         {message && (
-          <div className={`mb-6 p-4 rounded-lg ${
-            message.includes('success') || message.includes('🎉') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          <div className={`mb-6 p-4 rounded-xl border flex items-center gap-3 animate-fade-in ${
+            message.includes('success') || message.includes('🎉') 
+              ? 'bg-green-500/10 border-green-500/20 text-green-200' 
+              : 'bg-red-500/10 border-red-500/20 text-red-200'
           }`}>
-            {message}
+             {message.includes('success') || message.includes('🎉') ? (
+                 <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+             ) : (
+                <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+             )}
+            <p className="font-medium">{message}</p>
           </div>
         )}
 
-        <div className="glass-container p-4 sm:p-6 md:p-8">
+        <div className="glass-card p-6 md:p-10 animate-fade-in-up">
           {/* Step 1: Basic Details */}
           {currentStep === 1 && (
-            <div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 1: Fest Basic Details</h2>
-              <div className="space-y-4 sm:space-y-6">
-                <div>
-                  <label htmlFor="festName" className="label text-sm">
-                    Fest Name <span className="text-red-500">*</span>
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-white mb-2">Edit Fest Details</h2>
+                <p className="text-gray-400">Update the basics about your event</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="md:col-span-2">
+                  <label htmlFor="festName" className="label">
+                    Fest Name <span className="text-primary">*</span>
                   </label>
                   <input
                     type="text"
@@ -341,15 +503,15 @@ const EditFest = () => {
                     name="festName"
                     required
                     className="input-field"
-                    placeholder="e.g., TechFest 2026"
+                    placeholder="e.g. TechVision 2024"
                     value={festData.festName}
                     onChange={handleChange}
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="collegeName" className="label text-sm">
-                    College Name <span className="text-red-500">*</span>
+                  <label htmlFor="collegeName" className="label">
+                    College Name <span className="text-primary">*</span>
                   </label>
                   <input
                     type="text"
@@ -357,15 +519,36 @@ const EditFest = () => {
                     name="collegeName"
                     required
                     className="input-field"
-                    placeholder="Enter your college name"
+                    placeholder="University Name"
                     value={festData.collegeName}
                     onChange={handleChange}
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="festStartDate" className="label text-sm">
-                    Fest Start Date <span className="text-red-500">*</span>
+                  <label htmlFor="city" className="label">
+                    City <span className="text-primary">*</span>
+                  </label>
+                  <select
+                    id="city"
+                    name="city"
+                    required
+                    className="input-field appearance-none"
+                    value={festData.city}
+                    onChange={handleChange}
+                  >
+                    <option value="" className="bg-gray-900">Select City</option>
+                    {metroCities.map((city) => (
+                      <option key={city} value={city} className="bg-gray-900">
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="festStartDate" className="label">
+                    Fest Start Date <span className="text-primary">*</span>
                   </label>
                   <input
                     type="date"
@@ -376,12 +559,30 @@ const EditFest = () => {
                     value={festData.festStartDate}
                     onChange={handleChange}
                   />
-                  <p className="text-xs text-gray-400 mt-1">When the fest begins</p>
                 </div>
 
                 <div>
-                  <label htmlFor="registrationStartDate" className="label text-sm">
-                    Registration Start Date <span className="text-red-500">*</span>
+                  <label htmlFor="category" className="label">
+                    Category <span className="text-primary">*</span>
+                  </label>
+                  <select
+                    id="category"
+                    name="category"
+                    className="input-field appearance-none"
+                    value={festData.category}
+                    onChange={handleChange}
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat} className="bg-gray-900">
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="registrationStartDate" className="label">
+                    Registration Opens <span className="text-primary">*</span>
                   </label>
                   <input
                     type="date"
@@ -392,12 +593,11 @@ const EditFest = () => {
                     value={festData.registrationStartDate}
                     onChange={handleChange}
                   />
-                  <p className="text-xs text-gray-400 mt-1">When registrations open</p>
                 </div>
 
                 <div>
-                  <label htmlFor="registrationEndDate" className="label text-sm">
-                    Registration End Date <span className="text-red-500">*</span>
+                  <label htmlFor="registrationEndDate" className="label">
+                    Registration Closes <span className="text-primary">*</span>
                   </label>
                   <input
                     type="date"
@@ -408,60 +608,19 @@ const EditFest = () => {
                     value={festData.registrationEndDate}
                     onChange={handleChange}
                   />
-                  <p className="text-xs text-gray-400 mt-1">Last date to register</p>
                 </div>
 
-                <div>
-                  <label htmlFor="city" className="label text-sm">
-                    City <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    id="city"
-                    name="city"
-                    required
-                    className="input-field"
-                    value={festData.city}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select City</option>
-                    {metroCities.map((city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-gray-400 mt-1">City will be displayed on the fest card and used for filtering</p>
-                </div>
-
-                <div>
-                  <label htmlFor="category" className="label text-sm">
-                    Category <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    id="category"
-                    name="category"
-                    required
-                    className="input-field"
-                    value={festData.category}
-                    onChange={handleChange}
-                  >
-                    {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label htmlFor="description" className="label text-sm">
-                    Description <span className="text-red-500">*</span>
+                <div className="md:col-span-2">
+                  <label htmlFor="description" className="label">
+                    Description <span className="text-primary">*</span>
                   </label>
                   <textarea
                     id="description"
                     name="description"
                     required
                     rows="4"
-                    className="input-field"
-                    placeholder="Describe your fest..."
+                    className="textarea-field"
+                    placeholder="Describe what makes your fest unique..."
                     value={festData.description}
                     onChange={handleChange}
                   />
@@ -470,102 +629,248 @@ const EditFest = () => {
             </div>
           )}
 
-          {/* Step 2: Banner Upload */}
+          {/* Step 2: Social Media Links */}
           {currentStep === 2 && (
-            <div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 2: Add Banner Image</h2>
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-white mb-2">Connect Socially</h2>
+                <p className="text-gray-400">Where can students find more info?</p>
+              </div>
               
-              <div className="space-y-4 sm:space-y-6">
-                {/* Current Banner Preview */}
-                {festData.bannerUrl && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-300 mb-2">Current Banner</h3>
-                    <img
-                      src={festData.bannerUrl}
-                      alt="Current Banner"
-                      className="w-full h-48 sm:h-56 md:h-64 object-cover rounded-lg border-2 border-white/10"
-                    />
+              <div className="space-y-5">
+                {[
+                    { id: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/...' },
+                    { id: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/company/...' },
+                    { id: 'website', label: 'Official Website', placeholder: 'https://...' },
+                    { id: 'youtube', label: 'YouTube Channel', placeholder: 'https://youtube.com/...' },
+                    { id: 'twitter', label: 'Twitter / X', placeholder: 'https://twitter.com/...' },
+                ].map((social) => (
+                    <div key={social.id}>
+                        <label htmlFor={social.id} className="label">{social.label} (Optional)</label>
+                        <input
+                            type="url"
+                            id={social.id}
+                            name={social.id}
+                            className="input-field"
+                            placeholder={social.placeholder}
+                            value={festData.socialMedia[social.id]}
+                            onChange={handleSocialMediaChange}
+                        />
+                    </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Sponsors & Gallery */}
+          {currentStep === 3 && (
+            <div className="space-y-8">
+               <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-white mb-2">Enhance Your Page</h2>
+                <p className="text-gray-400">Add sponsors and gallery images to build trust</p>
+              </div>
+
+              {/* Sponsors Section */}
+              <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <span className="text-primary">✨</span> Sponsors
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <input
+                        type="text"
+                        className="input-field mb-2"
+                        placeholder="Sponsor Name"
+                        value={currentSponsor.name}
+                        onChange={(e) => setCurrentSponsor({...currentSponsor, name: e.target.value})}
+                        />
+                         <button
+                            type="button"
+                            onClick={handleAddSponsor}
+                            className="btn-secondary w-full"
+                            disabled={uploadingSponsorLogo}
+                        >
+                            <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                            Add Sponsor
+                        </button>
+                    </div>
+
+                    <div className="border-2 border-dashed border-white/10 rounded-xl p-4 flex flex-col items-center justify-center bg-black/20 hover:bg-black/30 transition-colors">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleSponsorLogoUpload}
+                            className="hidden"
+                            id="sponsor-logo-upload"
+                            disabled={uploadingSponsorLogo}
+                        />
+                        <label htmlFor="sponsor-logo-upload" className="cursor-pointer text-center w-full h-full flex flex-col items-center justify-center">
+                            {currentSponsor.logoUrl ? (
+                                <img src={currentSponsor.logoUrl} alt="Preview" className="h-16 object-contain" />
+                            ) : (
+                                <>
+                                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center mb-2">
+                                         <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                    </div>
+                                    <p className="text-xs text-gray-400">{uploadingSponsorLogo ? 'Uploading...' : 'Upload Logo'}</p>
+                                </>
+                            )}
+                        </label>
+                    </div>
+                </div>
+
+                {/* Display Sponsors */}
+                {festData.sponsors.length > 0 && (
+                  <div className="flex flex-wrap gap-4 mt-4">
+                    {festData.sponsors.map(sponsor => (
+                      <div key={sponsor.id} className="bg-[#121A2F] p-3 rounded-lg border border-white/10 relative group w-24 flex flex-col items-center">
+                        <button
+                          onClick={() => handleRemoveSponsor(sponsor.id)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                        >
+                          ×
+                        </button>
+                        <img src={sponsor.logoUrl} alt={sponsor.name} className="h-10 w-full object-contain mb-1" />
+                        <p className="text-[10px] text-gray-400 text-center truncate w-full">{sponsor.name}</p>
+                      </div>
+                    ))}
                   </div>
                 )}
+              </div>
 
-                {/* Upload by File */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-300 mb-2">
-                    {festData.bannerUrl ? 'Upload New Banner' : 'Upload Banner'} 
-                    <span className="text-red-500"> *</span>
-                  </h3>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={uploadingImage}
-                    className="block w-full text-sm text-gray-300
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-lg file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-primary file:text-white
-                      hover:file:bg-primary/90
-                      disabled:opacity-50"
-                  />
-                  {uploadingImage && (
-                    <p className="text-sm text-gray-400 mt-2">Uploading image...</p>
-                  )}
-                  <p className="text-xs text-gray-400 mt-1">Max size: 5MB. Supported formats: JPG, PNG, GIF</p>
-                </div>
-
-                {/* OR Divider */}
-                <div className="flex items-center">
-                  <div className="flex-1 border-t border-white/10"></div>
-                  <span className="px-4 text-gray-400 text-sm">OR</span>
-                  <div className="flex-1 border-t border-white/10"></div>
-                </div>
-
-                {/* Upload by URL */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-300 mb-2">Use Image URL</h3>
-                  <div className="flex flex-col sm:flex-row gap-2">
+              {/* Gallery Section */}
+               <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <span className="text-accent">🖼️</span> Gallery
+                </h3>
+                
+                <div className="mb-6">
                     <input
-                      type="url"
-                      name="bannerUrl"
-                      placeholder="https://example.com/image.jpg"
-                      className="input-field flex-1"
-                      value={festData.bannerUrl}
-                      onChange={handleChange}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleGalleryImageUpload}
+                      className="hidden"
+                      id="gallery-upload"
+                      disabled={uploadingGalleryImage}
                     />
-                    <button
-                      type="button"
-                      onClick={handleCustomUrlSubmit}
-                      className="btn-secondary px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base whitespace-nowrap"
-                    >
-                      Add URL
-                    </button>
+                    <label htmlFor="gallery-upload" className="cursor-pointer block text-center border-2 border-dashed border-white/10 rounded-xl p-8 hover:bg-white/5 transition-colors group">
+                        <div className="w-12 h-12 rounded-full bg-primary/10 mx-auto flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        </div>
+                        <p className="text-white font-medium mb-1">{uploadingGalleryImage ? 'Uploading...' : 'Drop images here or click to upload'}</p>
+                        <p className="text-xs text-gray-500">Supports PNG, JPG up to 5MB</p>
+                    </label>
+                </div>
+
+                {/* Display Gallery Images */}
+                {festData.gallery.length > 0 && (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                    {festData.gallery.map(image => (
+                      <div key={image.id} className="relative group aspect-square">
+                        <img src={image.url} alt="Gallery" className="w-full h-full object-cover rounded-lg border border-white/10" />
+                        <button
+                          onClick={() => handleRemoveGalleryImage(image.id)}
+                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">Provide a direct link to your banner image</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Banner Image */}
+          {currentStep === 4 && (
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-white mb-2">Fest Banner</h2>
+                <p className="text-gray-400">Update the banner image for your fest page</p>
+              </div>
+
+              {festData.bannerUrl && (
+                <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl mb-6">
+                  <img
+                    src={festData.bannerUrl}
+                    alt="Banner Preview"
+                    className="w-full h-48 sm:h-64 object-cover"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/800x400?text=Invalid+Image';
+                    }}
+                  />
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 {/* Upload Option */}
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center hover:border-primary/50 transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="banner-upload"
+                      disabled={uploadingImage}
+                    />
+                    <label htmlFor="banner-upload" className="cursor-pointer block h-full flex flex-col items-center justify-center">
+                         <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                            <svg className="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                         </div>
+                        <h4 className="text-white font-medium mb-1">{uploadingImage ? 'Uploading...' : 'Upload Image'}</h4>
+                        <p className="text-xs text-gray-500">Max size 5MB</p>
+                    </label>
+                </div>
+
+                {/* URL Option */}
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10 flex flex-col justify-center">
+                    <h4 className="text-white font-medium mb-3">Or use an image URL</h4>
+                    <div className="flex gap-2">
+                        <input
+                            type="url"
+                            name="bannerUrl"
+                            className="input-field"
+                            placeholder="https://..."
+                            value={festData.bannerUrl}
+                            onChange={handleChange}
+                        />
+                         <button
+                            type="button"
+                            onClick={handleCustomUrlSubmit}
+                            className="bg-primary/20 hover:bg-primary/30 text-primary border border-primary/20 rounded-xl px-4 transition-colors font-medium text-sm"
+                        >
+                            Validate
+                        </button>
+                    </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Step 3: Registration Form Builder */}
-          {currentStep === 3 && (
-            <div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 3: Edit Registration Form</h2>
+          {/* Step 5: Registration Form Builder */}
+          {currentStep === 5 && (
+            <div className="space-y-6">
+               <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-white mb-2">Registration Form</h2>
+                <p className="text-gray-400">Customize what data you collect from students</p>
+              </div>
               
-              <div className="mb-6">
-                <label className="flex items-center space-x-2 cursor-pointer">
+              <div className="bg-gradient-to-r from-primary/10 to-transparent p-4 rounded-xl border border-primary/20 flex items-center justify-between">
+                <div>
+                    <h4 className="text-white font-medium">Smart Prefill</h4>
+                    <p className="text-xs text-gray-400">Auto-fill Student Name, Email & College</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     checked={festData.prefillUserData}
                     onChange={(e) => setFestData({...festData, prefillUserData: e.target.checked})}
-                    className="w-4 h-4"
+                    className="sr-only peer"
                   />
-                  <span className="text-gray-300">
-                    Auto-fill user profile data (Name, Email, Phone, College)
-                  </span>
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 </label>
-                <p className="text-sm text-gray-400 ml-6 mt-1">
-                  When enabled, registered users' basic information will be pre-filled in the form
-                </p>
               </div>
 
               <FormBuilder
@@ -575,81 +880,88 @@ const EditFest = () => {
             </div>
           )}
 
-          {/* Step 4: Review & Submit */}
-          {currentStep === 4 && (
-            <div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6">Step 4: Review & Update</h2>
+          {/* Step 6: Review & Publish */}
+          {currentStep === 6 && (
+            <div className="space-y-6">
+               <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-white mb-2">Review Changes</h2>
+                <p className="text-gray-400">Review your updates before saving</p>
+              </div>
               
-              <div className="space-y-4 sm:space-y-6">
-                <div>
-                  <h3 className="font-semibold text-base sm:text-lg text-white mb-3">Fest Details</h3>
-                  <div className="bg-white/5 p-4 rounded-lg space-y-2 text-gray-300">
-                    <p><strong>Name:</strong> {festData.festName}</p>
-                    <p><strong>College:</strong> {festData.collegeName}</p>
-                    <p><strong>City:</strong> {festData.city}</p>
-                    <p><strong>Fest Start Date:</strong> {festData.festStartDate}</p>
-                    <p><strong>Registration Period:</strong> {festData.registrationStartDate} to {festData.registrationEndDate}</p>
-                    <p><strong>Category:</strong> {festData.category}</p>
-                    <p><strong>Description:</strong> {festData.description}</p>
-                  </div>
+              <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+                <div className="relative h-48">
+                    <img src={festData.bannerUrl || 'https://via.placeholder.com/800x400'} className="w-full h-full object-cover" alt="Banner" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                        <div>
+                            <span className="badge badge-tech mb-2">{festData.category}</span>
+                            <h2 className="text-3xl font-bold text-white">{festData.festName}</h2>
+                            <p className="text-gray-300 flex items-center gap-1 text-sm mt-1">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                {festData.city} | {festData.collegeName}
+                            </p>
+                        </div>
+                    </div>
                 </div>
-
-                <div>
-                  <h3 className="font-semibold text-base sm:text-lg text-white mb-3">Banner</h3>
-                  {festData.bannerUrl && (
-                    <img
-                      src={festData.bannerUrl}
-                      alt="Banner"
-                      className="w-full h-40 sm:h-48 object-cover rounded-lg"
-                    />
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-base sm:text-lg text-white mb-3">Registration Form</h3>
-                  <div className="bg-white/5 p-4 rounded-lg text-gray-300">
-                    <p className="mb-2">
-                      <strong>Prefill User Data:</strong> {festData.prefillUserData ? 'Yes' : 'No'}
-                    </p>
-                    <p className="mb-2">
-                      <strong>Custom Fields:</strong> {festData.registrationForm.length} field(s)
-                    </p>
-                    {festData.registrationForm.length === 0 && (
-                      <p className="text-sm text-gray-400">Standard registration (Name, Email, Phone, College only)</p>
-                    )}
-                  </div>
+                
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 className="text-gray-400 text-xs uppercase tracking-wider font-semibold mb-1">About</h4>
+                        <p className="text-gray-300 text-sm leading-relaxed">{festData.description}</p>
+                    </div>
+                    <div className="space-y-3">
+                         <div>
+                            <h4 className="text-gray-400 text-xs uppercase tracking-wider font-semibold mb-1">Timeline</h4>
+                            <p className="text-white text-sm">Fest Starts: <span className="text-primary">{festData.festStartDate}</span></p>
+                            <p className="text-white text-sm">Registration: <span className="text-gray-300">{festData.registrationStartDate} - {festData.registrationEndDate}</span></p>
+                        </div>
+                        <div>
+                             <h4 className="text-gray-400 text-xs uppercase tracking-wider font-semibold mb-1">Integrations</h4>
+                             <p className="text-sm text-gray-300">Form Fields: {festData.registrationForm.length}</p>
+                             <p className="text-sm text-gray-300">Sponsors: {festData.sponsors.length}</p>
+                        </div>
+                    </div>
                 </div>
               </div>
             </div>
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/10">
+          <div className="flex justify-between items-center mt-10 pt-6 border-t border-white/10">
             <button
               type="button"
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+              className={`px-6 py-3 rounded-xl border border-white/10 text-white font-medium transition-all ${
+                currentStep === 1 
+                  ? 'opacity-0 pointer-events-none' 
+                  : 'hover:bg-white/5 hover:border-white/20'
+              }`}
             >
-              ← Previous
+              Previous Step
             </button>
             
-            {currentStep < 4 ? (
+            {currentStep < 6 ? (
               <button
                 type="button"
                 onClick={handleNext}
-                className="btn-primary px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+                className="btn-primary"
               >
-                Next →
+                Continue
+                <svg className="w-5 h-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
               </button>
             ) : (
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="btn-primary disabled:opacity-50 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+                className="btn-primary shadow-glow"
               >
-                {loading ? 'Updating...' : 'Update Fest'}
+                {loading ? (
+                    <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Updating...
+                    </div>
+                ) : 'Update Fest'}
               </button>
             )}
           </div>
