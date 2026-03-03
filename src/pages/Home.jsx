@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import FestCard from '../components/FestCard';
@@ -18,9 +18,23 @@ const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const scrollRef = useRef(null);
 
   // Only 3 categories: Technical, Cultural, Sports
   const categories = ['all', 'Technical', 'Cultural', 'Sports'];
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+        scrollRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+      if (scrollRef.current) {
+          scrollRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+      }
+  };
+
   
   // Date filter options
   const dateFilters = [
@@ -208,25 +222,24 @@ const Home = () => {
 
         <div className="p-4 lg:p-8 space-y-8 flex-1">
             {/* Hero Section */}
-            <section className="relative rounded-3xl overflow-hidden min-h-[350px] flex flex-col justify-end p-6 lg:p-10 group shadow-2xl shadow-black/40">
+            <section className="relative rounded-3xl overflow-hidden min-h-[250px] flex flex-col justify-end p-6 lg:p-10 group shadow-2xl shadow-black/40">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" 
                      style={{
                         backgroundImage: "linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1459749411177-8c4750bb0e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')"
                      }}>
                 </div>
-                <div className="relative z-10 space-y-3 max-w-3xl">
+                <div className="relative z-10 space-y-2 max-w-3xl">
                     <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-md text-primary text-xs font-bold tracking-wider uppercase">
                         Featured Event
                     </div>
-                    <div className="pb-2">
-                        <h1 className="text-4xl lg:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg">
+                    <div className="pb-1">
+                        <h1 className="text-3xl lg:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
                             {currentUser ? `Welcome back, ${currentUser.displayName?.split(' ')[0] || 'User'}!` : 'Welcome to Festify!'}
                         </h1>
-                        <p className="text-slate-200 mt-2 text-lg lg:text-xl max-w-2xl drop-shadow-md">
+                        <p className="text-slate-200 mt-1 text-base lg:text-lg max-w-2xl drop-shadow-md">
                             Spring Bloom 2024 is almost here. Experience the biggest cultural fest of the year!
                         </p>
                     </div>
-                    {/* Buttons removed from hero as requested */}
                 </div>
             </section>
 
@@ -287,23 +300,47 @@ const Home = () => {
             </section>
 
             {/* Live Events (Horizontal Slider) */}
-            <section className="space-y-6">
+            <section className="space-y-6 group/slider">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                      <div className="flex items-center gap-3">
                         <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse box-shadow-glow"></span>
                         <h2 className="text-2xl font-bold text-white tracking-wide">Live Events</h2>
                      </div>
-                     <button className="px-6 py-2 bg-gradient-to-r from-primary to-primary-end text-bg-base font-bold rounded-full shadow-glow-primary hover:scale-105 transition-transform flex items-center gap-2 self-start md:self-auto">
-                        Register Now
-                        <span className="material-symbols-outlined text-lg">app_registration</span>
-                     </button>
-                     {/* View All button removed */}
+                     <div className="flex items-center gap-4 self-start md:self-auto">
+                        <div className="hidden md:flex gap-2">
+                            <button onClick={scrollLeft} className="p-2 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-colors">
+                                <span className="material-symbols-outlined">chevron_left</span>
+                            </button>
+                            <button onClick={scrollRight} className="p-2 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-colors">
+                                <span className="material-symbols-outlined">chevron_right</span>
+                            </button>
+                        </div>
+                        <button className="px-6 py-2 bg-gradient-to-r from-primary to-primary-end text-bg-base font-bold rounded-full shadow-glow-primary hover:scale-105 transition-transform flex items-center gap-2">
+                            Register Now
+                            <span className="material-symbols-outlined text-lg">app_registration</span>
+                        </button>
+                     </div>
                 </div>
                 
                 {/* Horizontal Scroll Layout */}
-                <div className="relative">
-                    {/* Gradient Fade for scroll indicators could go here */}
-                    <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-bg-base to-transparent z-10 pointer-events-none lg:block hidden"></div>
+                <div className="relative group">
+                    {/* Navigation Buttons Overlay */}
+                     <button 
+                        onClick={scrollLeft}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-black/70 backdrop-blur-md border border-white/20 text-white rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all shadow-lg hidden md:flex opacity-100"
+                        aria-label="Scroll Left"
+                     >
+                        <span className="material-symbols-outlined">chevron_left</span>
+                     </button>
+                     <button 
+                        onClick={scrollRight}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-black/70 backdrop-blur-md border border-white/20 text-white rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all shadow-lg hidden md:flex opacity-100"
+                        aria-label="Scroll Right"
+                     >
+                        <span className="material-symbols-outlined">chevron_right</span>
+                     </button>
+
+
 
                     {loading ? (
                         <div className="flex overflow-x-hidden gap-6 pb-4">
@@ -312,7 +349,11 @@ const Home = () => {
                             ))}
                         </div>
                     ) : filteredFests.length > 0 ? (
-                        <div className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide px-2 items-stretch" style={{ scrollBehavior: 'smooth' }}>
+                        <div 
+                            ref={scrollRef}
+                            className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide px-2 items-stretch" 
+                            style={{ scrollBehavior: 'smooth' }}
+                        >
                             {filteredFests.map(fest => (
                                 <div key={fest.id} className="min-w-[320px] max-w-[320px] snap-center transform transition-transform duration-300">
                                     <FestCard fest={fest} />
@@ -356,16 +397,10 @@ const Home = () => {
                 </div>
             </section>
         </div>
-
-        {/* Removed local footer to use global app footer or no footer if app doesn't have one? 
-            Wait, user said "There are two footers right now. Remove the second footer... Keep only the Festify...".
-            And I updated the GLOBAL Footer.jsx.
-            So I should NOT have a footer inside Home.jsx anymore. 
-            The global footer in App.jsx will show below. 
-        */}
       </main>
     </div>
   );
 };
 
 export default Home;
+

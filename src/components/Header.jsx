@@ -88,18 +88,11 @@ const Header = ({ searchTerm, setSearchTerm }) => {
                         <p className="text-sm font-bold leading-none text-text-primary">{currentUser.displayName || 'User'}</p>
                         <p className="text-xs text-text-secondary capitalize">{userRole || 'Student'}</p>
                     </div>
-                    <div className="w-10 h-10 rounded-full border-2 border-primary/20 bg-surface-card flex items-center justify-center text-lg font-bold text-primary overflow-hidden">
-                        {currentUser.photoURL ? (
-                            <img src={currentUser.photoURL} alt="Profile" className="w-full h-full object-cover" />
-                        ) : (
-                            <span>{currentUser.displayName ? currentUser.displayName[0].toUpperCase() : 'U'}</span>
-                        )}
-                    </div>
                 </div>
              </>
         ) : (
              <div className="flex items-center gap-3">
-                 <Link to="/login" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Log In</Link>
+                 <Link to="/login" className="px-4 py-2 bg-white/5 text-text-primary text-sm font-bold rounded-lg border border-white/10 hover:bg-white/10 transition-colors">Log In</Link>
                  <Link to="/signup" className="px-4 py-2 bg-primary hover:bg-primary-end text-bg-base text-sm font-bold rounded-lg transition-colors shadow-glow-primary">Sign Up</Link>
              </div>
         )}
