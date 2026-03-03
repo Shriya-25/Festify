@@ -180,85 +180,70 @@ const FestDetails = () => {
                 )}
               </div>
 
-              {/* Events Grid - Compact Cards */}
-              {filteredEvents.length === 0 ? (
-                <div className="glass-panel p-8 text-center border-dashed border-2 border-white/10 rounded-2xl">
-                  <div className="text-4xl mb-2">🗓️</div>
-                  <h3 className="text-lg font-bold text-white mb-1">No Events Found</h3>
-                  <p className="text-gray-400 text-sm">
-                    {events.length === 0 
-                      ? 'No events listed yet.' 
-                      : `No events found for ${selectedDomain}.`}
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredEvents.map((event, idx) => (
-                    <div 
-                      key={event.id} 
-                      className="group bg-surface-card border border-white/5 rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-300 hover:-translate-y-1"
-                      style={{ animationDelay: `${0.05 * (idx + 1)}s` }}
-                    >
-                      {/* Event Image - Reduced Height */}
-                      <div className="relative h-32 overflow-hidden">
-                        {event.bannerUrl ? (
-                          <img 
-                            src={event.bannerUrl} 
-                            alt={event.eventName}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-surface-dark flex items-center justify-center opacity-50">
-                            <span className="text-2xl text-white/10 font-black tracking-widest">EVENT</span>
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 to-transparent"></div>
-                        
-                        {/* Status Badge */}
-                        <div className="absolute top-2 right-2">
-                           {isRegistrationOpen(event) ? (
-                            <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-[10px] font-bold rounded border border-green-500/30 backdrop-blur-md">
-                              OPEN
-                            </span>
-                          ) : (
-                            <span className="px-2 py-0.5 bg-red-500/20 text-red-400 text-[10px] font-bold rounded border border-red-500/30 backdrop-blur-md">
-                              CLOSED
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Event Details - Compact */}
-                      <div className="p-4">
-                        <div className="mb-2">
-                            <span className="text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">{event.domain}</span>
-                        </div>
-                        <h3 className="text-base font-bold text-white mb-1 group-hover:text-primary transition-colors line-clamp-1">
-                          {event.eventName}
-                        </h3>
-                        
-                        <div className="space-y-1 text-xs text-gray-400 mb-3">
-                          <div className="flex items-center gap-1.5">
-                             <span className="material-symbols-outlined text-sm">schedule</span>
-                             {new Date(event.date).toLocaleDateString(undefined, {month:'short', day:'numeric'})} • {event.time}
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                             <span className="material-symbols-outlined text-sm">location_on</span>
-                             <span className="truncate">{event.venue}</span>
-                          </div>
-                        </div>
-
-                        <Link
-                          to={`/event/${event.id}`}
-                          className="w-full block py-2 text-xs font-bold text-center bg-white/5 hover:bg-primary hover:text-white rounded-lg transition-all border border-white/10 hover:border-primary/50 uppercase tracking-wide"
-                        >
-                          View Details
-                        </Link>
-                      </div>
+              {/* Events Grid - Scrollable List */}
+              <div className="bg-surface-card/30 border border-white/5 rounded-2xl p-4">
+                <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                  {filteredEvents.length === 0 ? (
+                    <div className="p-8 text-center border-dashed border-2 border-white/10 rounded-xl">
+                      <div className="text-4xl mb-2">🗓️</div>
+                      <h3 className="text-lg font-bold text-white mb-1">No Events Found</h3>
+                      <p className="text-gray-400 text-sm">
+                        {events.length === 0 
+                          ? 'No events listed yet.' 
+                          : `No events found for ${selectedDomain}.`}
+                      </p>
                     </div>
-                  ))}
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {filteredEvents.map((event, idx) => (
+                        <div 
+                          key={event.id} 
+                          className="group bg-[#0B101E] border border-white/5 rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col shadow-lg"
+                          style={{ animationDelay: `${0.05 * (idx + 1)}s` }}
+                        >
+                          {/* Card Top: Image + Details */}
+                          <div className="flex p-3 gap-4">
+                            {/* Image Square */}
+                            <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden relative bg-surface-dark border border-white/10">
+                              {event.bannerUrl ? (
+                                <img 
+                                  src={event.bannerUrl} 
+                                  alt={event.eventName}
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                  <span className="text-[10px] text-white/20 font-bold">EVENT</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Details: Only Name and Date as requested */}
+                            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                              <h3 className="text-base font-bold text-white mb-1.5 leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                                {event.eventName}
+                              </h3>
+                              
+                              <div className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
+                                 <span className="material-symbols-outlined text-primary text-sm">calendar_month</span>
+                                 {new Date(event.date).toLocaleDateString(undefined, {month:'short', day:'numeric', year: 'numeric'})}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Button - Full Width Bottom */}
+                          <Link
+                            to={`/event/${event.id}`}
+                            className="w-full block py-3 text-xs font-bold text-center bg-primary text-black hover:bg-white transition-colors uppercase tracking-wider"
+                          >
+                            View Details
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
 
