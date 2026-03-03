@@ -2,16 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const FestCard = ({ fest }) => {
-  // Map category to badge style
-  const getCategoryBadge = (category) => {
-    const badges = {
-      'Technical': 'badge-tech',
-      'Cultural': 'badge-culture',
-      'Sports': 'badge-sports'
-    };
-    return badges[category] || 'badge-tech';
-  };
-
   // Get fest status
   const getFestStatus = () => {
     if (!fest.registrationStartDate || !fest.registrationEndDate) {
@@ -26,92 +16,80 @@ const FestCard = ({ fest }) => {
     regEnd.setHours(0, 0, 0, 0);
     
     if (today < regStart) {
-      return { label: 'Opening Soon', class: 'bg-blue-500/90' };
+      return { label: 'Opening Soon' };
     } else if (today >= regStart && today <= regEnd) {
-      return { label: 'Live Now', class: 'bg-green-500/90' };
+      return { label: 'Live Now' };
     } else {
-      return { label: 'Closed', class: 'bg-gray-500/90' };
+      return { label: 'Closed' };
     }
   };
 
+  const getCategoryColor = (category) => {
+     switch(category) {
+        case 'Technical': return 'text-electric-blue border-electric-blue shadow-glow-blue';
+        case 'Cultural': return 'text-royal-purple border-royal-purple shadow-glow-purple';
+        case 'Sports': return 'text-neon-pink border-neon-pink shadow-glow-pink';
+        default: return 'text-primary border-primary shadow-glow-primary';
+     }
+  };
+
   const status = getFestStatus();
-  const badgeClass = getCategoryBadge(fest.category);
+  const categoryColor = getCategoryColor(fest.category);
 
   return (
-    <div className="glass-card group flex flex-col h-full relative overflow-hidden">
-      {/* Image Section */}
-      <div className="relative h-[220px] overflow-hidden">
+    <div className="bg-surface-card backdrop-blur-[16px] rounded-xl overflow-hidden border border-white/10 group transition-all hover:shadow-card-main hover:-translate-y-2 flex flex-col gap-0 p-0 min-w-[280px] h-full snap-start relative">
+      <div className="h-40 overflow-hidden relative">
+        {/* Status Badge */}
+        {status && (
+            <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full border shadow-[0_0_10px_rgba(58,190,255,0.3)] backdrop-blur-md z-20 ${status.label === 'Live Now' ? 'bg-primary/20 border-primary/50 animate-pulse' : 'bg-surface-card/80 border-white/10'}`}>
+                {status.label === 'Live Now' && <span className="w-2 h-2 bg-primary rounded-full"></span>}
+                <span className={`text-[10px] font-black uppercase tracking-widest ${status.label === 'Live Now' ? 'text-primary' : 'text-text-secondary'}`}>{status.label}</span>
+            </div>
+        )}
+
+        {/* Category Badge - moved to right */}
+        <div className={`absolute top-3 right-3 px-2.5 py-1 rounded-full border bg-surface-card/80 backdrop-blur-md z-20 ${categoryColor}`}>
+            <span className="text-[10px] font-bold uppercase tracking-widest">{fest.category}</span>
+        </div>
+
         {fest.bannerUrl ? (
           <img
             src={fest.bannerUrl}
             alt={fest.festName}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#1E293B] to-[#0F172A] flex items-center justify-center">
-             <span className="text-5xl opacity-20">🎉</span>
+          <div className="w-full h-full bg-surface-sidebar flex items-center justify-center">
+             <span className="text-4xl opacity-20">🎉</span>
           </div>
         )}
+        <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-bg-base/80 to-transparent"></div>
+      </div>
+
+      <div className="p-5 space-y-2 flex flex-col flex-grow relative z-10">
+        <h3 className="font-bold text-lg leading-snug text-text-primary line-clamp-2 group-hover:text-primary transition-colors">{fest.festName}</h3>
+        <p className="text-sm text-text-secondary font-medium line-clamp-1 mb-1">
+            {fest.collegeName}
+        </p>
         
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1F] via-transparent to-transparent opacity-80"></div>
-
-        {/* Floating Badges */}
-        <div className="absolute top-4 left-4 flex gap-2">
-            {status && (
-                <span className={`${status.class} text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg backdrop-blur-md bg-opacity-90`}>
-                {status.label}
-                </span>
-            )}
+        <div className="flex items-center gap-2 text-text-secondary text-sm mt-auto">
+            <span className="material-symbols-outlined text-base">location_on</span>
+            <span className="truncate">{fest.city || 'TBA'}</span>
         </div>
-
-        <div className="absolute top-4 right-4">
-             <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md shadow-lg ${badgeClass} text-white`}>
-                {fest.category}
-             </span>
-        </div>
-      </div>
-
-      {/* Content Section */}
-      <div className="p-6 flex flex-col flex-grow relative">
-        {/* Background Glow Effect on Hover */}
-        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-b-2xl"></div>
-
-        <div className="relative z-10 flex flex-col h-full">
-            {/* Title & Organization */}
-            <div className="mb-4">
-                <h3 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-primary transition-colors duration-300">
-                {fest.festName}
-                </h3>
-                <p className="text-sm text-text-secondary font-medium line-clamp-1">
-                {fest.collegeName}
-                </p>
+        
+        <div className="flex items-center justify-between text-xs font-bold text-primary pt-2 border-t border-white/5 mt-2">
+            <div className="flex items-center gap-1">
+                <span className="material-symbols-outlined text-sm">calendar_today</span>
+                <span>{fest.festStartDate ? new Date(fest.festStartDate).toLocaleDateString(undefined, {month: 'short', day: 'numeric'}) : 'TBA'}</span>
             </div>
-
-            {/* Meta Info Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-6 text-sm text-gray-400">
-                <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-primary/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                    <span className="truncate">{fest.city || 'TBA'}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-primary/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    <span className="truncate">
-                        {fest.festStartDate ? new Date(fest.festStartDate).toLocaleDateString(undefined, {month: 'short', day: 'numeric'}) : 'TBA'}
-                    </span>
-                </div>
-            </div>
-
-            {/* CTA Button */}
-            <div className="mt-auto pt-4 border-t border-white/5">
-                <Link to={`/fest/${fest.id}`} className="block w-full">
-                    <button className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-white/5 hover:bg-primary hover:text-white text-white border border-white/10 hover:border-primary group-hover:shadow-glow-tech">
-                        View Details
-                    </button>
-                </Link>
+            <div className="flex items-center gap-1">
+                 <span className="material-symbols-outlined text-sm">payments</span>
+                 <span>Free</span> 
             </div>
         </div>
       </div>
+       {/* Link wrapper for full card click functionality */}
+       <Link to={`/fest/${fest.id}`} className="absolute inset-0 z-0" aria-label={`View details for ${fest.festName}`}></Link>
     </div>
   );
 };
