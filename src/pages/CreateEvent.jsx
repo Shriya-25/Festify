@@ -507,7 +507,7 @@ const CreateEvent = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-4 sm:py-8">
       <div className="max-w-4xl mx-auto px-3 sm:px-4">
         <div className="mb-4 sm:mb-6">
-          <Link to={`/fest/${festId}/manage`} className="text-primary hover:text-orange-400 transition-colors flex items-center gap-2">
+          <Link to={`/fest/${festId}/manage`} className="text-primary hover:text-purple-400 transition-colors flex items-center gap-2">
             <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>

@@ -242,7 +242,7 @@ const PaymentSetup = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-4 sm:py-8">
       <div className="max-w-4xl mx-auto px-3 sm:px-4">
         <div className="mb-4 sm:mb-6">
-          <Link to={`/fest/${festId}/create-event`} className="text-primary hover:text-orange-400 transition-colors flex items-center gap-2">
+          <Link to={`/fest/${festId}/create-event`} className="text-primary hover:text-purple-400 transition-colors flex items-center gap-2">
             <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -319,7 +319,7 @@ const PaymentSetup = () => {
                     type="file"
                     accept="image/*"
                     onChange={handleQrFileChange}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white hover:file:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white hover:file:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-primary/50"
                     required
                   />
                   {qrPreview && (

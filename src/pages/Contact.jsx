@@ -154,7 +154,7 @@ const Contact = () => {
                   <p className="text-gray-400">
                     Need help with your account or an event?
                   </p>
-                  <a href="mailto:support@festify.com" className="text-primary hover:text-orange-400 transition-colors text-sm mt-1 inline-block">
+                  <a href="mailto:support@festify.com" className="text-primary hover:text-purple-400 transition-colors text-sm mt-1 inline-block">
                     support@festify.com
                   </a>
                 </div>
@@ -174,7 +174,7 @@ const Contact = () => {
                   <p className="text-gray-400">
                     Interested in partnerships?
                   </p>
-                  <a href="mailto:business@festify.com" className="text-primary hover:text-orange-400 transition-colors text-sm mt-1 inline-block">
+                  <a href="mailto:business@festify.com" className="text-primary hover:text-purple-400 transition-colors text-sm mt-1 inline-block">
                     business@festify.com
                   </a>
                 </div>

@@ -445,7 +445,7 @@ const EditFest = () => {
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 z-10 ${
                     currentStep >= step 
-                      ? 'bg-gradient-to-br from-primary to-orange-600 text-white shadow-[0_0_15px_rgba(255,122,24,0.4)] scale-110' 
+                      ? 'bg-gradient-to-br from-primary to-purple-600 text-white shadow-[0_0_15px_rgba(157,0,255,0.4)] scale-110' 
                       : 'bg-[#121A2F] text-gray-500 border border-white/10 group-hover:border-white/30'
                   }`}
                 >

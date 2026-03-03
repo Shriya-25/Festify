@@ -119,7 +119,7 @@ const StudentProfile = () => {
         {/* Profile Card */}
         <div className="glass-container border border-white/10 overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-primary to-orange-600 px-4 sm:px-6 py-4 sm:py-6">
+          <div className="bg-gradient-to-r from-primary to-purple-600 px-4 sm:px-6 py-4 sm:py-6">
             <div className="flex items-center space-x-3 sm:space-x-4">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold text-white border-2 border-white/30">
                 {student.name?.charAt(0).toUpperCase() || '?'}

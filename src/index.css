@@ -69,14 +69,14 @@
 
   /* --- BUTTONS --- */
   .btn-primary {
-    background: linear-gradient(135deg, #FF7A18 0%, #FF9A3C 100%);
-    box-shadow: 0 0 25px rgba(255, 122, 24, 0.35);
+    background: linear-gradient(135deg, #3ABEFF 0%, #9D00FF 100%);
+    box-shadow: 0 0 25px rgba(58, 190, 255, 0.35);
     @apply text-white font-medium px-6 py-3 rounded-full transition-all duration-300 flex items-center justify-center gap-2;
   }
   
   .btn-primary:hover {
-     background: linear-gradient(135deg, #FF8F3A 0%, #FFB066 100%);
-     box-shadow: 0 0 35px rgba(255, 122, 24, 0.5);
+     background: linear-gradient(135deg, #2D9CDB 0%, #8A00E0 100%);
+     box-shadow: 0 0 35px rgba(58, 190, 255, 0.5);
      transform: translateY(-2px);
   }
 
@@ -90,7 +90,7 @@
 
   /* --- TYPOGRAPHY --- */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#FF7A18] to-[#FF9A3C];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#3ABEFF] to-[#9D00FF];
   }
   
   .text-gradient-blue {
