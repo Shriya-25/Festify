@@ -6,195 +6,185 @@ const Navbar = () => {
   const { currentUser, userRole, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  
+  // Handle auto-collapse on non-home pages
   useEffect(() => {
-    const handleScroll = () => {
-      const offset = window.scrollY;
-      if (offset > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+    if (location.pathname !== '/') {
+      setIsCollapsed(true);
+    } else {
+      setIsCollapsed(false);
+    }
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     try {
       await logout();
       navigate('/login');
-      setMobileMenuOpen(false);
     } catch (error) {
       console.error('Logout error:', error);
     }
   };
 
-  // Check if user needs email verification
-  const needsVerification = currentUser && !currentUser.emailVerified && currentUser.providerData[0]?.providerId === 'password';
-
-  return (
-    <nav 
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? 'glass-nav h-[72px]' : 'bg-transparent h-[80px]'
-      }`}
+  const NavItem = ({ to, icon, label, active }) => (
+    <Link
+      to={to}
+      className={`relative flex items-center gap-4 px-4 py-3 my-1 rounded-xl transition-all duration-300 group
+        ${active 
+          ? 'bg-primary/10 text-primary' 
+          : 'text-gray-400 hover:bg-white/5 hover:text-white'
+        }
+        ${isCollapsed ? 'justify-center' : ''}
+      `}
     >
-      <div className="container-max h-full">
-        <div className="flex justify-between items-center h-full">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2 group">
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 group-hover:from-primary group-hover:to-primary-light transition-all duration-300">
-                Festify
-              </span>
-              <div className="h-1.5 w-1.5 rounded-full bg-primary group-hover:animate-ping"></div>
-            </Link>
-          </div>
-
-          {/* Center Navigation - Desktop */}
-          <div className="hidden md:flex items-center space-x-8">
-            {currentUser && !needsVerification && (
-              <>
-                <NavLink to="/" label="Discover" active={location.pathname === '/'} />
-                <NavLink to="/dashboard" label="Dashboard" active={location.pathname === '/dashboard'} />
-                
-                {userRole === 'organizer' && (
-                  <NavLink to="/create-fest" label="Create Fest" active={location.pathname === '/create-fest'} />
-                )}
-                
-                {userRole === 'admin' && (
-                  <Link 
-                    to="/admin" 
-                    className="text-primary hover:text-primary-light font-medium transition-colors duration-200"
-                  >
-                    Admin Panel
-                  </Link>
-                )}
-                
-                <NavLink to="/about" label="About" active={location.pathname === '/about'} />
-                <NavLink to="/contact" label="Contact" active={location.pathname === '/contact'} />
-              </>
-            )}
-          </div>
-
-          {/* Right Side - Auth */}
-          <div className="flex items-center gap-4">
-            {currentUser ? (
-              needsVerification ? (
-                <>
-                  <span className="text-sm text-yellow-500 font-medium hidden sm:block">
-                    Verify Email
-                  </span>
-                  <button
-                    onClick={handleLogout}
-                    className="text-sm text-gray-400 hover:text-white transition-colors"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link 
-                    to="/profile" 
-                    className="hidden sm:flex items-center gap-3 group"
-                  >
-                    <div className="text-right hidden lg:block">
-                      <p className="text-sm text-white font-medium group-hover:text-primary transition-colors">
-                        {currentUser.displayName || 'User'}
-                      </p>
-                      <p className="text-[10px] text-gray-500 uppercase tracking-widest">{userRole}</p>
-                    </div>
-                    <div className="w-9 h-9 rounded-full bg-surface border border-white/10 flex items-center justify-center text-primary font-bold shadow-lg shadow-black/20 group-hover:border-primary/50 transition-all">
-                      {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : currentUser.email[0].toUpperCase()}
-                    </div>
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="hidden sm:block text-sm text-gray-400 hover:text-white transition-colors"
-                  >
-                    Logout
-                  </button>
-                </>
-              )
-            ) : (
-              <>
-                <Link to="/login" className="text-gray-400 hover:text-white text-sm font-medium transition-colors duration-200">
-                  Login
-                </Link>
-                <Link to="/signup" className="btn-primary text-sm px-6 py-2.5 shadow-glow">
-                  Sign Up
-                </Link>
-              </>
-            )}
-            
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-400 hover:text-white transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden glass-panel mx-4 mt-2 p-4 animate-fade-in border border-white/10 bg-surface/95">
-          <div className="flex flex-col space-y-4">
-             {currentUser && !needsVerification && (
-              <>
-                <Link to="/" className="text-gray-300 hover:text-primary py-2" onClick={() => setMobileMenuOpen(false)}>Discover</Link>
-                <Link to="/dashboard" className="text-gray-300 hover:text-primary py-2" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
-                {userRole === 'organizer' && (
-                  <Link to="/create-fest" className="text-gray-300 hover:text-primary py-2" onClick={() => setMobileMenuOpen(false)}>Create Fest</Link>
-                )}
-                {userRole === 'admin' && (
-                  <Link to="/admin" className="text-primary hover:text-primary-light py-2" onClick={() => setMobileMenuOpen(false)}>Admin Panel</Link>
-                )}
-                 <Link to="/about" className="text-gray-300 hover:text-primary py-2" onClick={() => setMobileMenuOpen(false)}>About</Link>
-                <Link to="/contact" className="text-gray-300 hover:text-primary py-2" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
-                <div className="h-px bg-white/10 my-2"></div>
-                <Link to="/profile" className="text-gray-300 hover:text-white py-2" onClick={() => setMobileMenuOpen(false)}>Profile</Link>
-                <button onClick={handleLogout} className="text-left text-red-400 py-2">Logout</button>
-              </>
-             )}
-             {!currentUser && (
-               <>
-                <Link to="/login" className="text-gray-300 hover:text-white py-2" onClick={() => setMobileMenuOpen(false)}>Login</Link>
-                <Link to="/signup" className="btn-primary w-full text-center" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
-               </>
-             )}
-          </div>
+      <span className={`material-symbols-outlined text-2xl transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110'}`}>
+        {icon}
+      </span>
+      
+      {/* Desktop Label (Hidden if collapsed) */}
+      <span className={`hidden md:block font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+        {label}
+      </span>
+      
+      {/* Tooltip for collapsed state (Desktop only) */}
+      {isCollapsed && (
+        <div className="hidden md:block absolute left-full ml-4 px-2 py-1 bg-surface-card border border-white/10 rounded-md text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-nowrap">
+          {label}
         </div>
       )}
-    </nav>
+    </Link>
+  );
+
+  return (
+    <>
+      {/* DESKTOP SIDEBAR */}
+      <nav 
+        className={`hidden md:flex sticky top-0 h-screen flex-col bg-[#070C18] border-r border-white/5 transition-all duration-300 z-50
+        ${isCollapsed ? 'w-20' : 'w-64'}`}
+      >
+        {/* Logo Section */}
+        <div className={`flex items-center h-20 px-6 ${isCollapsed ? 'justify-center px-0' : 'justify-between'}`}>
+          <Link to="/" className="flex items-center gap-2 group overflow-hidden">
+            {isCollapsed ? (
+               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center font-bold text-white text-xl shadow-glow-primary">F</div>
+            ) : (
+               <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center font-bold text-white text-lg shadow-glow-primary">F</div>
+                  <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 group-hover:text-white transition-colors">
+                    Festify
+                  </span>
+               </div>
+            )}
+          </Link>
+        </div>
+
+        {/* Navigation Items */}
+        <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scrollbar-hide flex flex-col">
+          <NavItem to="/" icon="home" label="Discover" active={location.pathname === '/'} />
+          
+          {currentUser && (
+            <>
+              <NavItem to="/dashboard" icon="grid_view" label="Dashboard" active={location.pathname === '/dashboard'} />
+              
+              {userRole === 'organizer' && (
+                <NavItem to="/create-fest" icon="add_circle" label="Create Fest" active={location.pathname === '/create-fest'} />
+              )}
+              
+              {userRole === 'admin' && (
+                <NavItem to="/admin" icon="admin_panel_settings" label="Admin Panel" active={location.pathname === '/admin'} />
+              )}
+              
+              <NavItem to="/profile" icon="person" label="Profile" active={location.pathname === '/profile'} />
+            </>
+          )}
+
+          <div className="my-2 border-t border-white/5 mx-2"></div>
+          
+          <NavItem to="/about" icon="info" label="About" active={location.pathname === '/about'} />
+          <NavItem to="/contact" icon="mail" label="Contact" active={location.pathname === '/contact'} />
+        </div>
+
+        {/* Bottom Actions */}
+        <div className="p-3 border-t border-white/5 space-y-2 bg-[#050912]">
+          {currentUser ? (
+            <button
+              onClick={handleLogout}
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-300 group ${isCollapsed ? 'justify-center' : ''}`}
+            >
+              <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">logout</span>
+              
+               <span className={`font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${isCollapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'}`}>
+                  Logout
+               </span>
+            </button>
+          ) : (
+            <>
+              <NavItem to="/login" icon="login" label="Login" active={location.pathname === '/login'} />
+              {!isCollapsed ? (
+                <Link to="/signup" className="block w-full py-3 mt-2 bg-primary text-white text-center rounded-xl font-bold hover:bg-purple-600 transition-colors shadow-glow-primary uppercase tracking-wide text-xs">
+                  Sign Up
+                </Link>
+              ) : (
+                <NavItem to="/signup" icon="person_add" label="Sign Up" active={location.pathname === '/signup'} />
+              )}
+            </>
+          )}
+
+          {/* Collapse Toggle */}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="w-full flex items-center justify-center p-2 text-gray-500 hover:text-white transition-colors mt-1 hover:bg-white/5 rounded-lg"
+          >
+            <span className="material-symbols-outlined">
+              {isCollapsed ? 'chevron_right' : 'chevron_left'}
+            </span>
+          </button>
+        </div>
+      </nav>
+
+      {/* MOBILE BOTTOM NAV */}
+      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-[#070C18]/95 backdrop-blur-md border-t border-white/10 z-[100] px-6 py-3 flex justify-between items-center pb-safe">
+        <Link to="/" className={`flex flex-col items-center gap-1 ${location.pathname === '/' ? 'text-primary' : 'text-gray-400'}`}>
+          <span className="material-symbols-outlined text-2xl">home</span>
+          <span className="text-[10px] font-medium">Home</span>
+        </Link>
+        
+        {currentUser ? (
+           <Link to="/dashboard" className={`flex flex-col items-center gap-1 ${location.pathname === '/dashboard' ? 'text-primary' : 'text-gray-400'}`}>
+             <span className="material-symbols-outlined text-2xl">grid_view</span>
+             <span className="text-[10px] font-medium">Dash</span>
+           </Link>
+        ) : (
+           <Link to="/about" className={`flex flex-col items-center gap-1 ${location.pathname === '/about' ? 'text-primary' : 'text-gray-400'}`}>
+             <span className="material-symbols-outlined text-2xl">info</span>
+             <span className="text-[10px] font-medium">About</span>
+           </Link>
+        )}
+
+        {/* Floating Action Button */}
+         <Link to="/contact" className="relative -top-6 bg-gradient-to-br from-primary to-purple-600 text-white p-4 rounded-full shadow-[0_0_20px_rgba(58,190,255,0.5)] border-4 border-[#0A0F1F] hover:scale-110 transition-transform">
+            <span className="material-symbols-outlined text-2xl">mail</span>
+         </Link>
+
+        <Link to={currentUser ? "/profile" : "/login"} className={`flex flex-col items-center gap-1 ${['/profile', '/login'].includes(location.pathname) ? 'text-primary' : 'text-gray-400'}`}>
+          <span className="material-symbols-outlined text-2xl">{currentUser ? 'person' : 'login'}</span>
+          <span className="text-[10px] font-medium">{currentUser ? 'Profile' : 'Login'}</span>
+        </Link>
+        
+        {currentUser ? (
+             <button onClick={handleLogout} className="flex flex-col items-center gap-1 text-gray-400 hover:text-red-400">
+               <span className="material-symbols-outlined text-2xl">logout</span>
+               <span className="text-[10px] font-medium">Exit</span>
+             </button>
+        ) : (
+             <Link to="/signup" className={`flex flex-col items-center gap-1 ${location.pathname === '/signup' ? 'text-primary' : 'text-gray-400'}`}>
+               <span className="material-symbols-outlined text-2xl">person_add</span>
+               <span className="text-[10px] font-medium">Sign Up</span>
+             </Link>
+        )}
+      </nav>
+    </>
   );
 };
-
-const NavLink = ({ to, label, active }) => (
-  <Link 
-    to={to} 
-    className={`relative font-medium text-sm transition-colors duration-200 ${
-      active ? 'text-white' : 'text-gray-400 hover:text-white'
-    }`}
-  >
-    {label}
-    <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary rounded-full transition-all duration-300 ${
-      active ? 'w-full' : 'w-0 hover:w-full'
-    }`}></span>
-  </Link>
-);
 
 export default Navbar;

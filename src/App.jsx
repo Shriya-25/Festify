@@ -31,15 +31,25 @@ const AppContent = () => {
 
   // If user is logged in and needs role selection, redirect to role selection
   if (currentUser && needsRoleSelection) {
-    return <RoleSelection />;
+    return (
+      <div className="min-h-screen flex bg-background">
+        <Navbar />
+        <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
+           <main className="flex-grow p-4 md:p-8 overflow-y-auto h-screen">
+             <RoleSelection />
+           </main>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex bg-background font-sans text-white">
       <Navbar />
-      <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={<Home />} />
+      <div className="flex-1 flex flex-col min-w-0 transition-all duration-300 relative">
+        <main className="flex-grow overflow-y-auto h-screen scrollbar-hide">
+          <Routes>
+            <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/about" element={<About />} />
@@ -135,8 +145,9 @@ const AppContent = () => {
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <Footer />
       </main>
-      <Footer />
+      </div>
     </div>
   );
 };

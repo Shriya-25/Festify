@@ -641,253 +641,227 @@ const EventDetails = () => {
   const registrationStatus = !isRegistrationOpen() ? 'closed' : isRegistered ? 'registered' : 'open';
 
   return (
-    <div className="min-h-screen bg-background text-white pb-20">
-      {/* Hero Section */}
-      <div className="relative h-[50vh] overflow-hidden">
-        {/* Banner with gradient overlay */}
-        <div className="absolute inset-0 w-full h-full">
-          {event.bannerUrl ? (
-            <img 
-              src={event.bannerUrl} 
-              alt={event.eventName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-surface-dark bg-grid-pattern opacity-20"></div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
-        </div>
-
-        {/* Hero Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-8 z-10">
-          <div className="max-w-7xl mx-auto">
-            <div className="animate-fade-in-up">
-              <span className={`inline-block px-3 py-1 mb-4 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-lg border ${
-                registrationStatus === 'closed' 
-                  ? 'bg-red-500/20 text-red-400 border-red-500/30'
-                  : registrationStatus === 'registered'
-                  ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                  : 'bg-primary text-white border-transparent'
-              }`}>
-                {registrationStatus === 'closed' ? 'Closed' 
-                  : registrationStatus === 'registered' ? 'Registered' 
-                  : 'Open for Registration'}
-              </span>
-              <h1 className="text-4xl md:text-6xl font-black mb-2 tracking-tight drop-shadow-lg text-white">
-                {event.eventName}
-              </h1>
-              <p className="text-xl md:text-2xl text-gray-300 mb-6 font-light">{event.festName}</p>
-
-              <div className="flex flex-wrap items-center gap-6 text-sm md:text-base text-gray-300">
-                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg backdrop-blur-sm">
-                  <span className="text-primary">📅</span>
-                  {new Date(event.date).toLocaleDateString()} at {event.time}
-                </div>
-                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg backdrop-blur-sm">
-                  <span className="text-accent">📍</span>
-                  {event.venue}
-                </div>
-                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg backdrop-blur-sm border border-primary/20">
-                  <span className="text-green-400">💵</span>
-                  <span className="font-bold text-white">{event.isPaid ? `₹${event.entryFee}` : 'Free'}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
+    <div className="min-h-screen bg-background text-white pb-20 pt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* Main Content (Left Column) */}
-          <div className="lg:col-span-2 space-y-8">
+          {/* Left Column (Images, Prize Pool, Rules, Contact) */}
+          <div className="lg:col-span-1 space-y-6">
             
-            {/* Description Card */}
-            <div className="glass-card p-6 md:p-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <span className="w-1 h-8 bg-primary rounded-full"></span>
-                About This Event
-              </h2>
-              <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-line">
-                {event.description}
-              </p>
+            {/* Event Image Card */}
+            <div className="bg-surface-card rounded-2xl overflow-hidden border border-white/10 shadow-lg">
+                <div className="aspect-video w-full relative">
+                    {event.bannerUrl ? (
+                        <img 
+                        src={event.bannerUrl} 
+                        alt={event.eventName}
+                        className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-surface-dark flex items-center justify-center">
+                            <span className="text-white/20 font-bold text-xl">NO IMAGE</span>
+                        </div>
+                    )}
+                    
+                    {/* Status Badge Overlay */}
+                    <div className="absolute top-4 right-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border backdrop-blur-md ${
+                            !isRegistrationOpen() 
+                            ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                            : isRegistered
+                            ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                            : 'bg-green-500/80 text-white border-green-500' 
+                        }`}>
+                            {!isRegistrationOpen() ? 'Closed' : isRegistered ? 'Registered' : 'Open'}
+                        </span>
+                    </div>
+                </div>
             </div>
 
-            {/* Rules Section */}
-            {event.rules && (
-              <div className="glass-card p-6 md:p-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                  <span className="w-1 h-8 bg-red-500 rounded-full"></span>
-                  Rules & Regulations
-                </h2>
-                <div className="bg-white/5 p-6 rounded-xl border-l-4 border-red-500/50">
-                  <p className="text-gray-300 leading-relaxed whitespace-pre-line">
-                    {event.rules}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Special Guests */}
-            {event.guests && event.guests.length > 0 && (
-              <div className="glass-card p-6 md:p-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                  <span className="w-1 h-8 bg-accent rounded-full"></span>
-                  Special Guests
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {event.guests.map(guest => (
-                    <div key={guest.id} className="bg-surface-dark p-6 rounded-xl border border-white/10 hover:border-primary/50 transition-colors group text-center">
-                      {guest.photo && (
-                        <div className="w-24 h-24 mx-auto mb-4 relative">
-                          <img 
-                            src={guest.photo} 
-                            alt={guest.name}
-                            className="w-full h-full rounded-full object-cover border-2 border-white/20 group-hover:border-primary transition-colors"
-                          />
-                          <div className="absolute inset-0 rounded-full bg-primary/20 transform scale-110 blur-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
-                        </div>
-                      )}
-                      
-                      <h3 className="text-xl font-bold text-white mb-1">{guest.name}</h3>
-                      <p className="text-primary text-sm font-medium mb-3">{guest.designation}</p>
-                      
-                      {guest.appearanceDateTime && (
-                        <div className="inline-block px-3 py-1 bg-white/5 rounded text-xs text-gray-400 mb-2">
-                          {new Date(guest.appearanceDateTime).toLocaleString()}
-                        </div>
-                      )}
-                      
-                      {guest.description && (
-                         <p className="text-gray-400 text-sm mt-2 line-clamp-3 hover:line-clamp-none transition-all">
-                           {guest.description}
-                         </p>
-                      )}
+            {/* Prize Pool Card */}
+            <div className="bg-surface-card rounded-2xl p-6 border border-white/10 shadow-lg">
+                <h3 className="flex items-center gap-2 text-lg font-bold text-white mb-4">
+                    <span className="material-symbols-outlined text-yellow-500">emoji_events</span>
+                    PRIZE POOL
+                </h3>
+                <div className="space-y-3">
+                    <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg">
+                        <span className="text-gray-400 text-sm">Winner</span>
+                        <span className="text-yellow-400 font-bold">
+                            {event.prizePool ? `₹${event.prizePool.winner}` : 'TBA'}
+                        </span>
                     </div>
-                  ))}
+                    <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg">
+                        <span className="text-gray-400 text-sm">Runner Up</span>
+                        <span className="text-gray-200 font-bold">
+                             {event.prizePool ? `₹${event.prizePool.runnerUp}` : 'TBA'}
+                        </span>
+                    </div>
                 </div>
-              </div>
-            )}
-            
-            {/* Back Button */}
-            <button
-               onClick={() => navigate(`/fest/${event.festId}`)}
-               className="btn-secondary text-sm sm:text-base px-6 py-3 flex items-center gap-2 group"
-             >
-               <span className="group-hover:-translate-x-1 transition-transform">←</span> 
-               Back to {event.festName}
-             </button>
+            </div>
+
+            {/* Rules & Guidelines Card */}
+            <div className="bg-surface-card rounded-2xl p-6 border border-white/10 shadow-lg">
+                 <h3 className="text-lg font-bold text-white mb-4">Rules and Guidelines</h3>
+                 <div className="text-gray-400 text-sm space-y-4 max-h-60 overflow-y-auto custom-scrollbar pr-2">
+                    {event.rules ? (
+                        <p className="whitespace-pre-line">{event.rules}</p>
+                    ) : (
+                        <p>General rules apply. Please contact organizers for specific guidelines.</p>
+                    )}
+                 </div>
+                 {event.rules && event.rules.length > 150 && (
+                     <button className="text-primary text-sm font-bold mt-2 hover:underline">Read More</button>
+                 )}
+            </div>
+
+            {/* Contact Details Card */}
+            <div className="bg-surface-card rounded-2xl p-6 border border-white/10 shadow-lg">
+                <h3 className="text-lg font-bold text-white mb-4">Contact Details</h3>
+                <div className="space-y-4">
+                    {event.contacts && event.contacts.length > 0 ? (
+                        event.contacts.map((contact, idx) => (
+                            <div key={idx} className="flex items-start gap-3">
+                                <div className="p-2 bg-white/5 rounded-full text-primary">
+                                    <span className="material-symbols-outlined text-sm">person</span>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-white">{contact.name}</p>
+                                    <a href={`tel:${contact.phone}`} className="text-xs text-gray-400 mt-0.5 hover:text-white transition-colors">{contact.phone}</a>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="flex items-start gap-3">
+                             <div className="p-2 bg-white/5 rounded-full text-primary">
+                                <span className="material-symbols-outlined text-sm">support_agent</span>
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold text-white">Event Organizer</p>
+                                <p className="text-xs text-gray-400 mt-0.5">Contact info TBA</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
           </div>
 
-          {/* Sidebar (Right Column) */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="sticky top-24 space-y-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-              
-              {/* Registration Card */}
-              <div className="glass-panel p-6 border-t-4 border-primary shadow-[0_0_30px_rgba(0,0,0,0.3)]">
-                <h3 className="font-bold text-xl mb-6 text-white text-center">Event Details</h3>
-                
-                <div className="space-y-4 mb-8">
-                  <div className="flex justify-between items-center py-2 border-b border-white/5">
-                    <span className="text-gray-400 text-sm">Status</span>
-                    <span className={`text-sm font-bold uppercase ${
-                      registrationStatus === 'closed' ? 'text-red-400' : 
-                      registrationStatus === 'registered' ? 'text-green-400' : 'text-primary'
-                    }`}>
-                      {registrationStatus.toUpperCase()}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center py-2 border-b border-white/5">
-                    <span className="text-gray-400 text-sm">Fees</span>
-                    <span className="text-white font-bold">{event.isPaid ? `₹${event.entryFee}` : 'Free'}</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center py-2 border-b border-white/5">
-                    <span className="text-gray-400 text-sm">Available Spots</span>
-                    <span className="text-white font-bold">
-                       {event.maxParticipants 
-                         ? `${event.maxParticipants - (event.participantCount || 0)}` 
-                         : 'Unlimited'}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center py-2 border-b border-white/5">
-                    <span className="text-gray-400 text-sm">Deadline</span>
-                    <span className="text-white text-sm text-right font-medium">
-                      {new Date(event.registrationDeadline).toLocaleDateString()}
-                    </span>
-                  </div>
-                  
-                  {event.googleMapsLink && (
-                    <a
-                      href={event.googleMapsLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 text-primary hover:text-white text-sm mt-2 transition-colors py-2 bg-primary/10 rounded-lg hover:bg-primary/20"
-                    >
-                      <span>📍</span> View Venue on Maps
-                    </a>
-                  )}
+          {/* Right Column (Header, Description, Register) */}
+          <div className="lg:col-span-2 space-y-6">
+            
+            {/* Header & Registration Card */}
+            <div className="bg-surface-card rounded-2xl p-6 md:p-8 border border-white/10 shadow-lg relative overflow-hidden">
+                {/* Background Decoration */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
+
+                <div className="mb-2">
+                    <span className="text-primary text-sm font-bold uppercase tracking-wider bg-primary/10 px-2 py-1 rounded inline-block mb-2">{event.domain || 'Event'}</span>
+                    <h1 className="text-3xl md:text-5xl font-black text-white mb-2">{event.eventName}</h1>
+                    <p className="text-gray-400 text-lg flex items-center gap-2">
+                       <span className="material-symbols-outlined text-sm">festival</span>
+                       {event.festName}
+                    </p>
                 </div>
 
-                {message && (
-                  <div className={`mb-4 p-3 rounded text-sm text-center ${
-                    message.includes('Success') || message.includes('🎉') ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
-                  }`}>
-                    {message}
-                  </div>
-                )}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8 bg-black/20 p-4 rounded-xl border border-white/5">
+                     <div className="flex items-center gap-3">
+                        <div className="p-2 bg-white/5 rounded-lg text-primary">
+                            <span className="material-symbols-outlined">calendar_month</span>
+                        </div>
+                        <div>
+                            <p className="text-xs text-gray-400 uppercase tracking-wide">Date</p>
+                            <p className="text-white font-bold text-sm">
+                                {new Date(event.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </p>
+                        </div>
+                     </div>
 
-                {!currentUser ? (
-                  <button onClick={() => navigate('/login')} className="btn-primary w-full py-3 shadow-[0_0_20px_rgba(255,122,24,0.3)] hover:shadow-[0_0_30px_rgba(255,122,24,0.5)]">
-                    Login to Register
-                  </button>
-                ) : !isRegistrationOpen() ? (
-                  <button disabled className="w-full bg-surface-dark border border-white/10 text-gray-400 font-semibold py-3 rounded-lg cursor-not-allowed">
-                    Registration Closed
-                  </button>
-                ) : isRegistered ? (
-                  <button disabled className="w-full bg-green-600/20 border border-green-500/50 text-green-400 font-semibold py-3 rounded-lg flex items-center justify-center gap-2">
-                    <span>✓</span> Already Registered
-                  </button>
-                ) : userRole === 'student' ? (
-                  <button
-                    onClick={openRegistrationModal}
-                    className="btn-primary w-full py-3 text-lg font-bold shadow-[0_0_20px_rgba(255,122,24,0.3)] hover:shadow-[0_0_30px_rgba(255,122,24,0.5)] animate-pulse"
-                  >
-                    Register Now
-                  </button>
+                     <div className="flex items-center gap-3">
+                        <div className="p-2 bg-white/5 rounded-lg text-accent">
+                            <span className="material-symbols-outlined">location_on</span>
+                        </div>
+                        <div>
+                            <p className="text-xs text-gray-400 uppercase tracking-wide">Venue</p>
+                            <p className="text-white font-bold text-sm">{event.venue}</p>
+                        </div>
+                     </div>
+
+                     <div className="flex items-center gap-3">
+                        <div className="p-2 bg-white/5 rounded-lg text-green-400">
+                             <span className="material-symbols-outlined">payments</span>
+                        </div>
+                        <div>
+                            <p className="text-xs text-gray-400 uppercase tracking-wide">Entry Fee</p>
+                            <p className="text-white font-bold text-lg">
+                                {event.isPaid ? `₹${event.entryFee}` : 'Free'}
+                            </p>
+                        </div>
+                     </div>
+                </div>
+
+                {isRegistrationOpen() ? (
+                    currentUser ? (
+                         isRegistered ? (
+                            <button disabled className="w-full py-4 bg-green-500/20 text-green-400 font-bold rounded-xl border border-green-500/30 cursor-not-allowed flex items-center justify-center gap-2">
+                                <span className="material-symbols-outlined">check_circle</span>
+                                Already Registered
+                            </button>
+                         ) : userRole === 'student' ? (
+                            <button 
+                                onClick={openRegistrationModal}
+                                className="w-full py-4 bg-primary hover:bg-primary-hover text-black font-bold text-lg rounded-xl shadow-glow-primary transition-all active:scale-[0.98]"
+                            >
+                                Register Now
+                            </button>
+                         ) : (
+                            <div className="text-center p-3 bg-white/5 rounded-lg text-gray-400 text-sm border border-white/10">
+                                Only students can register for events
+                            </div>
+                         )
+                    ) : (
+                        <button 
+                            onClick={() => navigate('/login', { state: { from: `/event/${eventId}` } })}
+                            className="w-full py-4 bg-primary hover:bg-primary-hover text-black font-bold text-lg rounded-xl shadow-glow-primary transition-all active:scale-[0.98]"
+                        >
+                            Login to Register
+                        </button>
+                    )
                 ) : (
-                  <div className="text-center p-3 bg-white/5 rounded-lg text-gray-400 text-sm">
-                    Only students can register for events
-                  </div>
+                    <button disabled className="w-full py-4 bg-white/5 text-gray-400 font-bold rounded-xl border border-white/10 cursor-not-allowed">
+                        Registration Closed
+                    </button>
                 )}
-              </div>
-
-              {/* Contact Info (Compact) */}
-              {event.contacts && event.contacts.length > 0 && (
-                <div className="glass-panel p-6">
-                  <h3 className="font-bold text-lg mb-4 text-white">Contact Organizers</h3>
-                  <div className="space-y-4">
-                    {event.contacts.map(contact => (
-                      <div key={contact.id} className="flex items-start gap-3 text-sm p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 text-primary font-bold">
-                           {contact.name.charAt(0)}
-                        </div>
-                        <div className="overflow-hidden">
-                          <p className="text-white font-semibold truncate">{contact.name}</p>
-                          <a href={`tel:${contact.phone}`} className="text-gray-400 hover:text-primary block text-xs mt-1">
-                            📞 {contact.phone}
-                          </a>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
+
+            {/* Description / Rounds Card */}
+            <div className="bg-surface-card rounded-2xl p-6 md:p-8 border border-white/10 shadow-lg">
+                <div className="border-b border-white/10 pb-4 mb-6">
+                    <h2 className="text-2xl font-bold text-white">
+                        {event.eventName} <span className="text-primary">Details</span>
+                    </h2>
+                    <p className="text-gray-400 text-sm mt-1">Competition details and information</p>
+                </div>
+                
+                <div className="prose prose-invert max-w-none text-gray-300">
+                    <h3 className="text-white font-bold mb-2">All that you need to know about {event.eventName}</h3>
+                    <p className="whitespace-pre-line leading-relaxed text-sm md:text-base">
+                        {event.description}
+                    </p>
+                </div>
+                
+                {/* Back Button */}
+                <button
+                    onClick={() => navigate(`/fest/${event.festId}`)}
+                    className="mt-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors text-sm"
+                    >
+                    <span className="material-symbols-outlined">arrow_back</span>
+                    Back to Fest
+                </button>
+            </div>
+
           </div>
         </div>
       </div>
