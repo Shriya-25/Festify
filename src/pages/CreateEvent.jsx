@@ -527,7 +527,7 @@ const CreateEvent = () => {
               {/* Step 1 */}
               <div className="flex items-center flex-1">
                 <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold ${
-                  currentStep >= 1 ? 'bg-primary text-white' : 'bg-surface border border-border text-text-secondary'
+                  currentStep >= 1 ? 'bg-primary text-white' : 'bg-surface border border-fest-border text-text-secondary'
                 }`}>
                   1
                 </div>
@@ -544,7 +544,7 @@ const CreateEvent = () => {
               {/* Step 2 */}
               <div className="flex items-center flex-1">
                 <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold ${
-                  currentStep >= 2 ? 'bg-primary text-white' : 'bg-surface border border-border text-text-secondary'
+                  currentStep >= 2 ? 'bg-primary text-white' : 'bg-surface border border-fest-border text-text-secondary'
                 }`}>
                   2
                 </div>
@@ -561,7 +561,7 @@ const CreateEvent = () => {
               {/* Step 3 */}
               <div className="flex items-center flex-1">
                 <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold ${
-                  currentStep >= 3 ? 'bg-primary text-white' : 'bg-surface border border-border text-text-secondary'
+                  currentStep >= 3 ? 'bg-primary text-white' : 'bg-surface border border-fest-border text-text-secondary'
                 }`}>
                   3
                 </div>
@@ -578,7 +578,7 @@ const CreateEvent = () => {
               {/* Step 4 */}
               <div className="flex items-center flex-1">
                 <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold ${
-                  currentStep >= 4 ? 'bg-primary text-white' : 'bg-surface border border-border text-text-secondary'
+                  currentStep >= 4 ? 'bg-primary text-white' : 'bg-surface border border-fest-border text-text-secondary'
                 }`}>
                   4
                 </div>
@@ -810,13 +810,13 @@ const CreateEvent = () => {
             </div>
 
             {/* Contacts Section */}
-            <div className="border-t border-border pt-4 sm:pt-6">
+            <div className="border-t border-fest-border pt-4 sm:pt-6">
               <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-3 sm:mb-4">
                 Contact Information <span className="text-red-500">*</span>
               </h3>
               <p className="text-sm text-text-secondary mb-4">Add at least 1 contact person for this event</p>
               
-              <div className="bg-surface/50 p-4 sm:p-6 rounded-2xl border border-border mb-4">
+              <div className="bg-surface/50 p-4 sm:p-6 rounded-2xl border border-fest-border mb-4">
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="contactName" className="label text-sm">
@@ -891,7 +891,7 @@ const CreateEvent = () => {
                     Added Contacts ({eventData.contacts.length}/1 minimum):
                   </p>
                   {eventData.contacts.map(contact => (
-                    <div key={contact.id} className="bg-surface/50 p-3 rounded-lg border border-border flex justify-between items-center">
+                    <div key={contact.id} className="bg-surface/50 p-3 rounded-lg border border-fest-border flex justify-between items-center">
                       <div>
                         <p className="text-text-primary font-medium">{contact.name}</p>
                         {contact.description && <p className="text-gray-300 text-sm italic">{contact.description}</p>}
@@ -917,13 +917,13 @@ const CreateEvent = () => {
             {currentStep === 2 && (
               <>
                 {/* Guests Section (Optional) */}
-                <div className="border-t border-border pt-4 sm:pt-6">
+                <div className="border-t border-fest-border pt-4 sm:pt-6">
                   <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-3 sm:mb-4">
                     Special Guests (Optional)
                   </h3>
                   <p className="text-sm text-text-secondary mb-4">Add judges, chief guests, or special speakers</p>
               
-              <div className="bg-surface/50 p-4 sm:p-6 rounded-2xl border border-border mb-4">
+              <div className="bg-surface/50 p-4 sm:p-6 rounded-2xl border border-fest-border mb-4">
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="guestName" className="label text-sm">
@@ -955,7 +955,7 @@ const CreateEvent = () => {
 
                   <div>
                     <label className="label text-sm">Guest Photo (Optional)</label>
-                    <div className="border-2 border-dashed border-border rounded-xl p-4 text-center bg-surface/50">
+                    <div className="border-2 border-dashed border-fest-border rounded-xl p-4 text-center bg-surface/50">
                       <input
                         type="file"
                         accept="image/*"
@@ -1026,7 +1026,7 @@ const CreateEvent = () => {
                     Added Guests ({eventData.guests.length}):
                   </p>
                   {eventData.guests.map(guest => (
-                    <div key={guest.id} className="bg-surface/50 p-3 rounded-lg border border-border flex gap-3 items-start">
+                    <div key={guest.id} className="bg-surface/50 p-3 rounded-lg border border-fest-border flex gap-3 items-start">
                       {guest.photo && (
                         <img src={guest.photo} alt={guest.name} className="h-16 w-16 rounded-full object-cover" />
                       )}
@@ -1061,7 +1061,7 @@ const CreateEvent = () => {
             {currentStep === 3 && (
               <>
                 {/* Prefill Toggle */}
-                <div className="border-t border-border pt-4 sm:pt-6">
+                <div className="border-t border-fest-border pt-4 sm:pt-6">
                   <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-3 sm:mb-4">Registration Form</h3>
               <div className="mb-4 sm:mb-6">
                 <label className="flex items-center space-x-2 cursor-pointer">
@@ -1091,7 +1091,7 @@ const CreateEvent = () => {
             {/* STEP 4: Payment */}
             {currentStep === 4 && (
               <>
-                <div className="border-t border-border pt-4 sm:pt-6">
+                <div className="border-t border-fest-border pt-4 sm:pt-6">
                   <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-3 sm:mb-4">
                     Payment Configuration
                   </h3>

@@ -27,7 +27,7 @@ export default {
           secondary: 'rgb(var(--color-text-secondary) / <alpha-value>)',
           muted: '#94A3B8',
         },
-        border: 'rgb(var(--color-border) / <alpha-value>)',
+        'fest-border': 'rgb(var(--color-border) / <alpha-value>)',
         // Old references kept for compatibility if needed, but updated to use vars
         'bg-base': 'rgb(var(--color-background) / <alpha-value>)',
         'surface-sidebar': 'rgb(var(--color-surface) / <alpha-value>)',

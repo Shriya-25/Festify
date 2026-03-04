@@ -79,7 +79,7 @@ const Signup = () => {
           <p className="text-text-secondary">Start your journey as a student or organizer</p>
         </div>
 
-        <div className="glass-card p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-border backdrop-blur-xl">
+        <div className="glass-card p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-fest-border backdrop-blur-xl">
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-200 text-sm p-4 rounded-xl mb-6 flex items-start gap-3 animate-fade-in">
               <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -201,16 +201,16 @@ const Signup = () => {
               </div>
 
               <div className="flex items-center gap-4 py-2">
-                <div className="flex-1 border-t border-border"></div>
+                <div className="flex-1 border-t border-fest-border"></div>
                 <span className="text-xs text-text-secondary uppercase tracking-widest">Or continue with</span>
-                <div className="flex-1 border-t border-border"></div>
+                <div className="flex-1 border-t border-fest-border"></div>
               </div>
 
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-border rounded-xl bg-surface/50 hover:bg-surface-card text-text-primary transition-all duration-300 hover:border-border hover:transform hover:-translate-y-0.5"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-fest-border rounded-xl bg-surface/50 hover:bg-surface-card text-text-primary transition-all duration-300 hover:border-fest-border hover:transform hover:-translate-y-0.5"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

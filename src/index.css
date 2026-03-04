@@ -61,7 +61,7 @@
 
   /* --- GLASS SYSTEM --- */
   .glass-card {
-    @apply bg-surface-card/80 backdrop-blur-xl border border-border rounded-xl transition-all duration-300;
+    @apply bg-surface-card/80 backdrop-blur-xl border border-fest-border rounded-xl transition-all duration-300;
     /* Fallback for browsers not supporting backdrop-filter if needed, but modern browsers are fine */
   }
 
@@ -71,11 +71,11 @@
   }
 
   .glass-panel {
-    @apply bg-surface/90 backdrop-blur-xl border border-border rounded-xl;
+    @apply bg-surface/90 backdrop-blur-xl border border-fest-border rounded-xl;
   }
 
   .glass-nav {
-    @apply bg-background/80 backdrop-blur-xl border-b border-border;
+    @apply bg-background/80 backdrop-blur-xl border-b border-fest-border;
   }
 
   /* --- BUTTONS --- */
@@ -92,7 +92,7 @@
   }
 
   .btn-secondary {
-    @apply bg-surface/50 text-text-primary border border-border hover:bg-surface-card hover:border-primary/50 font-medium px-6 py-3 rounded-full transition-all duration-300;
+    @apply bg-surface/50 text-text-primary border border-fest-border hover:bg-surface-card hover:border-primary/50 font-medium px-6 py-3 rounded-full transition-all duration-300;
   }
 
   .btn-danger {
@@ -110,12 +110,12 @@
 
   /* --- INPUTS --- */
   .input-field {
-    @apply w-full bg-surface/50 dark:bg-[#121A2F]/80 border border-border text-text-primary px-5 py-3 rounded-xl focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder-gray-400 dark:placeholder-gray-500;
+    @apply w-full bg-surface/50 dark:bg-[#121A2F]/80 border border-fest-border text-text-primary px-5 py-3 rounded-xl focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder-gray-400 dark:placeholder-gray-500;
   }
   
     /* Textarea - reuse input-field styles mostly or keep separate but consistent */
   .textarea-field {
-    @apply w-full px-4 py-3 bg-surface/50 dark:bg-[#121A2F]/80 border border-border rounded-xl text-text-primary placeholder-gray-400 dark:placeholder-gray-500 focus:ring-1 focus:ring-primary outline-none transition-all duration-200;
+    @apply w-full px-4 py-3 bg-surface/50 dark:bg-[#121A2F]/80 border border-fest-border rounded-xl text-text-primary placeholder-gray-400 dark:placeholder-gray-500 focus:ring-1 focus:ring-primary outline-none transition-all duration-200;
   }
   
    /* Label */
@@ -142,7 +142,7 @@
   
     /* Search Rounded */
   .search-rounded {
-    @apply h-12 rounded-full bg-surface/50 dark:bg-[#121A2F]/80 backdrop-blur-md border border-border text-text-primary placeholder-gray-400 dark:placeholder-gray-500 px-6 focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all duration-200;
+    @apply h-12 rounded-full bg-surface/50 dark:bg-[#121A2F]/80 backdrop-blur-md border border-fest-border text-text-primary placeholder-gray-400 dark:placeholder-gray-500 px-6 focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all duration-200;
   }
 }
 
@@ -165,7 +165,7 @@
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out forwards;
 }
-.glass-container { @apply bg-surface-card/80 backdrop-blur-xl border border-border rounded-3xl shadow-2xl; }
+  .glass-container { @apply bg-surface-card/80 backdrop-blur-xl border border-fest-border rounded-3xl shadow-2xl; }
 
 select.input-field {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239CA3AF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");

@@ -325,7 +325,7 @@ const ManageFest = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Events List */}
           <div className="lg:col-span-1">
-            <div className="glass-container p-4 sm:p-6 border border-border bg-surface-card">
+            <div className="glass-container p-4 sm:p-6 border border-fest-border bg-surface-card">
               <h2 className="text-lg sm:text-xl font-bold text-text-primary mb-4">
                 Events ({events.length})
               </h2>
@@ -348,7 +348,7 @@ const ManageFest = () => {
                   {events.map(event => (
                     <div
                       key={event.id}
-                      className="rounded-xl sm:rounded-2xl border border-border bg-background hover:bg-surface-card transition overflow-hidden shadow-sm hover:shadow-md"
+                      className="rounded-xl sm:rounded-2xl border border-fest-border bg-background hover:bg-surface-card transition overflow-hidden shadow-sm hover:shadow-md"
                     >
                       <div className="flex flex-col sm:flex-row items-start">
                         {/* Event Banner Thumbnail */}
@@ -425,13 +425,13 @@ const ManageFest = () => {
                         </div>
                       </div>
                       
-                      <div className="flex gap-2 p-2 sm:p-3 md:p-4 pt-2 border-t border-border">
+                      <div className="flex gap-2 p-2 sm:p-3 md:p-4 pt-2 border-t border-fest-border">
                         <button
                           onClick={() => handleEventClick(event)}
                           className={`flex-1 text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg sm:rounded-xl transition-colors ${
                             selectedEvent?.id === event.id
                               ? 'bg-primary text-white shadow-glow'
-                              : 'bg-background hover:bg-background/80 text-text-secondary border border-border'
+                              : 'bg-background hover:bg-background/80 text-text-secondary border border-fest-border'
                           }`}
                         >
                           View Registrations
@@ -453,7 +453,7 @@ const ManageFest = () => {
           {/* Registrations Panel */}
           <div className="lg:col-span-2">
             {!selectedEvent ? (
-              <div className="glass-container p-6 sm:p-8 md:p-12 text-center border border-border bg-surface-card">
+              <div className="glass-container p-6 sm:p-8 md:p-12 text-center border border-fest-border bg-surface-card">
                 <svg className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
@@ -462,7 +462,7 @@ const ManageFest = () => {
                 </p>
               </div>
             ) : (
-              <div className="glass-container p-4 sm:p-6 border border-border bg-surface-card">
+              <div className="glass-container p-4 sm:p-6 border border-fest-border bg-surface-card">
                 <div className="flex flex-col sm:flex-row sm:flex-wrap justify-between items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
                   <div className="flex-1">
                     <h2 className="text-lg sm:text-xl font-bold text-text-primary mb-2">
@@ -522,7 +522,7 @@ const ManageFest = () => {
                       {filteredRegistrations.map(reg => (
                         <div
                           key={reg.id}
-                          className="block p-3 sm:p-4 border border-border rounded-xl sm:rounded-2xl bg-background hover:bg-surface-card transition-colors shadow-sm hover:shadow-md"
+                          className="block p-3 sm:p-4 border border-fest-border rounded-xl sm:rounded-2xl bg-background hover:bg-surface-card transition-colors shadow-sm hover:shadow-md"
                         >
                           <div className="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-0">
                             <div className="flex-1">
@@ -641,8 +641,8 @@ const ManageFest = () => {
         {/* Payment Proof Modal */}
         {showPaymentProof && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
-            <div className="glass-container border border-border bg-surface-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-surface-card border-b border-border p-4 sm:p-6 flex justify-between items-center z-10">
+            <div className="glass-container border border-fest-border bg-surface-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-surface-card border-b border-fest-border p-4 sm:p-6 flex justify-between items-center z-10">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-text-primary">
                   Payment Proof - {showPaymentProof.name}
                 </h2>
@@ -659,7 +659,7 @@ const ManageFest = () => {
               <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                 <div>
                   <h3 className="text-sm sm:text-base font-semibold text-text-primary mb-2 sm:mb-3">Student Details</h3>
-                  <div className="bg-background rounded-lg sm:rounded-xl p-3 sm:p-4 border border-border space-y-2">
+                  <div className="bg-background rounded-lg sm:rounded-xl p-3 sm:p-4 border border-fest-border space-y-2">
                     <p className="text-xs sm:text-sm text-text-secondary"><strong className="text-text-primary">Name:</strong> {showPaymentProof.name}</p>
                     <p className="text-xs sm:text-sm text-text-secondary"><strong className="text-text-primary">Email:</strong> {showPaymentProof.email}</p>
                     <p className="text-xs sm:text-sm text-text-secondary"><strong className="text-text-primary">Phone:</strong> {showPaymentProof.phone}</p>
@@ -670,7 +670,7 @@ const ManageFest = () => {
                   <>
                     <div>
                       <h3 className="text-sm sm:text-base font-semibold text-text-primary mb-2 sm:mb-3">Transaction Details</h3>
-                      <div className="bg-background rounded-lg sm:rounded-xl p-3 sm:p-4 border border-border space-y-2">
+                      <div className="bg-background rounded-lg sm:rounded-xl p-3 sm:p-4 border border-fest-border space-y-2">
                         <p className="text-xs sm:text-sm text-text-secondary"><strong className="text-text-primary">Transaction ID:</strong> {showPaymentProof.paymentProof.transactionId}</p>
                         <p className="text-xs sm:text-sm text-text-secondary">
                           <strong className="text-text-primary">Status:</strong> 
@@ -695,7 +695,7 @@ const ManageFest = () => {
 
                     <div>
                       <h3 className="text-sm sm:text-base font-semibold text-text-primary mb-2 sm:mb-3">Payment Screenshot</h3>
-                      <div className="border border-border rounded-lg sm:rounded-xl p-2 sm:p-4 bg-background">
+                      <div className="border border-fest-border rounded-lg sm:rounded-xl p-2 sm:p-4 bg-background">
                         <img
                           src={showPaymentProof.paymentProof.screenshotURL}
                           alt="Payment proof"
@@ -705,7 +705,7 @@ const ManageFest = () => {
                     </div>
 
                     {showPaymentProof.paymentProof.paymentStatus === 'pending_verification' && (
-                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-4 border-t border-border">
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-4 border-t border-fest-border">
                         <button
                           onClick={() => {
                             handleVerifyPayment(showPaymentProof.id, showPaymentProof);

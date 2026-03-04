@@ -28,7 +28,7 @@ const Dashboard = () => {
   };
 
   const StatCard = ({ title, value, icon, color }) => (
-    <div className="bg-surface-card backdrop-blur-xl border border-border p-6 rounded-2xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 hover:shadow-glow-blue">
+    <div className="bg-surface-card backdrop-blur-xl border border-fest-border p-6 rounded-2xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 hover:shadow-glow-blue">
       <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity ${color}`}>
         {icon}
       </div>
@@ -39,7 +39,7 @@ const Dashboard = () => {
   );
 
   const ActionCard = ({ title, description, link, icon, gradient }) => (
-    <Link to={link} className="bg-surface-card backdrop-blur-xl border border-border p-6 rounded-2xl group hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 block h-full">
+    <Link to={link} className="bg-surface-card backdrop-blur-xl border border-fest-border p-6 rounded-2xl group hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 block h-full">
       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-4 shadow-lg group-hover:shadow-primary/20 transition-shadow text-white`}>
         {icon}
       </div>
@@ -180,7 +180,7 @@ const Dashboard = () => {
             </div>
 
             {/* Recent Activity Section */}
-            <div className="bg-surface-card backdrop-blur-xl border border-border p-6 md:p-8 rounded-2xl">
+            <div className="bg-surface-card backdrop-blur-xl border border-fest-border p-6 md:p-8 rounded-2xl">
             <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">history</span>
                 Recent Activity
@@ -188,7 +188,7 @@ const Dashboard = () => {
             
             <div className="space-y-4">
                 {[1, 2, 3].map((_, index) => (
-                <div key={index} className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-border hover:bg-surface-card transition-colors">
+                <div key={index} className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-fest-border hover:bg-surface-card transition-colors">
                     <div className="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0"></div>
                     <div>
                     <h4 className="text-text-primary font-medium text-sm">Activity Log #{index + 1}</h4>

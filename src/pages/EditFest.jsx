@@ -446,7 +446,7 @@ const EditFest = () => {
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 z-10 ${
                     currentStep >= step 
                       ? 'bg-gradient-to-br from-primary to-purple-600 text-white shadow-[0_0_15px_rgba(157,0,255,0.4)] scale-110' 
-                      : 'bg-surface text-text-secondary border border-border group-hover:border-primary/50'
+                      : 'bg-surface text-text-secondary border border-fest-border group-hover:border-primary/50'
                   }`}
                 >
                   {step}
@@ -671,7 +671,7 @@ const EditFest = () => {
               </div>
 
               {/* Sponsors Section */}
-              <div className="bg-surface/50 p-6 rounded-2xl border border-border">
+              <div className="bg-surface/50 p-6 rounded-2xl border border-fest-border">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                     <span className="text-primary">✨</span> Sponsors
                 </h3>
@@ -740,7 +740,7 @@ const EditFest = () => {
               </div>
 
               {/* Gallery Section */}
-               <div className="bg-surface/50 p-6 rounded-2xl border border-border">
+               <div className="bg-surface/50 p-6 rounded-2xl border border-fest-border">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                     <span className="text-accent">🖼️</span> Gallery
                 </h3>
@@ -806,7 +806,7 @@ const EditFest = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  {/* Upload Option */}
-                <div className="bg-surface/50 p-6 rounded-2xl border border-border text-center hover:border-primary/50 transition-colors">
+                <div className="bg-surface/50 p-6 rounded-2xl border border-fest-border text-center hover:border-primary/50 transition-colors">
                     <input
                       type="file"
                       accept="image/*"
@@ -825,7 +825,7 @@ const EditFest = () => {
                 </div>
 
                 {/* URL Option */}
-                <div className="bg-surface/50 p-6 rounded-2xl border border-border flex flex-col justify-center">
+                <div className="bg-surface/50 p-6 rounded-2xl border border-fest-border flex flex-col justify-center">
                     <h4 className="text-text-primary font-medium mb-3">Or use an image URL</h4>
                     <div className="flex gap-2">
                         <input
@@ -931,7 +931,7 @@ const EditFest = () => {
               type="button"
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              className={`px-6 py-3 rounded-xl border border-border text-text-primary font-medium transition-all ${
+              className={`px-6 py-3 rounded-xl border border-fest-border text-text-primary font-medium transition-all ${
                 currentStep === 1 
                   ? 'opacity-0 pointer-events-none' 
                   : 'hover:bg-surface/50 hover:border-primary/50'
