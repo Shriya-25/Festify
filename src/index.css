@@ -3,8 +3,28 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Light Theme Variables (RGB values for opacity) */
+    --color-background: 250 250 250; /* Light Gray/White */
+    --color-surface: 255 255 255;    /* Pure White */
+    --color-surface-card: 255 255 255;
+    --color-text-primary: 15 23 42;  /* Slate 900 */
+    --color-text-secondary: 71 85 105; /* Slate 600 */
+    --color-border: 226 232 240;     /* Slate 200 */
+  }
+
+  .dark {
+    /* Dark Theme Variables */
+    --color-background: 10 15 31;    /* #0A0F1F */
+    --color-surface: 18 26 47;       /* #121A2F */
+    --color-surface-card: 15 25 45; /* Adjusted for card */
+    --color-text-primary: 244 247 250; /* #F4F7FA */
+    --color-text-secondary: 155 163 180; /* #9BA3B4 */
+    --color-border: 45 55 72;     /* Darker Border for better contrast if needed, or stick to white/10 logic via classes */
+  }
+
   body {
-    @apply bg-[#0A0F1F] text-[#F4F7FA] min-h-screen antialiased;
+    @apply bg-background text-text-primary min-h-screen antialiased transition-colors duration-300;
     font-family: 'Inter', sans-serif;
     overflow-x: hidden;
   }
@@ -15,17 +35,17 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-[#0A0F1F];
+    @apply bg-background;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-[#121A2F] rounded-full;
+    @apply bg-surface rounded-full;
   }
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-primary/50;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight font-bold text-white;
+    @apply tracking-tight font-bold text-text-primary;
   }
 }
 
@@ -41,30 +61,21 @@
 
   /* --- GLASS SYSTEM --- */
   .glass-card {
-    background: rgba(24, 34, 58, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    @apply rounded-xl transition-all duration-300;
+    @apply bg-surface-card/80 backdrop-blur-xl border border-border rounded-xl transition-all duration-300;
+    /* Fallback for browsers not supporting backdrop-filter if needed, but modern browsers are fine */
   }
 
   .glass-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
-    border-color: rgba(255, 255, 255, 0.1);
+    @apply -translate-y-1.5 shadow-xl border-primary/20;
+    /* box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5); - Let's use Tailwind shadow */
   }
 
   .glass-panel {
-    background: rgba(18, 26, 47, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    @apply rounded-xl;
+    @apply bg-surface/90 backdrop-blur-xl border border-border rounded-xl;
   }
 
   .glass-nav {
-    background: rgba(10, 15, 31, 0.6);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    @apply bg-background/80 backdrop-blur-xl border-b border-border;
   }
 
   /* --- BUTTONS --- */
@@ -81,7 +92,7 @@
   }
 
   .btn-secondary {
-    @apply bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20 font-medium px-6 py-3 rounded-full transition-all duration-300;
+    @apply bg-surface/50 text-text-primary border border-border hover:bg-surface-card hover:border-primary/50 font-medium px-6 py-3 rounded-full transition-all duration-300;
   }
 
   .btn-danger {
@@ -99,17 +110,17 @@
 
   /* --- INPUTS --- */
   .input-field {
-    @apply w-full bg-[#121A2F]/80 border border-white/10 text-white px-5 py-3 rounded-xl focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder-gray-500;
+    @apply w-full bg-surface/50 dark:bg-[#121A2F]/80 border border-border text-text-primary px-5 py-3 rounded-xl focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder-gray-400 dark:placeholder-gray-500;
   }
   
-    /* Textarea */
+    /* Textarea - reuse input-field styles mostly or keep separate but consistent */
   .textarea-field {
-    @apply w-full px-4 py-3 bg-[#121A2F]/80 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-1 focus:ring-primary outline-none transition-all duration-200;
+    @apply w-full px-4 py-3 bg-surface/50 dark:bg-[#121A2F]/80 border border-border rounded-xl text-text-primary placeholder-gray-400 dark:placeholder-gray-500 focus:ring-1 focus:ring-primary outline-none transition-all duration-200;
   }
   
    /* Label */
   .label {
-    @apply block text-sm font-medium text-gray-300 mb-2;
+    @apply block text-sm font-medium text-text-secondary mb-2;
   }
 
   /* --- BADGES --- */
@@ -118,20 +129,20 @@
   }
   
   .badge-tech {
-    @apply bg-[#3ABEFF]/10 text-[#3ABEFF] border border-[#3ABEFF]/20;
+    @apply bg-primary/10 text-primary border border-primary/20;
   }
   
   .badge-culture {
-    @apply bg-[#6B5CFF]/10 text-[#6B5CFF] border border-[#6B5CFF]/20;
+    @apply bg-accent-purple/10 text-accent-purple border border-accent-purple/20;
   }
   
   .badge-sports {
-    @apply bg-[#FF6A3D]/10 text-[#FF6A3D] border border-[#FF6A3D]/20;
+    @apply bg-accent-pink/10 text-accent-pink border border-accent-pink/20;
   }
   
     /* Search Rounded */
   .search-rounded {
-    @apply h-12 rounded-full bg-[#121A2F]/80 backdrop-blur-md border border-white/10 text-white placeholder-gray-500 px-6 focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all duration-200;
+    @apply h-12 rounded-full bg-surface/50 dark:bg-[#121A2F]/80 backdrop-blur-md border border-border text-text-primary placeholder-gray-400 dark:placeholder-gray-500 px-6 focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all duration-200;
   }
 }
 
@@ -154,7 +165,7 @@
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out forwards;
 }
-.glass-container { @apply bg-[#18223a]/60 backdrop-blur-xl border border-white/5 rounded-3xl shadow-2xl; }
+.glass-container { @apply bg-surface-card/80 backdrop-blur-xl border border-border rounded-3xl shadow-2xl; }
 
 select.input-field {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239CA3AF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");

@@ -44,7 +44,7 @@ const AppContent = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-background font-sans text-white">
+    <div className="min-h-screen flex bg-background font-sans text-text-primary transition-colors duration-300">
       <Navbar />
       <div className="flex-1 flex flex-col min-w-0 transition-all duration-300 relative">
         <main className="flex-grow overflow-y-auto h-screen scrollbar-hide">

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
   const { currentUser, userRole, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -31,8 +33,8 @@ const Navbar = () => {
       to={to}
       className={`relative flex items-center gap-4 px-4 py-3 my-1 rounded-xl transition-all duration-300 group
         ${active 
-          ? 'bg-primary/10 text-primary' 
-          : 'text-gray-400 hover:bg-white/5 hover:text-white'
+          ? 'bg-primary/10 text-primary dark:text-primary' 
+          : 'text-gray-500 hover:bg-surface-card hover:text-text-primary dark:text-gray-400 dark:hover:text-white'
         }
         ${isCollapsed ? 'justify-center' : ''}
       `}
@@ -48,7 +50,7 @@ const Navbar = () => {
       
       {/* Tooltip for collapsed state (Desktop only) */}
       {isCollapsed && (
-        <div className="hidden md:block absolute left-full ml-4 px-2 py-1 bg-surface-card border border-white/10 rounded-md text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-nowrap">
+        <div className="hidden md:block absolute left-full ml-4 px-2 py-1 bg-surface-card border border-white/10 rounded-md text-xs text-text-primary opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-nowrap shadow-lg">
           {label}
         </div>
       )}
@@ -59,7 +61,7 @@ const Navbar = () => {
     <>
       {/* DESKTOP SIDEBAR */}
       <nav 
-        className={`hidden md:flex sticky top-0 h-screen flex-col bg-[#070C18] border-r border-white/5 transition-all duration-300 z-50
+        className={`hidden md:flex sticky top-0 h-screen flex-col bg-surface border-r border-white/5 transition-all duration-300 z-50 text-text-primary
         ${isCollapsed ? 'w-20' : 'w-64'}`}
       >
         {/* Logo Section */}
@@ -70,7 +72,7 @@ const Navbar = () => {
             ) : (
                <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center font-bold text-white text-lg shadow-glow-primary">F</div>
-                  <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 group-hover:text-white transition-colors">
+                  <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-text-primary to-primary group-hover:text-primary transition-colors">
                     Festify
                   </span>
                </div>
@@ -105,11 +107,25 @@ const Navbar = () => {
         </div>
 
         {/* Bottom Actions */}
-        <div className="p-3 border-t border-white/5 space-y-2 bg-[#050912]">
+        <div className="p-3 border-t border-white/5 space-y-2 bg-background/50 backdrop-blur-sm">
+          {/* Theme Toggle */}
+          <button
+              onClick={toggleTheme}
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-500 hover:bg-surface-card hover:text-text-primary transition-all duration-300 group dark:text-gray-400 dark:hover:text-white ${isCollapsed ? 'justify-center' : ''}`}
+            >
+              <span className="material-symbols-outlined text-2xl group-hover:rotate-12 transition-transform">
+                {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              </span>
+              
+               <span className={`font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${isCollapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'}`}>
+                  {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+               </span>
+            </button>
+
           {currentUser ? (
             <button
               onClick={handleLogout}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-300 group ${isCollapsed ? 'justify-center' : ''}`}
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-500 hover:bg-red-500/10 hover:text-red-500 transition-all duration-300 group dark:text-gray-400 dark:hover:text-red-400 ${isCollapsed ? 'justify-center' : ''}`}
             >
               <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">logout</span>
               
@@ -133,7 +149,7 @@ const Navbar = () => {
           {/* Collapse Toggle */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="w-full flex items-center justify-center p-2 text-gray-500 hover:text-white transition-colors mt-1 hover:bg-white/5 rounded-lg"
+            className="w-full flex items-center justify-center p-2 text-gray-500 hover:text-text-primary transition-colors mt-1 hover:bg-surface-card rounded-lg"
           >
             <span className="material-symbols-outlined">
               {isCollapsed ? 'chevron_right' : 'chevron_left'}
@@ -143,41 +159,43 @@ const Navbar = () => {
       </nav>
 
       {/* MOBILE BOTTOM NAV */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-[#070C18]/95 backdrop-blur-md border-t border-white/10 z-[100] px-6 py-3 flex justify-between items-center pb-safe">
-        <Link to="/" className={`flex flex-col items-center gap-1 ${location.pathname === '/' ? 'text-primary' : 'text-gray-400'}`}>
+      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-surface/95 backdrop-blur-md border-t border-white/10 z-[100] px-6 py-3 flex justify-between items-center pb-safe text-text-primary">
+
+        <Link to="/" className={`flex flex-col items-center gap-1 ${location.pathname === '/' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'}`}>
           <span className="material-symbols-outlined text-2xl">home</span>
           <span className="text-[10px] font-medium">Home</span>
         </Link>
         
         {currentUser ? (
-           <Link to="/dashboard" className={`flex flex-col items-center gap-1 ${location.pathname === '/dashboard' ? 'text-primary' : 'text-gray-400'}`}>
+           <Link to="/dashboard" className={`flex flex-col items-center gap-1 ${location.pathname === '/dashboard' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'}`}>
              <span className="material-symbols-outlined text-2xl">grid_view</span>
              <span className="text-[10px] font-medium">Dash</span>
            </Link>
         ) : (
-           <Link to="/about" className={`flex flex-col items-center gap-1 ${location.pathname === '/about' ? 'text-primary' : 'text-gray-400'}`}>
+           <Link to="/about" className={`flex flex-col items-center gap-1 ${location.pathname === '/about' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'}`}>
              <span className="material-symbols-outlined text-2xl">info</span>
              <span className="text-[10px] font-medium">About</span>
            </Link>
         )}
 
         {/* Floating Action Button */}
-         <Link to="/contact" className="relative -top-6 bg-gradient-to-br from-primary to-purple-600 text-white p-4 rounded-full shadow-[0_0_20px_rgba(58,190,255,0.5)] border-4 border-[#0A0F1F] hover:scale-110 transition-transform">
+         <Link to="/contact" className="relative -top-6 bg-gradient-to-br from-primary to-purple-600 text-white p-4 rounded-full shadow-[0_0_20px_rgba(58,190,255,0.5)] border-4 border-background hover:scale-110 transition-transform">
             <span className="material-symbols-outlined text-2xl">mail</span>
          </Link>
 
-        <Link to={currentUser ? "/profile" : "/login"} className={`flex flex-col items-center gap-1 ${['/profile', '/login'].includes(location.pathname) ? 'text-primary' : 'text-gray-400'}`}>
-          <span className="material-symbols-outlined text-2xl">{currentUser ? 'person' : 'login'}</span>
-          <span className="text-[10px] font-medium">{currentUser ? 'Profile' : 'Login'}</span>
-        </Link>
+        {/* Theme Toggle */}
+        <button onClick={toggleTheme} className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-primary transition-colors">
+            <span className="material-symbols-outlined text-2xl">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
+            <span className="text-[10px] font-medium">Theme</span>
+        </button>
         
         {currentUser ? (
-             <button onClick={handleLogout} className="flex flex-col items-center gap-1 text-gray-400 hover:text-red-400">
+             <button onClick={handleLogout} className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-red-500">
                <span className="material-symbols-outlined text-2xl">logout</span>
                <span className="text-[10px] font-medium">Exit</span>
              </button>
         ) : (
-             <Link to="/signup" className={`flex flex-col items-center gap-1 ${location.pathname === '/signup' ? 'text-primary' : 'text-gray-400'}`}>
+             <Link to="/signup" className={`flex flex-col items-center gap-1 ${location.pathname === '/signup' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'}`}>
                <span className="material-symbols-outlined text-2xl">person_add</span>
                <span className="text-[10px] font-medium">Sign Up</span>
              </Link>

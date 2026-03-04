@@ -28,28 +28,28 @@ const Dashboard = () => {
   };
 
   const StatCard = ({ title, value, icon, color }) => (
-    <div className="bg-surface-card backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 hover:shadow-glow-blue">
+    <div className="bg-surface-card backdrop-blur-xl border border-border p-6 rounded-2xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 hover:shadow-glow-blue">
       <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity ${color}`}>
         {icon}
       </div>
       <h3 className="text-text-secondary text-sm font-bold uppercase tracking-wider mb-1">{title}</h3>
-      <p className="text-3xl font-bold text-white mb-2">{value}</p>
+      <p className="text-3xl font-bold text-text-primary mb-2">{value}</p>
       <div className={`h-1 w-12 rounded-full ${color.replace('text-', 'bg-')}`}></div>
     </div>
   );
 
   const ActionCard = ({ title, description, link, icon, gradient }) => (
-    <Link to={link} className="bg-surface-card backdrop-blur-xl border border-white/5 p-6 rounded-2xl group hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 block h-full">
+    <Link to={link} className="bg-surface-card backdrop-blur-xl border border-border p-6 rounded-2xl group hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 block h-full">
       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-4 shadow-lg group-hover:shadow-primary/20 transition-shadow text-white`}>
         {icon}
       </div>
-      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">{title}</h3>
+      <h3 className="text-xl font-bold text-text-primary mb-2 group-hover:text-primary transition-colors">{title}</h3>
       <p className="text-text-secondary text-sm leading-relaxed">{description}</p>
     </Link>
   );
 
   return (
-    <div className="flex min-h-screen bg-bg-base font-display text-text-primary relative overflow-x-hidden before:fixed before:inset-0 before:bg-[radial-gradient(circle_at_20%_30%,rgba(58,190,255,0.1),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(0,136,255,0.08),transparent_40%)] before:-z-10">
+    <div className="flex min-h-screen bg-background font-display text-text-primary relative overflow-x-hidden before:fixed before:inset-0 before:bg-[radial-gradient(circle_at_20%_30%,rgba(58,190,255,0.1),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(0,136,255,0.08),transparent_40%)] before:-z-10">
       {/* Sidebar */}
       <Sidebar />
 
@@ -61,7 +61,7 @@ const Dashboard = () => {
             {/* Greeting Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">
+                <h1 className="text-3xl md:text-4xl font-extrabold text-text-primary mb-2 tracking-tight">
                 Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-end">{currentUser?.displayName || 'User'}</span>
                 </h1>
                 <p className="text-text-secondary">
@@ -122,7 +122,7 @@ const Dashboard = () => {
 
             {/* Quick Actions */}
             <div>
-            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-2">
                 <span className="w-1 h-6 bg-primary rounded-full"></span>
                 Quick Actions
             </h2>
@@ -180,18 +180,18 @@ const Dashboard = () => {
             </div>
 
             {/* Recent Activity Section */}
-            <div className="bg-surface-card backdrop-blur-xl border border-white/5 p-6 md:p-8 rounded-2xl">
-            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <div className="bg-surface-card backdrop-blur-xl border border-border p-6 md:p-8 rounded-2xl">
+            <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">history</span>
                 Recent Activity
             </h2>
             
             <div className="space-y-4">
                 {[1, 2, 3].map((_, index) => (
-                <div key={index} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                <div key={index} className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-border hover:bg-surface-card transition-colors">
                     <div className="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0"></div>
                     <div>
-                    <h4 className="text-white font-medium text-sm">Activity Log #{index + 1}</h4>
+                    <h4 className="text-text-primary font-medium text-sm">Activity Log #{index + 1}</h4>
                     <p className="text-xs text-text-secondary">You updated your profile details successfully.</p>
                     </div>
                     <span className="ml-auto text-xs text-text-secondary">2h ago</span>

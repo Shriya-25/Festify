@@ -4,11 +4,13 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        background: '#0A0F1F',
-        surface: '#121A2F',
+        background: 'rgb(var(--color-background) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
+        'surface-card': 'rgb(var(--color-surface-card) / <alpha-value>)',
         primary: {
           DEFAULT: '#3ABEFF',
           light: '#6FCFFF',
@@ -21,21 +23,18 @@ export default {
           pink: '#FF007A',
         },
         text: {
-          primary: '#F4F7FA',
-          secondary: '#9BA3B4',
-          muted: '#4A5568',
+          primary: 'rgb(var(--color-text-primary) / <alpha-value>)',
+          secondary: 'rgb(var(--color-text-secondary) / <alpha-value>)',
+          muted: '#94A3B8',
         },
-        // New colors from reference
-        'electric-blue': '#3ABEFF',
-        'royal-purple': '#9D00FF',
-        'neon-pink': '#FF007A',
-        'bg-base': '#0A0F1F',
-        'surface-card': 'rgba(15, 25, 45, 0.8)',
-        'surface-sidebar': '#070C18',
+        border: 'rgb(var(--color-border) / <alpha-value>)',
+        // Old references kept for compatibility if needed, but updated to use vars
+        'bg-base': 'rgb(var(--color-background) / <alpha-value>)',
+        'surface-sidebar': 'rgb(var(--color-surface) / <alpha-value>)',
         
         glass: {
-          DEFAULT: 'rgba(24, 34, 58, 0.6)',
-          border: 'rgba(255, 255, 255, 0.06)',
+          DEFAULT: 'rgba(255, 255, 255, 0.1)', // More generic glass
+          border: 'rgba(255, 255, 255, 0.1)',
         }
       },
       fontFamily: {

@@ -75,11 +75,11 @@ const Signup = () => {
               FESTIFY
             </span>
           </Link>
-          <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Join the Community</h2>
-          <p className="text-gray-400">Start your journey as a student or organizer</p>
+          <h2 className="text-3xl font-bold text-text-primary mb-2 tracking-tight">Join the Community</h2>
+          <p className="text-text-secondary">Start your journey as a student or organizer</p>
         </div>
 
-        <div className="glass-card p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-white/10 backdrop-blur-xl">
+        <div className="glass-card p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-border backdrop-blur-xl">
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-200 text-sm p-4 rounded-xl mb-6 flex items-start gap-3 animate-fade-in">
               <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -94,7 +94,7 @@ const Signup = () => {
 
           <div className="space-y-6">
             <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-               <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider ml-1 mb-3 block">
+               <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider ml-1 mb-3 block">
                 Select Your Role
               </label>
               <RoleSelector selectedRole={role} onSelect={handleRoleSelect} />
@@ -103,7 +103,7 @@ const Signup = () => {
             <form onSubmit={handleSubmit} className="space-y-5 animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-1.5 md:col-span-2">
-                  <label htmlFor="email" className="text-xs font-semibold text-gray-300 uppercase tracking-wider ml-1">
+                  <label htmlFor="email" className="text-xs font-semibold text-text-secondary uppercase tracking-wider ml-1">
                     Email Address
                   </label>
                   <div className="relative group">
@@ -125,7 +125,7 @@ const Signup = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="password" className="text-xs font-semibold text-gray-300 uppercase tracking-wider ml-1">
+                  <label htmlFor="password" className="text-xs font-semibold text-text-secondary uppercase tracking-wider ml-1">
                     Password
                   </label>
                   <div className="relative group">
@@ -146,7 +146,7 @@ const Signup = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors"
                     >
                       {showPassword ? (
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -163,7 +163,7 @@ const Signup = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="confirm-password" className="text-xs font-semibold text-gray-300 uppercase tracking-wider ml-1">
+                  <label htmlFor="confirm-password" className="text-xs font-semibold text-text-secondary uppercase tracking-wider ml-1">
                     Confirm Check
                   </label>
                   <div className="relative group">
@@ -200,20 +200,17 @@ const Signup = () => {
                 </button>
               </div>
 
-              <div className="relative py-2">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/10"></div>
-                </div>
-                <div className="relative flex justify-center">
-                  <span className="px-4 bg-[#18223a] text-xs text-gray-400 uppercase tracking-widest">Or continue with</span>
-                </div>
+              <div className="flex items-center gap-4 py-2">
+                <div className="flex-1 border-t border-border"></div>
+                <span className="text-xs text-text-secondary uppercase tracking-widest">Or continue with</span>
+                <div className="flex-1 border-t border-border"></div>
               </div>
 
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-white/10 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all duration-300 hover:border-white/20 hover:transform hover:-translate-y-0.5"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-border rounded-xl bg-surface/50 hover:bg-surface-card text-text-primary transition-all duration-300 hover:border-border hover:transform hover:-translate-y-0.5"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

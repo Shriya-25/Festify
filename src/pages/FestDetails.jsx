@@ -86,7 +86,7 @@ const FestDetails = () => {
   if (!fest) return null;
 
   return (
-    <div className="min-h-screen bg-background text-white pb-20">
+    <div className="min-h-screen bg-background text-text-primary pb-20">
       {/* Hero Section */}
       <div className="relative h-[350px] overflow-hidden group">
         {/* Background Image / Overlay */}
@@ -103,7 +103,7 @@ const FestDetails = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-black/60 to-transparent"></div>
         </div>
 
-        {/* Hero Content */}
+        {/* Hero Content - KEEP TEXT WHITE HERE due to dark overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-10">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-end md:items-center justify-between gap-4">
             <div className="animate-fade-in-up">
@@ -139,12 +139,12 @@ const FestDetails = () => {
           <div className="lg:col-span-3 space-y-8">
             
             {/* Description Card */}
-            <div className="bg-surface-card border border-white/5 rounded-2xl p-6 md:p-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+            <div className="bg-surface-card border border-border rounded-2xl p-6 md:p-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-text-primary">
                 <span className="w-1 h-6 bg-primary rounded-full"></span>
                 About The Fest
               </h2>
-              <p className="text-gray-300 leading-relaxed text-base scrollbar-hide">
+              <p className="text-text-secondary leading-relaxed text-base scrollbar-hide">
                 {fest.description}
               </p>
             </div>
@@ -152,10 +152,10 @@ const FestDetails = () => {
             {/* Events Section */}
             <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                <h2 className="text-xl font-bold flex items-center gap-2 text-white">
+                <h2 className="text-xl font-bold flex items-center gap-2 text-text-primary">
                   <span className="material-symbols-outlined text-primary">event_available</span>
                   Upcoming Events
-                  <span className="text-xs font-bold text-bg-base bg-white px-2 py-0.5 rounded-full ml-1">
+                  <span className="text-xs font-bold text-background bg-text-primary px-2 py-0.5 rounded-full ml-1">
                     {events.length}
                   </span>
                 </h2>
@@ -170,7 +170,7 @@ const FestDetails = () => {
                         className={`px-3 py-1 rounded-full text-xs font-bold transition-all duration-300 border ${
                           selectedDomain === domain
                             ? 'bg-primary text-white border-primary shadow-glow-primary'
-                            : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/30 hover:bg-white/10'
+                            : 'bg-background/50 text-text-secondary border-border hover:border-primary/50 hover:bg-surface-card'
                         }`}
                       >
                         {domain}
@@ -181,13 +181,13 @@ const FestDetails = () => {
               </div>
 
               {/* Events Grid - Scrollable List */}
-              <div className="bg-surface-card/30 border border-white/5 rounded-2xl p-4">
+              <div className="bg-surface-card border border-border rounded-2xl p-4">
                 <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                   {filteredEvents.length === 0 ? (
-                    <div className="p-8 text-center border-dashed border-2 border-white/10 rounded-xl">
+                    <div className="p-8 text-center border-dashed border-2 border-border rounded-xl">
                       <div className="text-4xl mb-2">🗓️</div>
-                      <h3 className="text-lg font-bold text-white mb-1">No Events Found</h3>
-                      <p className="text-gray-400 text-sm">
+                      <h3 className="text-lg font-bold text-text-primary mb-1">No Events Found</h3>
+                      <p className="text-text-secondary text-sm">
                         {events.length === 0 
                           ? 'No events listed yet.' 
                           : `No events found for ${selectedDomain}.`}
@@ -198,13 +198,13 @@ const FestDetails = () => {
                       {filteredEvents.map((event, idx) => (
                         <div 
                           key={event.id} 
-                          className="group bg-[#0B101E] border border-white/5 rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col shadow-lg"
+                          className="group bg-background border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col shadow-lg"
                           style={{ animationDelay: `${0.05 * (idx + 1)}s` }}
                         >
                           {/* Card Top: Image + Details */}
                           <div className="flex p-3 gap-4">
                             {/* Image Square */}
-                            <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden relative bg-surface-dark border border-white/10">
+                            <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden relative bg-surface-dark border border-border">
                               {event.bannerUrl ? (
                                 <img 
                                   src={event.bannerUrl} 
@@ -212,19 +212,19 @@ const FestDetails = () => {
                                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-white/5">
-                                  <span className="text-[10px] text-white/20 font-bold">EVENT</span>
+                                <div className="w-full h-full flex items-center justify-center bg-background/50">
+                                  <span className="text-[10px] text-text-muted font-bold">EVENT</span>
                                 </div>
                               )}
                             </div>
 
                             {/* Details: Only Name and Date as requested */}
                             <div className="flex-1 min-w-0 flex flex-col justify-center">
-                              <h3 className="text-base font-bold text-white mb-1.5 leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                              <h3 className="text-base font-bold text-text-primary mb-1.5 leading-tight group-hover:text-primary transition-colors line-clamp-2">
                                 {event.eventName}
                               </h3>
                               
-                              <div className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
+                              <div className="flex items-center gap-1.5 text-xs text-text-secondary font-medium">
                                  <span className="material-symbols-outlined text-primary text-sm">calendar_month</span>
                                  {new Date(event.date).toLocaleDateString(undefined, {month:'short', day:'numeric', year: 'numeric'})}
                               </div>
@@ -252,29 +252,29 @@ const FestDetails = () => {
             <div className="sticky top-24 space-y-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               
               {/* Connect With Us (Replaces Info Card) */}
-              <div className="bg-surface-card border border-white/5 rounded-2xl p-5">
-                  <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <div className="bg-surface-card border border-border rounded-2xl p-5">
+                  <h4 className="text-sm font-bold text-text-primary mb-3 flex items-center gap-2">
                     <span className="material-symbols-outlined text-primary text-lg">connect_without_contact</span>
                     Connect With Us
                   </h4>
                   <div className="flex gap-2 flex-wrap">
                     {fest.socialMedia?.instagram && (
-                      <a href={fest.socialMedia.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-600 rounded-lg transition-all text-gray-400 hover:text-white shadow-sm hover:shadow-lg" aria-label="Instagram">
+                      <a href={fest.socialMedia.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-background/50 border border-border hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-600 rounded-lg transition-all text-text-secondary hover:text-white shadow-sm hover:shadow-lg" aria-label="Instagram">
                         <span className="text-xl">📷</span> {/* Simple icon or svg */}
                       </a>
                     )}
                     {fest.socialMedia?.linkedin && (
-                      <a href={fest.socialMedia.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 hover:bg-[#0077b5] rounded-lg transition-all text-gray-400 hover:text-white shadow-sm hover:shadow-lg" aria-label="LinkedIn">
+                      <a href={fest.socialMedia.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-background/50 border border-border hover:bg-[#0077b5] rounded-lg transition-all text-text-secondary hover:text-white shadow-sm hover:shadow-lg" aria-label="LinkedIn">
                         <span className="text-xl">💼</span>
                       </a>
                     )}
                     {fest.socialMedia?.website && (
-                      <a href={fest.socialMedia.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 hover:bg-emerald-500 rounded-lg transition-all text-gray-400 hover:text-white shadow-sm hover:shadow-lg" aria-label="Website">
+                      <a href={fest.socialMedia.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-background/50 border border-border hover:bg-emerald-500 rounded-lg transition-all text-text-secondary hover:text-white shadow-sm hover:shadow-lg" aria-label="Website">
                         <span className="text-xl">🌐</span>
                       </a>
                     )}
                     {fest.contactEmail && (
-                        <a href={`mailto:${fest.contactEmail}`} className="p-2 bg-white/5 hover:bg-red-500 rounded-lg transition-all text-gray-400 hover:text-white shadow-sm hover:shadow-lg" aria-label="Email">
+                        <a href={`mailto:${fest.contactEmail}`} className="p-2 bg-background/50 border border-border hover:bg-red-500 rounded-lg transition-all text-text-secondary hover:text-white shadow-sm hover:shadow-lg" aria-label="Email">
                             <span className="text-xl">📧</span>
                         </a>
                     )}
@@ -283,8 +283,8 @@ const FestDetails = () => {
 
               {/* Gallery Section (Moved here) */}
               {fest.gallery && fest.gallery.length > 0 && (
-                <div className="bg-surface-card border border-white/5 rounded-2xl p-5">
-                  <h2 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                <div className="bg-surface-card border border-border rounded-2xl p-5">
+                  <h2 className="text-sm font-bold text-text-primary mb-3 flex items-center gap-2">
                     <span className="material-symbols-outlined text-accent text-lg">collections</span>
                     Gallery
                   </h2>
@@ -292,7 +292,7 @@ const FestDetails = () => {
                     {fest.gallery.slice(0, 9).map((image, idx) => (
                       <div 
                         key={idx} 
-                        className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer border border-white/10 hover:border-primary/50 transition-all"
+                        className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer border border-border hover:border-primary/50 transition-all"
                         onClick={() => window.open(image.url, '_blank')}
                       >
                         <img 

@@ -249,7 +249,7 @@ const EditEvent = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-white">Loading event...</p>
+          <p className="text-text-primary">Loading event...</p>
         </div>
       </div>
     );
@@ -268,11 +268,11 @@ const EditEvent = () => {
         </div>
 
         <div className="glass-container p-4 sm:p-6 md:p-8">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Edit Event</h1>
-          <p className="text-sm sm:text-base text-gray-300 mb-3 sm:mb-4">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-primary mb-2">Edit Event</h1>
+          <p className="text-sm sm:text-base text-text-secondary mb-3 sm:mb-4">
             <strong>{eventData.eventName}</strong>
           </p>
-          <p className="text-xs sm:text-sm text-yellow-300 bg-yellow-500/20 p-3 rounded-lg mb-4 sm:mb-6 md:mb-8 border border-yellow-500/30">
+          <p className="text-xs sm:text-sm text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-500/20 p-3 rounded-lg mb-4 sm:mb-6 md:mb-8 border border-yellow-200 dark:border-yellow-500/30">
             ⚠️ After editing, this event will be sent back for admin approval and marked as pending.
           </p>
 

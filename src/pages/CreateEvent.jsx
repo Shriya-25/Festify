@@ -504,7 +504,7 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-4 sm:py-8">
+    <div className="min-h-screen bg-background py-4 sm:py-8">
       <div className="max-w-4xl mx-auto px-3 sm:px-4">
         <div className="mb-4 sm:mb-6">
           <Link to={`/fest/${festId}/manage`} className="text-primary hover:text-purple-400 transition-colors flex items-center gap-2">
@@ -515,9 +515,9 @@ const CreateEvent = () => {
           </Link>
         </div>
 
-        <div className="glass-container border border-white/10 p-4 sm:p-6 md:p-8">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Create New Event</h1>
-          <p className="text-gray-300 mb-4 sm:mb-6">
+        <div className="glass-card p-4 sm:p-6 md:p-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-primary mb-2">Create New Event</h1>
+          <p className="text-text-secondary mb-4 sm:mb-6">
             Add an event under <strong>{fest.festName}</strong>
           </p>
 
@@ -527,7 +527,7 @@ const CreateEvent = () => {
               {/* Step 1 */}
               <div className="flex items-center flex-1">
                 <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold ${
-                  currentStep >= 1 ? 'bg-primary text-white' : 'bg-gray-700 text-gray-400'
+                  currentStep >= 1 ? 'bg-primary text-white' : 'bg-surface border border-border text-text-secondary'
                 }`}>
                   1
                 </div>
@@ -539,12 +539,12 @@ const CreateEvent = () => {
               </div>
 
               {/* Line 1 */}
-              <div className={`flex-1 h-1 mx-2 ${currentStep > 1 ? 'bg-primary' : 'bg-gray-700'}`}></div>
+              <div className={`flex-1 h-1 mx-2 ${currentStep > 1 ? 'bg-primary' : 'bg-border'}`}></div>
 
               {/* Step 2 */}
               <div className="flex items-center flex-1">
                 <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold ${
-                  currentStep >= 2 ? 'bg-primary text-white' : 'bg-gray-700 text-gray-400'
+                  currentStep >= 2 ? 'bg-primary text-white' : 'bg-surface border border-border text-text-secondary'
                 }`}>
                   2
                 </div>
@@ -556,12 +556,12 @@ const CreateEvent = () => {
               </div>
 
               {/* Line 2 */}
-              <div className={`flex-1 h-1 mx-2 ${currentStep > 2 ? 'bg-primary' : 'bg-gray-700'}`}></div>
+              <div className={`flex-1 h-1 mx-2 ${currentStep > 2 ? 'bg-primary' : 'bg-border'}`}></div>
 
               {/* Step 3 */}
               <div className="flex items-center flex-1">
                 <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold ${
-                  currentStep >= 3 ? 'bg-primary text-white' : 'bg-gray-700 text-gray-400'
+                  currentStep >= 3 ? 'bg-primary text-white' : 'bg-surface border border-border text-text-secondary'
                 }`}>
                   3
                 </div>
@@ -573,12 +573,12 @@ const CreateEvent = () => {
               </div>
 
               {/* Line 3 */}
-              <div className={`flex-1 h-1 mx-2 ${currentStep > 3 ? 'bg-primary' : 'bg-gray-700'}`}></div>
+              <div className={`flex-1 h-1 mx-2 ${currentStep > 3 ? 'bg-primary' : 'bg-border'}`}></div>
 
               {/* Step 4 */}
               <div className="flex items-center flex-1">
                 <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold ${
-                  currentStep >= 4 ? 'bg-primary text-white' : 'bg-gray-700 text-gray-400'
+                  currentStep >= 4 ? 'bg-primary text-white' : 'bg-surface border border-border text-text-secondary'
                 }`}>
                   4
                 </div>
@@ -810,13 +810,13 @@ const CreateEvent = () => {
             </div>
 
             {/* Contacts Section */}
-            <div className="border-t border-white/10 pt-4 sm:pt-6">
-              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
+            <div className="border-t border-border pt-4 sm:pt-6">
+              <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-3 sm:mb-4">
                 Contact Information <span className="text-red-500">*</span>
               </h3>
-              <p className="text-sm text-gray-400 mb-4">Add at least 1 contact person for this event</p>
+              <p className="text-sm text-text-secondary mb-4">Add at least 1 contact person for this event</p>
               
-              <div className="bg-white/5 p-4 sm:p-6 rounded-2xl border border-white/10 mb-4">
+              <div className="bg-surface/50 p-4 sm:p-6 rounded-2xl border border-border mb-4">
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="contactName" className="label text-sm">
@@ -887,13 +887,13 @@ const CreateEvent = () => {
               {/* Display Added Contacts */}
               {eventData.contacts.length > 0 && (
                 <div className="space-y-2 mb-4">
-                  <p className="text-sm text-white font-semibold">
+                  <p className="text-sm text-text-primary font-semibold">
                     Added Contacts ({eventData.contacts.length}/1 minimum):
                   </p>
                   {eventData.contacts.map(contact => (
-                    <div key={contact.id} className="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-center">
+                    <div key={contact.id} className="bg-surface/50 p-3 rounded-lg border border-border flex justify-between items-center">
                       <div>
-                        <p className="text-white font-medium">{contact.name}</p>
+                        <p className="text-text-primary font-medium">{contact.name}</p>
                         {contact.description && <p className="text-gray-300 text-sm italic">{contact.description}</p>}
                         <p className="text-gray-400 text-sm">{contact.phone}</p>
                         {contact.email && <p className="text-gray-400 text-sm">{contact.email}</p>}
@@ -917,13 +917,13 @@ const CreateEvent = () => {
             {currentStep === 2 && (
               <>
                 {/* Guests Section (Optional) */}
-                <div className="border-t border-white/10 pt-4 sm:pt-6">
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
+                <div className="border-t border-border pt-4 sm:pt-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-3 sm:mb-4">
                     Special Guests (Optional)
                   </h3>
-                  <p className="text-sm text-gray-400 mb-4">Add judges, chief guests, or special speakers</p>
+                  <p className="text-sm text-text-secondary mb-4">Add judges, chief guests, or special speakers</p>
               
-              <div className="bg-white/5 p-4 sm:p-6 rounded-2xl border border-white/10 mb-4">
+              <div className="bg-surface/50 p-4 sm:p-6 rounded-2xl border border-border mb-4">
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="guestName" className="label text-sm">
@@ -955,7 +955,7 @@ const CreateEvent = () => {
 
                   <div>
                     <label className="label text-sm">Guest Photo (Optional)</label>
-                    <div className="border-2 border-dashed border-white/20 rounded-xl p-4 text-center bg-white/5">
+                    <div className="border-2 border-dashed border-border rounded-xl p-4 text-center bg-surface/50">
                       <input
                         type="file"
                         accept="image/*"
@@ -972,7 +972,7 @@ const CreateEvent = () => {
                             <svg className="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
-                            <div className="text-white text-sm">
+                            <div className="text-text-primary text-sm">
                               {uploadingGuestPhoto ? 'Uploading...' : 'Click to upload photo'}
                             </div>
                           </>
@@ -1022,16 +1022,16 @@ const CreateEvent = () => {
               {/* Display Added Guests */}
               {eventData.guests.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-sm text-white font-semibold">
+                  <p className="text-sm text-text-primary font-semibold">
                     Added Guests ({eventData.guests.length}):
                   </p>
                   {eventData.guests.map(guest => (
-                    <div key={guest.id} className="bg-white/5 p-3 rounded-lg border border-white/10 flex gap-3 items-start">
+                    <div key={guest.id} className="bg-surface/50 p-3 rounded-lg border border-border flex gap-3 items-start">
                       {guest.photo && (
                         <img src={guest.photo} alt={guest.name} className="h-16 w-16 rounded-full object-cover" />
                       )}
                       <div className="flex-1">
-                        <p className="text-white font-medium">{guest.name}</p>
+                        <p className="text-text-primary font-medium">{guest.name}</p>
                         <p className="text-gray-400 text-sm">{guest.designation}</p>
                         {guest.appearanceDateTime && (
                           <p className="text-gray-400 text-xs">
@@ -1061,8 +1061,8 @@ const CreateEvent = () => {
             {currentStep === 3 && (
               <>
                 {/* Prefill Toggle */}
-                <div className="border-t border-white/10 pt-4 sm:pt-6">
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Registration Form</h3>
+                <div className="border-t border-border pt-4 sm:pt-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-3 sm:mb-4">Registration Form</h3>
               <div className="mb-4 sm:mb-6">
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
@@ -1091,11 +1091,11 @@ const CreateEvent = () => {
             {/* STEP 4: Payment */}
             {currentStep === 4 && (
               <>
-                <div className="border-t border-white/10 pt-4 sm:pt-6">
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
+                <div className="border-t border-border pt-4 sm:pt-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-3 sm:mb-4">
                     Payment Configuration
                   </h3>
-                  <p className="text-sm text-gray-400 mb-4">Configure entry fee and payment options for this event</p>
+                  <p className="text-sm text-text-secondary mb-4">Configure entry fee and payment options for this event</p>
 
                   {/* Entry Fee Options */}
                   <div>

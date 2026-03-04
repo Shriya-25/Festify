@@ -407,10 +407,10 @@ const EditFest = () => {
 
   if (fetchingFest) {
      return (
-        <div className="min-h-screen bg-[#0A0F1F] flex items-center justify-center">
+        <div className="min-h-screen bg-background flex items-center justify-center">
             <div className="text-center">
                 <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <h2 className="text-xl font-bold text-white">Loading Fest Details...</h2>
+                <h2 className="text-xl font-bold text-text-primary">Loading Fest Details...</h2>
             </div>
         </div>
      )
@@ -427,13 +427,13 @@ const EditFest = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
-            <button onClick={() => navigate('/dashboard')} className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+            <button onClick={() => navigate('/dashboard')} className="group flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors">
                 <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </div>
-                <span className="font-medium">Back to Dashboard</span>
+                <span className="font-medium text-text-primary">Back to Dashboard</span>
             </button>
         </div>
 
@@ -446,13 +446,13 @@ const EditFest = () => {
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 z-10 ${
                     currentStep >= step 
                       ? 'bg-gradient-to-br from-primary to-purple-600 text-white shadow-[0_0_15px_rgba(157,0,255,0.4)] scale-110' 
-                      : 'bg-[#121A2F] text-gray-500 border border-white/10 group-hover:border-white/30'
+                      : 'bg-surface text-text-secondary border border-border group-hover:border-primary/50'
                   }`}
                 >
                   {step}
                 </div>
                 <span className={`absolute -bottom-8 text-xs font-medium whitespace-nowrap transition-colors duration-300 ${
-                  currentStep >= step ? 'text-white' : 'text-gray-600'
+                  currentStep >= step ? 'text-primary' : 'text-text-secondary'
                 }`}>
                   {step === 1 ? 'Details' : step === 2 ? 'Social' : step === 3 ? 'Enhance' : step === 4 ? 'Banner' : step === 5 ? 'Form' : 'Review'}
                 </span>
@@ -488,7 +488,7 @@ const EditFest = () => {
           {currentStep === 1 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Edit Fest Details</h2>
+                <h2 className="text-2xl font-bold text-text-primary mb-2">Edit Fest Details</h2>
                 <p className="text-gray-400">Update the basics about your event</p>
               </div>
               
@@ -633,7 +633,7 @@ const EditFest = () => {
           {currentStep === 2 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Connect Socially</h2>
+                <h2 className="text-2xl font-bold text-text-primary mb-2">Connect Socially</h2>
                 <p className="text-gray-400">Where can students find more info?</p>
               </div>
               
@@ -666,12 +666,12 @@ const EditFest = () => {
           {currentStep === 3 && (
             <div className="space-y-8">
                <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-white mb-2">Enhance Your Page</h2>
+                <h2 className="text-2xl font-bold text-text-primary mb-2">Enhance Your Page</h2>
                 <p className="text-gray-400">Add sponsors and gallery images to build trust</p>
               </div>
 
               {/* Sponsors Section */}
-              <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+              <div className="bg-surface/50 p-6 rounded-2xl border border-border">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                     <span className="text-primary">✨</span> Sponsors
                 </h3>
@@ -740,7 +740,7 @@ const EditFest = () => {
               </div>
 
               {/* Gallery Section */}
-               <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+               <div className="bg-surface/50 p-6 rounded-2xl border border-border">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                     <span className="text-accent">🖼️</span> Gallery
                 </h3>
@@ -758,7 +758,7 @@ const EditFest = () => {
                         <div className="w-12 h-12 rounded-full bg-primary/10 mx-auto flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                             <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                         </div>
-                        <p className="text-white font-medium mb-1">{uploadingGalleryImage ? 'Uploading...' : 'Drop images here or click to upload'}</p>
+                        <p className="text-text-primary font-medium mb-1">{uploadingGalleryImage ? 'Uploading...' : 'Drop images here or click to upload'}</p>
                         <p className="text-xs text-gray-500">Supports PNG, JPG up to 5MB</p>
                     </label>
                 </div>
@@ -787,7 +787,7 @@ const EditFest = () => {
           {currentStep === 4 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Fest Banner</h2>
+                <h2 className="text-2xl font-bold text-text-primary mb-2">Fest Banner</h2>
                 <p className="text-gray-400">Update the banner image for your fest page</p>
               </div>
 
@@ -806,7 +806,7 @@ const EditFest = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  {/* Upload Option */}
-                <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center hover:border-primary/50 transition-colors">
+                <div className="bg-surface/50 p-6 rounded-2xl border border-border text-center hover:border-primary/50 transition-colors">
                     <input
                       type="file"
                       accept="image/*"
@@ -819,14 +819,14 @@ const EditFest = () => {
                          <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mb-4">
                             <svg className="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
                          </div>
-                        <h4 className="text-white font-medium mb-1">{uploadingImage ? 'Uploading...' : 'Upload Image'}</h4>
+                        <h4 className="text-text-primary font-medium mb-1">{uploadingImage ? 'Uploading...' : 'Upload Image'}</h4>
                         <p className="text-xs text-gray-500">Max size 5MB</p>
                     </label>
                 </div>
 
                 {/* URL Option */}
-                <div className="bg-white/5 p-6 rounded-2xl border border-white/10 flex flex-col justify-center">
-                    <h4 className="text-white font-medium mb-3">Or use an image URL</h4>
+                <div className="bg-surface/50 p-6 rounded-2xl border border-border flex flex-col justify-center">
+                    <h4 className="text-text-primary font-medium mb-3">Or use an image URL</h4>
                     <div className="flex gap-2">
                         <input
                             type="url"
@@ -853,13 +853,13 @@ const EditFest = () => {
           {currentStep === 5 && (
             <div className="space-y-6">
                <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Registration Form</h2>
+                <h2 className="text-2xl font-bold text-text-primary mb-2">Registration Form</h2>
                 <p className="text-gray-400">Customize what data you collect from students</p>
               </div>
               
               <div className="bg-gradient-to-r from-primary/10 to-transparent p-4 rounded-xl border border-primary/20 flex items-center justify-between">
                 <div>
-                    <h4 className="text-white font-medium">Smart Prefill</h4>
+                    <h4 className="text-text-primary font-medium">Smart Prefill</h4>
                     <p className="text-xs text-gray-400">Auto-fill Student Name, Email & College</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -884,7 +884,7 @@ const EditFest = () => {
           {currentStep === 6 && (
             <div className="space-y-6">
                <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Review Changes</h2>
+                <h2 className="text-2xl font-bold text-text-primary mb-2">Review Changes</h2>
                 <p className="text-gray-400">Review your updates before saving</p>
               </div>
               
@@ -931,10 +931,10 @@ const EditFest = () => {
               type="button"
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              className={`px-6 py-3 rounded-xl border border-white/10 text-white font-medium transition-all ${
+              className={`px-6 py-3 rounded-xl border border-border text-text-primary font-medium transition-all ${
                 currentStep === 1 
                   ? 'opacity-0 pointer-events-none' 
-                  : 'hover:bg-white/5 hover:border-white/20'
+                  : 'hover:bg-surface/50 hover:border-primary/50'
               }`}
             >
               Previous Step
