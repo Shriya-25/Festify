@@ -7,6 +7,7 @@ import Header from '../components/Header';
 const Dashboard = () => {
   const { currentUser, userRole, logout } = useAuth();
   const navigate = useNavigate();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     // Hide global navbar for this page to use the new layout
@@ -51,10 +52,10 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-background font-display text-text-primary relative overflow-x-hidden before:fixed before:inset-0 before:bg-[radial-gradient(circle_at_20%_30%,rgba(58,190,255,0.1),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(0,136,255,0.08),transparent_40%)] before:-z-10">
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar isCollapsed={isSidebarCollapsed} toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)} />
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-64 min-h-screen flex flex-col relative z-0">
+      <main className={`flex-1 ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} min-h-screen flex flex-col relative z-0 transition-all duration-300`}>
         <Header />
 
         <div className="p-4 lg:p-8 space-y-8 flex-1">

@@ -1,98 +1,133 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
-const Sidebar = () => {
+const Sidebar = ({ isCollapsed, toggleSidebar }) => {
   const location = useLocation();
   const { currentUser, userRole } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const isActive = (path) => {
-    return location.pathname === path ? 
+    // Modify active state styling for collapsed mode if needed
+    const baseStyle = location.pathname === path ? 
       'bg-primary/10 text-primary font-semibold shadow-[0_0_15px_rgba(58,190,255,0.1)]' : 
-      'text-slate-500 hover:bg-white/5 hover:text-slate-300 transition-colors';
+      'text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-700 dark:hover:text-slate-300 transition-colors';
+    
+    return `${baseStyle} ${isCollapsed ? 'justify-center px-2' : 'px-3'}`;
   };
 
   return (
-    <aside className="fixed inset-y-0 left-0 w-64 bg-surface-sidebar border-r border-white/5 z-50 hidden lg:flex flex-col">
-      <div className="p-6 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white bg-primary shadow-glow-primary">
+    <aside className={`fixed inset-y-0 left-0 ${isCollapsed ? 'w-20' : 'w-64'} bg-surface-sidebar border-r border-slate-200 dark:border-white/5 z-50 hidden lg:flex flex-col transition-all duration-300`}>
+      <div className={`p-6 flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white bg-primary shadow-glow-primary shrink-0">
           <span className="material-symbols-outlined">auto_awesome</span>
         </div>
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-white">Festify</h1>
-          <p className="text-xs text-slate-500">College Event Hub</p>
-        </div>
+        {!isCollapsed && (
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-text-primary">Festify</h1>
+            <p className="text-xs text-slate-500">College Event Hub</p>
+          </div>
+        )}
       </div>
 
-      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-        <Link to="/" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive('/')}`}>
-          <span className="material-symbols-outlined">explore</span>
-          <span>Explore Events</span>
+      <button 
+        onClick={toggleSidebar}
+        className="absolute -right-3 top-20 bg-surface-sidebar border border-slate-200 dark:border-white/10 text-slate-400 hover:text-text-primary rounded-full p-1 shadow-lg z-50 transition-colors"
+      >
+        <span className="material-symbols-outlined text-sm">
+          {isCollapsed ? 'chevron_right' : 'chevron_left'}
+        </span>
+      </button>
+
+      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto overflow-x-hidden">
+        <Link to="/" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/')}`} title={isCollapsed ? "Explore Events" : ""}>
+          <span className="material-symbols-outlined text-2xl">explore</span>
+          {!isCollapsed && <span>Explore Events</span>}
         </Link>
         
         {currentUser && (
-          <Link to="/dashboard" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive('/dashboard')}`}>
-            <span className="material-symbols-outlined">dashboard</span>
-            <span>Dashboard</span>
+          <Link to="/dashboard" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/dashboard')}`} title={isCollapsed ? "Dashboard" : ""}>
+            <span className="material-symbols-outlined text-2xl">dashboard</span>
+             {!isCollapsed && <span>Dashboard</span>}
           </Link>
         )}
 
         {currentUser && (
-          <Link to="/my-registrations" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive('/my-registrations')}`}>
-            <span className="material-symbols-outlined">confirmation_number</span>
-            <span>My Registrations</span>
+          <Link to="/my-registrations" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/my-registrations')}`} title={isCollapsed ? "My Registrations" : ""}>
+            <span className="material-symbols-outlined text-2xl">confirmation_number</span>
+             {!isCollapsed && <span>My Registrations</span>}
           </Link>
         )}
 
         {currentUser && (
-          <Link to="/saved-events" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive('/saved-events')}`}>
-            <span className="material-symbols-outlined">bookmark</span>
-            <span>Saved Events</span>
+          <Link to="/saved-events" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/saved-events')}`} title={isCollapsed ? "Saved Events" : ""}>
+            <span className="material-symbols-outlined text-2xl">bookmark</span>
+             {!isCollapsed && <span>Saved Events</span>}
           </Link>
         )}
 
         {userRole === 'organizer' && (
              <>
-                <div className="pt-4 pb-2">
-                    <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Organizer</p>
-                </div>
-                <Link to="/create-fest" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive('/create-fest')}`}>
-                    <span className="material-symbols-outlined">add_circle</span>
-                    <span>Create Fest</span>
+                {!isCollapsed && (
+                  <div className="pt-4 pb-2">
+                      <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Organizer</p>
+                  </div>
+                )}
+                {isCollapsed && <div className="h-4"></div>}
+                <Link to="/create-fest" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/create-fest')}`} title={isCollapsed ? "Create Fest" : ""}>
+                    <span className="material-symbols-outlined text-2xl">add_circle</span>
+                     {!isCollapsed && <span>Create Fest</span>}
                 </Link>
              </>
         )}
 
         {userRole === 'admin' && (
              <>
+                {!isCollapsed && (
                 <div className="pt-4 pb-2">
                     <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Admin</p>
                 </div>
-                <Link to="/admin" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive('/admin')}`}>
-                    <span className="material-symbols-outlined">admin_panel_settings</span>
-                    <span>Admin Panel</span>
+                )}
+                {isCollapsed && <div className="h-4"></div>}
+                <Link to="/admin" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/admin')}`} title={isCollapsed ? "Admin Panel" : ""}>
+                    <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
+                     {!isCollapsed && <span>Admin Panel</span>}
                 </Link>
              </>
         )}
 
-        <div className="pt-4 pb-2">
-          <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Account</p>
-        </div>
+        {!isCollapsed && (
+          <div className="pt-4 pb-2">
+            <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Account</p>
+          </div>
+        )}
+        {isCollapsed && <div className="h-4"></div>}
         
         {currentUser && (
-          <Link to="/profile" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive('/profile')}`}>
-            <span className="material-symbols-outlined">person</span>
-            <span>Profile</span>
+          <Link to="/profile" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/profile')}`} title={isCollapsed ? "Profile" : ""}>
+            <span className="material-symbols-outlined text-2xl">person</span>
+             {!isCollapsed && <span>Profile</span>}
           </Link>
         )}
         
-        <Link to="/settings" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive('/settings')}`}>
-          <span className="material-symbols-outlined">settings</span>
-          <span>Settings</span>
+        <Link to="/settings" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/settings')}`} title={isCollapsed ? "Settings" : ""}>
+          <span className="material-symbols-outlined text-2xl">settings</span>
+           {!isCollapsed && <span>Settings</span>}
         </Link>
       </nav>
 
-      <div className="p-4 mt-auto">
+      <div className="p-4 mt-auto border-t border-slate-200 dark:border-white/5 space-y-4">
+          <button
+              onClick={toggleTheme}
+              className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-3'} py-2.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-700 dark:hover:text-slate-300 transition-colors`}
+              title={isCollapsed ? (theme === 'dark' ? "Light Mode" : "Dark Mode") : ""}
+          >
+              <span className="material-symbols-outlined text-2xl">
+                  {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              </span>
+              {!isCollapsed && <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
+          </button>
       </div>
     </aside>
   );

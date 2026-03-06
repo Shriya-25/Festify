@@ -19,6 +19,7 @@ const Home = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Only 3 categories: Technical, Cultural, Sports
   const categories = ['all', 'Technical', 'Cultural', 'Sports'];
@@ -214,10 +215,10 @@ const Home = () => {
       )}
 
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar isCollapsed={isSidebarCollapsed} toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)} />
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-64 min-h-screen flex flex-col relative z-0">
+      <main className={`flex-1 ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} min-h-screen flex flex-col relative z-0 transition-all duration-300`}>
         <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
         <div className="p-4 lg:p-8 space-y-8 flex-1">
@@ -254,7 +255,7 @@ const Home = () => {
                 <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x p-1">
                     <button 
                          onClick={() => setSelectedCategory('all')}
-                         className={`px-6 py-3 snap-start rounded-full font-bold whitespace-nowrap transition-all ${selectedCategory === 'all' ? 'bg-gradient-to-r from-primary to-primary-end text-white shadow-glow-primary scale-105' : 'bg-surface-card border border-white/10 text-text-secondary hover:border-primary/50 hover:text-white'}`}
+                         className={`px-6 py-3 snap-start rounded-full font-bold whitespace-nowrap transition-all ${selectedCategory === 'all' ? 'bg-gradient-to-r from-primary to-primary-end text-white shadow-glow-primary scale-105' : 'bg-surface-card border border-slate-200 dark:border-white/10 text-text-secondary hover:border-primary/50 hover:text-primary dark:hover:text-white'}`}
                     >
                         All Events
                     </button>
@@ -262,7 +263,7 @@ const Home = () => {
                          <button 
                             key={category}
                             onClick={() => setSelectedCategory(category)}
-                            className={`px-6 py-3 snap-start rounded-full font-bold whitespace-nowrap transition-all ${selectedCategory === category ? 'bg-gradient-to-r from-royal-purple to-purple-600 text-white shadow-lg scale-105' : 'bg-surface-card border border-white/10 text-text-secondary hover:border-royal-purple/50 hover:text-white'}`}
+                            className={`px-6 py-3 snap-start rounded-full font-bold whitespace-nowrap transition-all ${selectedCategory === category ? 'bg-gradient-to-r from-royal-purple to-purple-600 text-white shadow-lg scale-105' : 'bg-surface-card border border-slate-200 dark:border-white/10 text-text-secondary hover:border-royal-purple/50 hover:text-primary dark:hover:text-white'}`}
                          >
                             {category}
                          </button>
@@ -276,7 +277,7 @@ const Home = () => {
                         <select 
                             value={cityFilter}
                             onChange={(e) => setCityFilter(e.target.value)}
-                            className="w-full appearance-none pl-5 pr-10 py-3 rounded-full bg-surface-card border border-white/10 text-text-secondary font-bold text-sm whitespace-nowrap hover:border-electric-blue hover:text-white transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-electric-blue/50"
+                            className="w-full appearance-none pl-5 pr-10 py-3 rounded-full bg-surface-card border border-slate-200 dark:border-white/10 text-text-secondary font-bold text-sm whitespace-nowrap hover:border-electric-blue hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-electric-blue/50"
                         >
                             <option value="all">City: All</option>
                             {metroCities.map(city => <option key={city} value={city}>{city}</option>)}
@@ -290,7 +291,7 @@ const Home = () => {
                         <select 
                             value={dateFilter}
                             onChange={(e) => setDateFilter(e.target.value)}
-                            className="w-full appearance-none pl-5 pr-10 py-3 rounded-full bg-surface-card border border-white/10 text-text-secondary font-bold text-sm whitespace-nowrap hover:border-electric-blue hover:text-white transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-electric-blue/50"
+                            className="w-full appearance-none pl-5 pr-10 py-3 rounded-full bg-surface-card border border-slate-200 dark:border-white/10 text-text-secondary font-bold text-sm whitespace-nowrap hover:border-electric-blue hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-electric-blue/50"
                         >
                             <option value="all">Date: All</option>
                             {dateFilters.filter(f => f.value !== 'all').map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
