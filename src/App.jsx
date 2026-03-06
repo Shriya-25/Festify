@@ -19,6 +19,7 @@ import EditFest from './pages/EditFest';
 import CreateEvent from './pages/CreateEvent';
 import PaymentSetup from './pages/PaymentSetup';
 import EditEvent from './pages/EditEvent';
+import ManageFestList from './pages/ManageFestList';
 import ManageFest from './pages/ManageFest';
 import StudentProfile from './pages/StudentProfile';
 import Dashboard from './pages/Dashboard';
@@ -66,6 +67,14 @@ const AppContent = () => {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manage-fests"
+            element={
+              <ProtectedRoute requiredRole="organizer">
+                <ManageFestList />
               </ProtectedRoute>
             }
           />

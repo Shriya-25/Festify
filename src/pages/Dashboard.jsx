@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -8,16 +10,96 @@ const Dashboard = () => {
   const { currentUser, userRole, logout } = useAuth();
   const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  
+  // Organizer Stats State
+  const [stats, setStats] = useState({
+    activeFests: 0,
+    totalRegistrations: 0,
+    totalRevenue: 0
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Hide global navbar for this page to use the new layout
     const nav = document.querySelector('nav');
     if (nav) nav.style.display = 'none';
+    
+    // Fetch stats if organizer
+    if (userRole === 'organizer' && currentUser) {
+      fetchOrganizerStats();
+    } else {
+      setLoading(false);
+    }
+
     return () => {
       // Restore global navbar
       if (nav) nav.style.display = ''; 
     };
-  }, []);
+  }, [currentUser, userRole]);
+
+  const fetchOrganizerStats = async () => {
+    try {
+      setLoading(true);
+      // 1. Fetch fests created by user
+      const festsQuery = query(
+        collection(db, 'fests'),
+        where('createdBy', '==', currentUser.uid)
+      );
+      const festsSnapshot = await getDocs(festsQuery);
+      const fests = festsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      const activeFestsCount = fests.length;
+      
+      if (activeFestsCount === 0) {
+        setStats({ activeFests: 0, totalRegistrations: 0, totalRevenue: 0 });
+        setLoading(false);
+        return;
+      }
+
+      // 2. Fetch events for these fests
+      // Note: Firestore 'in' query supports up to 10 values. If user has > 10 fests, we need multiple queries or another approach.
+      // For now, assuming < 10 active fests or fetching all events and filtering (if events collection isn't huge).
+      // Better approach: Query events where festId is one of the user's fest IDs using batches of 10.
+      
+      const festIds = fests.map(f => f.id);
+      let allEvents = [];
+      
+      // Batch stats fetching
+      for (let i = 0; i < festIds.length; i += 10) {
+        const batch = festIds.slice(i, i + 10);
+        if (batch.length > 0) {
+           const eventsQuery = query(
+             collection(db, 'events'),
+             where('festId', 'in', batch)
+           );
+           const eventsSnap = await getDocs(eventsQuery);
+           allEvents = [...allEvents, ...eventsSnap.docs.map(d => d.data())];
+        }
+      }
+
+      // 3. Calculate totals
+      const totalRegistrations = allEvents.reduce((sum, event) => sum + (event.participantCount || 0), 0);
+      
+      // Revenue estimate (Price * Participants) - Ideally should verify payment status from registrations
+      // but this is a dashboard overview
+      const totalRevenue = allEvents.reduce((sum, event) => {
+        const price = parseFloat(event.registrationFee) || 0;
+        const count = event.participantCount || 0;
+        return sum + (price * count);
+      }, 0);
+
+      setStats({
+        activeFests: activeFestsCount,
+        totalRegistrations,
+        totalRevenue
+      });
+
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -79,20 +161,20 @@ const Dashboard = () => {
             {userRole === 'organizer' ? (
                 <>
                 <StatCard 
-                    title="Active Fests" 
-                    value="3" 
+                    title="Your Fests" 
+                    value={loading ? "..." : stats.activeFests.toString()} 
                     color="text-primary"
                     icon={<span className="material-symbols-outlined text-5xl">event</span>}
                 />
                 <StatCard 
                     title="Total Registrations" 
-                    value="1,245" 
+                    value={loading ? "..." : stats.totalRegistrations.toLocaleString()} 
                     color="text-neon-pink"
                     icon={<span className="material-symbols-outlined text-5xl">group</span>}
                 />
                 <StatCard 
-                    title="Revenue" 
-                    value="₹45k" 
+                    title="Est. Revenue" 
+                    value={loading ? "..." : `₹${stats.totalRevenue.toLocaleString()}`} 
                     color="text-green-400"
                     icon={<span className="material-symbols-outlined text-5xl">payments</span>}
                 />
@@ -144,13 +226,6 @@ const Dashboard = () => {
                     gradient="from-royal-purple to-indigo-600"
                     icon={<span className="material-symbols-outlined text-2xl">edit_document</span>}
                     />
-                    <ActionCard
-                    title="Organizer Profile"
-                    description="Update your organization details and contact information."
-                    link="/profile"
-                    gradient="from-neon-pink to-pink-600"
-                    icon={<span className="material-symbols-outlined text-2xl">person_pin</span>}
-                    />
                 </>
                 ) : (
                 <>
@@ -195,15 +270,13 @@ const Dashboard = () => {
                     <h4 className="text-text-primary font-medium text-sm">Activity Log #{index + 1}</h4>
                     <p className="text-xs text-text-secondary">You updated your profile details successfully.</p>
                     </div>
-                    <span className="ml-auto text-xs text-text-secondary">2h ago</span>
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-fest-border hover:bg-surface-card transition-colors">
+                    <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div>
+                    <div>
+                    <h4 className="text-text-primary font-medium text-sm">Login Successful</h4>
+                    <p className="text-xs text-text-secondary">Welcome back to your dashboard.</p>
+                    </div>
+                    <span className="ml-auto text-xs text-text-secondary">Just now</span>
                 </div>
-                ))}
-            </div>
-            </div>
-        </div>
-      </main>
-    </div>
-  );
-};
 
 export default Dashboard;
