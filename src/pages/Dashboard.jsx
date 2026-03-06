@@ -257,26 +257,26 @@ const Dashboard = () => {
 
             {/* Recent Activity Section */}
             <div className="bg-surface-card backdrop-blur-xl border border-fest-border p-6 md:p-8 rounded-2xl">
-            <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary">history</span>
-                Recent Activity
-            </h2>
-            
-            <div className="space-y-4">
-                {[1, 2, 3].map((_, index) => (
-                <div key={index} className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-fest-border hover:bg-surface-card transition-colors">
-                    <div className="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0"></div>
-                    <div>
-                    <h4 className="text-text-primary font-medium text-sm">Activity Log #{index + 1}</h4>
-                    <p className="text-xs text-text-secondary">You updated your profile details successfully.</p>
-                    </div>
-                <div className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-fest-border hover:bg-surface-card transition-colors">
-                    <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div>
-                    <div>
-                    <h4 className="text-text-primary font-medium text-sm">Login Successful</h4>
-                    <p className="text-xs text-text-secondary">Welcome back to your dashboard.</p>
-                    </div>
-                    <span className="ml-auto text-xs text-text-secondary">Just now</span>
-                </div>
+              <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary">history</span>
+                  Recent Activity
+              </h2>
+              
+              <div className="space-y-4">
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-fest-border hover:bg-surface-card transition-colors">
+                      <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div>
+                      <div>
+                      <h4 className="text-text-primary font-medium text-sm">Login Successful</h4>
+                      <p className="text-xs text-text-secondary">Welcome back to your dashboard.</p>
+                      </div>
+                      <span className="ml-auto text-xs text-text-secondary">Just now</span>
+                  </div>
+              </div>
+            </div>
+        </div>
+      </main>
+    </div>
+  );
+};
 
 export default Dashboard;
