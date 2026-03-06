@@ -1,12 +1,22 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
   const location = useLocation();
-  const { currentUser, userRole } = useAuth();
+  const navigate = useNavigate();
+  const { currentUser, userRole, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   const isActive = (path) => {
     // Modify active state styling for collapsed mode if needed
@@ -115,6 +125,28 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
           <span className="material-symbols-outlined text-2xl">settings</span>
            {!isCollapsed && <span>Settings</span>}
         </Link>
+
+        {currentUser ? (
+          <button 
+            onClick={handleLogout}
+            className={`w-full flex items-center gap-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-red-500 transition-colors ${isCollapsed ? 'justify-center px-2' : 'px-3'}`}
+            title={isCollapsed ? "Logout" : ""}
+          >
+            <span className="material-symbols-outlined text-2xl">logout</span>
+             {!isCollapsed && <span>Logout</span>}
+          </button>
+        ) : (
+          <>
+            <Link to="/login" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/login')}`} title={isCollapsed ? "Login" : ""}>
+              <span className="material-symbols-outlined text-2xl">login</span>
+              {!isCollapsed && <span>Login</span>}
+            </Link>
+            <Link to="/signup" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/signup')}`} title={isCollapsed ? "Sign Up" : ""}>
+              <span className="material-symbols-outlined text-2xl">person_add</span>
+              {!isCollapsed && <span>Sign Up</span>}
+            </Link>
+          </>
+        )}
       </nav>
 
       <div className="p-4 mt-auto border-t border-slate-200 dark:border-white/5 space-y-4">
