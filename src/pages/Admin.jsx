@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import Header from '../components/Header'; // Import Header
 
 function Admin() {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme(); // Use theme context
   const [fests, setFests] = useState([]);
   const [events, setEvents] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('fests'); // 'fests', 'events', or 'users'
+  const [activeTab, setActiveTab] = useState('fests'); // 'fests', 'events', 'users', or 'activity'
   const [error, setError] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedFest, setSelectedFest] = useState(null);
@@ -331,6 +334,8 @@ function Admin() {
   const pendingEvents = events.filter(e => e.status === 'pending' || !e.status).length;
 
   const getQueueItems = () => {
+    if (activeTab === 'activity') return [];
+    
     let items = [];
     if (activeTab === 'events') {
        items = events;
@@ -366,53 +371,104 @@ function Admin() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0F1F] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
+  // Activity Log Component
+  const ActivityLog = () => (
+    <div className="space-y-6">
+        <h2 className="text-xl font-bold text-text-primary capitalize">Activity Logs</h2>
+        <div className="bg-surface-card backdrop-blur-xl border border-fest-border p-6 rounded-2xl">
+            <div className="space-y-4">
+                {[
+                  { title: 'User Registration', desc: 'New user "John Doe" registered.', time: '10 mins ago', type: 'user' },
+                  { title: 'Fest Created', desc: 'New fest "TechX 2026" submitted for review.', time: '1 hour ago', type: 'fest' },
+                  { title: 'Event Update', desc: 'Organizer updated details for "Coding Contest".', time: '2 hours ago', type: 'event' },
+                  { title: 'Login', desc: 'Admin logged in successfully.', time: 'Just now', type: 'system' }
+                ].map((log, index) => (
+                <div key={index} className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-fest-border hover:bg-surface-card transition-colors">
+                    <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                        log.type === 'user' ? 'bg-blue-500' : 
+                        log.type === 'fest' ? 'bg-purple-500' :
+                        log.type === 'event' ? 'bg-green-500' : 'bg-orange-500'
+                    }`}></div>
+                    <div>
+                        <h4 className="text-text-primary font-medium text-sm">{log.title}</h4>
+                        <p className="text-xs text-text-secondary">{log.desc}</p>
+                    </div>
+                    <span className="ml-auto text-xs text-text-secondary">{log.time}</span>
+                </div>
+                ))}
+            </div>
+        </div>
+    </div>
+  );
+
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0A0F1F] font-sans text-[#F4F7FA]">
+    <div className="flex h-screen overflow-hidden bg-background font-sans text-text-primary">
       {/* Side Navigation */}
-      <aside className="w-64 flex-shrink-0 bg-[#070C18] border-r border-white/5 flex flex-col z-50">
+      <aside className="w-64 flex-shrink-0 bg-surface-sidebar border-r border-slate-200 dark:border-white/5 flex flex-col z-50">
         <div className="p-6 flex flex-col gap-1 cursor-pointer" onClick={() => navigate('/')}>
-          <h1 className="text-[#3ABEFF] text-2xl font-bold tracking-tight">Festify</h1>
-          <p className="text-[#9BA3B4] text-xs font-medium uppercase tracking-wider">Platform Admin</p>
+          <h1 className="text-primary text-2xl font-bold tracking-tight">Festify</h1>
+          <p className="text-text-secondary text-xs font-medium uppercase tracking-wider">Platform Admin</p>
         </div>
         <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
           <button 
             onClick={() => setActiveTab('fests')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'fests' ? 'bg-[#3ABEFF]/10 text-[#3ABEFF] font-semibold' : 'text-[#9BA3B4] hover:bg-white/5 hover:text-[#3ABEFF]'}`}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'fests' ? 'bg-primary/10 text-primary font-semibold' : 'text-text-secondary hover:bg-white/5 hover:text-primary'}`}
           >
             <span className="material-symbols-outlined fill-1">verified</span>
             <span className="text-sm">Fests</span>
           </button>
           <button 
             onClick={() => setActiveTab('events')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'events' ? 'bg-[#3ABEFF]/10 text-[#3ABEFF] font-semibold' : 'text-[#9BA3B4] hover:bg-white/5 hover:text-[#3ABEFF]'}`}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'events' ? 'bg-primary/10 text-primary font-semibold' : 'text-text-secondary hover:bg-white/5 hover:text-primary'}`}
           >
             <span className="material-symbols-outlined">calendar_month</span>
             <span className="text-sm">Events</span>
           </button>
           <button 
             onClick={() => setActiveTab('users')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'users' ? 'bg-[#3ABEFF]/10 text-[#3ABEFF] font-semibold' : 'text-[#9BA3B4] hover:bg-white/5 hover:text-[#3ABEFF]'}`}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'users' ? 'bg-primary/10 text-primary font-semibold' : 'text-text-secondary hover:bg-white/5 hover:text-primary'}`}
           >
             <span className="material-symbols-outlined">group</span>
             <span className="text-sm">Users</span>
           </button>
+          <button 
+            onClick={() => setActiveTab('activity')}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'activity' ? 'bg-primary/10 text-primary font-semibold' : 'text-text-secondary hover:bg-white/5 hover:text-primary'}`}
+          >
+            <span className="material-symbols-outlined">history</span>
+            <span className="text-sm">Activity Logs</span>
+          </button>
         </nav>
-        <div className="p-4 border-t border-white/5">
+        
+        {/* Theme Toggle - Re-added to sidebar */}
+        <div className="px-4 pb-2 mt-auto">
+           <button
+              onClick={toggleTheme}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-white/5 hover:text-text-primary transition-colors"
+           >
+              <span className="material-symbols-outlined">
+                  {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              </span>
+              <span className="text-sm">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+           </button>
+        </div>
+
+        <div className="p-4 border-t border-slate-200 dark:border-white/5">
           <div className="flex items-center gap-3 p-2">
-            <div className="h-10 w-10 rounded-full bg-[#3ABEFF]/20 flex items-center justify-center overflow-hidden text-[#3ABEFF]">
+            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden text-primary">
                <span className="material-symbols-outlined">person</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold truncate">Administrator</p>
-              <p className="text-[#9BA3B4] text-xs font-medium uppercase tracking-wider">Online</p>
+              <p className="text-sm font-bold truncate text-text-primary">Administrator</p>
+              <p className="text-text-secondary text-xs font-medium uppercase tracking-wider">Online</p>
             </div>
-            <button onClick={() => navigate('/')} className="text-slate-400 hover:text-slate-200" title="Exit Admin">
+            <button onClick={() => navigate('/')} className="text-text-muted hover:text-text-primary" title="Exit Admin">
               <span className="material-symbols-outlined text-xl">logout</span>
             </button>
           </div>
@@ -420,107 +476,132 @@ function Admin() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative before:fixed before:inset-0 before:bg-[radial-gradient(circle_at_20%_30%,rgba(58,190,255,0.1),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(0,136,255,0.08),transparent_40%)] before:-z-10 before:pointer-events-none">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative bg-background">
         
-        {/* Header */}
-        <header className="h-16 flex items-center justify-between px-8 bg-[#0A0F1F]/60 backdrop-blur-xl border-b border-white/5 shrink-0">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="relative w-full max-w-md">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                <span className="material-symbols-outlined">search</span>
-              </span>
-              <input 
-                className="block w-full pl-10 pr-3 py-2 border-none rounded-lg bg-white/5 text-sm text-[#F4F7FA] placeholder:text-[#9BA3B4] focus:ring-2 focus:ring-[#3ABEFF]/50 transition-all outline-none" 
-                placeholder={`Search ${activeTab}...`}
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-             <button className="p-2 text-slate-500 hover:bg-white/5 rounded-lg relative transition-colors">
-                <span className="material-symbols-outlined">notifications</span>
-                {pendingFests + pendingEvents > 0 && <span className="absolute top-2 right-2.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-[#0A0F1F]"></span>}
-             </button>
-          </div>
-        </header>
+        {/* Header - Using Global Header Component */}
+        <Header 
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            notificationCount={pendingFests + pendingEvents}
+            notificationContent={
+                <div>
+                    <div className="p-4 border-b border-fest-border bg-surface/50">
+                        <h3 className="font-bold text-text-primary">Notifications</h3>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                        {(pendingFests + pendingEvents) === 0 ? (
+                            <div className="p-4 text-center text-text-secondary text-sm">No new notifications</div>
+                        ) : (
+                            <div className="divide-y divide-fest-border">
+                                {pendingFests > 0 && (
+                                    <div className="p-4 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => setActiveTab('fests')}>
+                                        <div className="flex gap-3">
+                                            <div className="mt-1 h-2 w-2 rounded-full bg-pink-500 flex-shrink-0"></div>
+                                            <div>
+                                                <p className="text-sm font-medium text-text-primary">Fests Pending Approval</p>
+                                                <p className="text-xs text-text-secondary mt-1">Review {pendingFests} new fest requests.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {pendingEvents > 0 && (
+                                    <div className="p-4 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => setActiveTab('events')}>
+                                        <div className="flex gap-3">
+                                            <div className="mt-1 h-2 w-2 rounded-full bg-amber-500 flex-shrink-0"></div>
+                                            <div>
+                                                <p className="text-sm font-medium text-text-primary">Events Pending Approval</p>
+                                                <p className="text-xs text-text-secondary mt-1">Review {pendingEvents} new event requests.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            }
+        />
 
         {/* Dashboard Body */}
         <div className="flex-1 overflow-y-auto p-8 space-y-8">
           
-          {/* Statistics Grid */}
+          {/* Statistics Grid - Only show if NOT in Activity Log tab */}
+          {activeTab !== 'activity' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-[rgba(24,34,58,0.6)] backdrop-blur-xl p-6 rounded-2xl border border-white/10 flex flex-col gap-4 shadow-lg">
+            <div className="bg-surface-card backdrop-blur-xl p-6 rounded-2xl border border-fest-border flex flex-col gap-4 shadow-lg">
               <div className="flex items-center justify-between">
-                <div className="p-2 bg-[#3ABEFF]/20 rounded-lg">
-                  <span className="material-symbols-outlined text-[#3ABEFF]">group</span>
+                <div className="p-2 bg-primary/20 rounded-lg">
+                  <span className="material-symbols-outlined text-primary">group</span>
                 </div>
               </div>
               <div>
-                <p className="text-[#9BA3B4] text-sm font-medium">Total Users</p>
-                <h3 className="text-2xl font-bold mt-1 text-[#F4F7FA]">{users.length}</h3>
+                <p className="text-text-secondary text-sm font-medium">Total Users</p>
+                <h3 className="text-2xl font-bold mt-1 text-text-primary">{users.length}</h3>
               </div>
             </div>
             
-            <div className="bg-[rgba(24,34,58,0.6)] backdrop-blur-xl p-6 rounded-2xl border border-white/10 flex flex-col gap-4 shadow-lg">
+            <div className="bg-surface-card backdrop-blur-xl p-6 rounded-2xl border border-fest-border flex flex-col gap-4 shadow-lg">
               <div className="flex items-center justify-between">
-                 <div className="p-2 bg-[#9D00FF]/20 rounded-lg">
-                  <span className="material-symbols-outlined text-[#9D00FF]">confirmation_number</span>
+                 <div className="p-2 bg-purple-500/20 rounded-lg">
+                  <span className="material-symbols-outlined text-purple-500">confirmation_number</span>
                 </div>
               </div>
               <div>
-                <p className="text-[#9BA3B4] text-sm font-medium">Total Fests</p>
-                <h3 className="text-2xl font-bold mt-1 text-[#F4F7FA]">{fests.length}</h3>
+                <p className="text-text-secondary text-sm font-medium">Total Fests</p>
+                <h3 className="text-2xl font-bold mt-1 text-text-primary">{fests.length}</h3>
               </div>
             </div>
 
-             <div className="bg-[rgba(24,34,58,0.6)] backdrop-blur-xl p-6 rounded-2xl border border-white/10 flex flex-col gap-4 shadow-lg">
+             <div className="bg-surface-card backdrop-blur-xl p-6 rounded-2xl border border-fest-border flex flex-col gap-4 shadow-lg">
               <div className="flex items-center justify-between">
                  <div className="p-2 bg-emerald-400/20 rounded-lg">
                   <span className="material-symbols-outlined text-emerald-400">payments</span>
                 </div>
               </div>
               <div>
-                <p className="text-[#9BA3B4] text-sm font-medium">Events</p>
-                <h3 className="text-2xl font-bold mt-1 text-[#F4F7FA]">{events.length}</h3>
+                <p className="text-text-secondary text-sm font-medium">Events</p>
+                <h3 className="text-2xl font-bold mt-1 text-text-primary">{events.length}</h3>
               </div>
             </div>
 
-             <div className="bg-[rgba(24,34,58,0.6)] backdrop-blur-xl p-6 rounded-2xl border border-white/10 flex flex-col gap-4 shadow-lg">
+             <div className="bg-surface-card backdrop-blur-xl p-6 rounded-2xl border border-fest-border flex flex-col gap-4 shadow-lg">
               <div className="flex items-center justify-between">
                  <div className="p-2 bg-amber-400/20 rounded-lg">
                   <span className="material-symbols-outlined text-amber-400">pending_actions</span>
                 </div>
-                {(pendingFests + pendingEvents > 0) && <span className="text-xs font-bold text-[#FF007A] bg-[#FF007A]/10 px-2.5 py-1 rounded-full">Action Needed</span>}
+                {(pendingFests + pendingEvents > 0) && <span className="text-xs font-bold text-white bg-pink-500 px-2.5 py-1 rounded-full">Action Needed</span>}
               </div>
               <div>
-                <p className="text-[#9BA3B4] text-sm font-medium">Pending Approvals</p>
-                <h3 className="text-2xl font-bold mt-1 text-[#F4F7FA]">{pendingFests + pendingEvents}</h3>
+                <p className="text-text-secondary text-sm font-medium">Pending Approvals</p>
+                <h3 className="text-2xl font-bold mt-1 text-text-primary">{pendingFests + pendingEvents}</h3>
               </div>
             </div>
           </div>
+          )}
 
-          {/* Grid: Queue & Detail */}
+          {activeTab === 'activity' ? (
+              <ActivityLog />
+          ) : (
+          /* Grid: Queue & Detail */
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Left Column: List/Table */}
             <div className="lg:col-span-2 flex flex-col gap-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold capitalize text-white">{activeTab} Queue</h2>
+                <h2 className="text-xl font-bold capitalize text-text-primary">{activeTab} Queue</h2>
                 
                 {/* Status Filter for Fests/Events */}
                 {activeTab !== 'users' && (
                   <div className="flex gap-2">
                      <button 
                         onClick={() => activeTab === 'fests' ? setFestStatusFilter('all') : setEventStatusFilter('all')}
-                        className={`text-xs px-2 py-1 rounded-md border ${festStatusFilter === 'all' && eventStatusFilter === 'all' ? 'bg-[#3ABEFF]/20 border-[#3ABEFF] text-[#3ABEFF]' : 'border-white/10 text-[#9BA3B4]'}`}
+                        className={`text-xs px-2 py-1 rounded-md border ${festStatusFilter === 'all' && eventStatusFilter === 'all' ? 'bg-primary/20 border-primary text-primary' : 'border-fest-border text-text-secondary'}`}
                      >
                         All
                      </button>
                      <button 
                         onClick={() => activeTab === 'fests' ? setFestStatusFilter('pending') : setEventStatusFilter('pending')}
-                        className={`text-xs px-2 py-1 rounded-md border ${festStatusFilter === 'pending' || eventStatusFilter === 'pending' ? 'bg-yellow-500/20 border-yellow-500 text-yellow-500' : 'border-white/10 text-[#9BA3B4]'}`}
+                        className={`text-xs px-2 py-1 rounded-md border ${festStatusFilter === 'pending' || eventStatusFilter === 'pending' ? 'bg-yellow-500/20 border-yellow-500 text-yellow-500' : 'border-fest-border text-text-secondary'}`}
                      >
                         Pending
                      </button>
@@ -528,36 +609,36 @@ function Admin() {
                 )}
               </div>
               
-              <div className="bg-[rgba(24,34,58,0.6)] backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden shadow-lg min-h-[400px]">
+              <div className="bg-surface-card backdrop-blur-xl rounded-2xl border border-fest-border overflow-hidden shadow-lg min-h-[400px]">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead className="bg-white/5 border-b border-white/10">
                       <tr>
-                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#9BA3B4]">Name</th>
+                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Name</th>
                         {activeTab === 'users' ? (
                             <>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#9BA3B4]">Email</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#9BA3B4]">Role</th>
+                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Email</th>
+                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Role</th>
                             </>
                         ) : (
                             <>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#9BA3B4]">Organizer</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#9BA3B4]">Status</th>
+                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Organizer</th>
+                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Status</th>
                             </>
                         )}
-                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#9BA3B4]">Action</th>
+                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
                       {queueItems.length === 0 ? (
                         <tr>
-                            <td colSpan="4" className="px-6 py-8 text-center text-[#9BA3B4]">No items found.</td>
+                            <td colSpan="4" className="px-6 py-8 text-center text-text-secondary">No items found.</td>
                         </tr>
                       ) : (
                         queueItems.map(item => (
                             <tr 
                                 key={item.id} 
-                                className={`hover:bg-white/5 transition-colors cursor-pointer ${(selectedFest?.id === item.id || selectedEvent?.id === item.id) ? 'bg-[#3ABEFF]/10 border-l-2 border-[#3ABEFF]' : ''}`}
+                                className={`hover:bg-white/5 transition-colors cursor-pointer ${(selectedFest?.id === item.id || selectedEvent?.id === item.id) ? 'bg-primary/10 border-l-2 border-primary' : ''}`}
                                 onClick={() => {
                                     if(activeTab === 'fests') {
                                         setSelectedFest(item);
@@ -574,37 +655,41 @@ function Admin() {
                             >
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded bg-white/5 flex items-center justify-center text-[#9BA3B4]">
+                                        <div className="h-10 w-10 rounded bg-white/5 flex items-center justify-center text-text-secondary">
                                             <span className="material-symbols-outlined">
                                                 {activeTab === 'users' ? 'person' : (activeTab === 'events' ? 'event' : 'festival')}
                                             </span>
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-[#F4F7FA]">{item.festName || item.eventName || item.displayName || 'Unnamed'}</p>
-                                            <p className="text-xs text-[#9BA3B4] italic">{item.category || item.domain || item.role || 'Uncategorized'}</p>
+                                            {/* Fix name display for events */}
+                                            <p className="text-sm font-bold text-text-primary">
+                                                {activeTab === 'events' ? item.eventName : (item.festName || item.displayName || 'Unnamed')}
+                                            </p>
+                                            <p className="text-xs text-text-secondary italic">{item.category || item.domain || item.role || 'Uncategorized'}</p>
                                         </div>
                                     </div>
                                 </td>
                                 
                                 {activeTab === 'users' ? (
                                     <>
-                                        <td className="px-6 py-4 text-sm text-[#9BA3B4]">{item.email}</td>
+                                        <td className="px-6 py-4 text-sm text-text-secondary">{item.email}</td>
                                         <td className="px-6 py-4">
                                             <select
                                               value={item.role || 'student'}
                                               onClick={(e) => e.stopPropagation()}
                                               onChange={(e) => handleChangeUserRole(item.id, e.target.value)}
-                                              className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#3ABEFF]"
+                                              className="bg-surface-card border border-fest-border rounded px-2 py-1 text-xs text-text-primary focus:outline-none focus:ring-1 focus:ring-primary"
                                             >
-                                              <option value="student" className="bg-[#0A0F1F]">Student</option>
-                                              <option value="organizer" className="bg-[#0A0F1F]">Organizer</option>
-                                              <option value="admin" className="bg-[#0A0F1F]">Admin</option>
+                                              <option value="student" className="bg-surface">Student</option>
+                                              <option value="organizer" className="bg-surface">Organizer</option>
+                                              <option value="admin" className="bg-surface">Admin</option>
                                             </select>
                                         </td>
                                     </>
                                 ) : (
                                     <>
-                                        <td className="px-6 py-4 text-sm text-[#9BA3B4]">{item.organizerName || item.collegeName || 'N/A'}</td>
+                                        {/* Show College Name for Organizer column */}
+                                        <td className="px-6 py-4 text-sm text-text-secondary">{item.college || item.collegeName || item.organizerName || 'N/A'}</td>
                                         <td className="px-6 py-4">
                                             <span className={`text-xs font-bold px-2 py-1 rounded-full uppercase ${
                                                 item.status === 'approved' ? 'bg-green-500/20 text-green-400' :
@@ -619,7 +704,7 @@ function Admin() {
                                 )}
                                 
                                 <td className="px-6 py-4">
-                                    <button className="text-[#3ABEFF] hover:text-white transition-colors text-sm font-bold">
+                                    <button className="text-primary hover:text-text-primary transition-colors text-sm font-bold">
                                         {activeTab === 'users' ? 'Edit' : 'Review'}
                                     </button>
                                 </td>
@@ -634,10 +719,10 @@ function Admin() {
 
             {/* Right Column: Review Details Panel */}
             <div className="flex flex-col gap-4">
-               <h2 className="text-xl font-bold text-white">Review Details</h2>
+               <h2 className="text-xl font-bold text-text-primary">Review Details</h2>
                
                {activeTab !== 'users' && (selectedFest || selectedEvent) ? (
-                   <div className="bg-[rgba(24,34,58,0.6)] backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-lg flex flex-col gap-6 sticky top-8">
+                   <div className="bg-surface-card backdrop-blur-xl rounded-2xl border border-fest-border p-6 shadow-lg flex flex-col gap-6 sticky top-8">
                         {/* Detail Content */}
                         <div className="space-y-4">
                             {(selectedFest?.bannerUrl || selectedEvent?.bannerUrl) && (
@@ -652,24 +737,24 @@ function Admin() {
                             )}
                             
                             <div>
-                                <h4 className="text-lg font-bold text-[#F4F7FA]">
+                                <h4 className="text-lg font-bold text-text-primary">
                                     {selectedFest?.festName || selectedEvent?.eventName}
                                 </h4>
-                                <p className="text-sm text-[#9BA3B4] leading-relaxed mt-1 max-h-40 overflow-y-auto">
+                                <p className="text-sm text-text-secondary leading-relaxed mt-1 max-h-40 overflow-y-auto">
                                     {selectedFest?.description || selectedEvent?.description}
                                 </p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 pt-2">
                                 <div className="p-3 bg-white/5 border border-white/5 rounded-xl">
-                                    <p className="text-[10px] uppercase font-bold text-[#9BA3B4] tracking-wider">Date</p>
-                                    <p className="text-xs font-semibold mt-0.5 text-[#F4F7FA]">
+                                    <p className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Date</p>
+                                    <p className="text-xs font-semibold mt-0.5 text-text-primary">
                                         {new Date(selectedFest?.date || selectedEvent?.date || Date.now()).toLocaleDateString()}
                                     </p>
                                 </div>
                                 <div className="p-3 bg-white/5 border border-white/5 rounded-xl">
-                                    <p className="text-[10px] uppercase font-bold text-[#9BA3B4] tracking-wider">Location</p>
-                                    <p className="text-xs font-semibold mt-0.5 text-[#F4F7FA]">
+                                    <p className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Location</p>
+                                    <p className="text-xs font-semibold mt-0.5 text-text-primary">
                                         {selectedFest?.venue || selectedEvent?.venue || 'TBA'}
                                     </p>
                                 </div>
@@ -678,9 +763,9 @@ function Admin() {
 
                         {/* Actions */}
                         <div className="space-y-3">
-                            <label className="text-xs font-bold uppercase tracking-wider text-[#9BA3B4]">Admin Comments</label>
+                            <label className="text-xs font-bold uppercase tracking-wider text-text-secondary">Admin Comments</label>
                             <textarea 
-                                className="w-full p-3 text-sm rounded-xl border border-white/10 bg-white/5 text-[#F4F7FA] placeholder:text-[#9BA3B4] focus:outline-none focus:ring-2 focus:ring-[#3ABEFF]/50 transition-all resize-none"
+                                className="w-full p-3 text-sm rounded-xl border border-fest-border bg-white/5 text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
                                 placeholder="Provide feedback..."
                                 rows="3"
                                 value={adminComments}
@@ -691,13 +776,21 @@ function Admin() {
                         <div className="flex flex-col gap-2 pt-2">
                             <button 
                                 onClick={() => {
+                                    const isApproved = selectedFest?.status === 'approved' || selectedEvent?.status === 'approved';
+                                    if (isApproved) return;
+                                    
                                     if(selectedFest) handleApproveFest(selectedFest.id, adminComments);
                                     if(selectedEvent) handleApproveEvent(selectedEvent.id, adminComments);
                                 }}
-                                className="w-full bg-gradient-to-r from-[#3ABEFF] to-[#0088FF] text-white py-3 rounded-xl font-bold text-sm hover:shadow-[0_0_20px_rgba(58,190,255,0.4)] transition-all flex items-center justify-center gap-2"
+                                disabled={selectedFest?.status === 'approved' || selectedEvent?.status === 'approved'}
+                                className={`w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                                    (selectedFest?.status === 'approved' || selectedEvent?.status === 'approved')
+                                    ? 'bg-green-500/20 text-green-500 cursor-default border border-green-500/20' 
+                                    : 'bg-gradient-to-r from-primary to-primary-hover text-white hover:shadow-[0_0_20px_rgba(58,190,255,0.4)]'
+                                }`}
                             >
                                 <span className="material-symbols-outlined text-lg">check_circle</span>
-                                Approve
+                                {(selectedFest?.status === 'approved' || selectedEvent?.status === 'approved') ? 'Approved' : 'Approve'}
                             </button>
                             <div className="grid grid-cols-2 gap-2">
                                 <button 
@@ -705,7 +798,7 @@ function Admin() {
                                         if(selectedFest) handleRequestFestChanges(selectedFest.id, adminComments);
                                         if(selectedEvent) handleRequestEventChanges(selectedEvent.id, adminComments);
                                     }}
-                                    className="bg-white/5 text-white/70 py-2.5 rounded-lg font-bold text-sm hover:bg-white/10 transition-all"
+                                    className="bg-white/5 text-text-secondary hover:text-text-primary py-2.5 rounded-lg font-bold text-sm hover:bg-white/10 transition-all"
                                 >
                                     Request Changes
                                 </button>
@@ -723,7 +816,7 @@ function Admin() {
                             {selectedEvent && (
                                 <button
                                     onClick={() => handleViewRegistrations(selectedEvent)}
-                                    className="mt-2 w-full border border-[#3ABEFF]/30 text-[#3ABEFF] py-2.5 rounded-xl font-bold text-sm hover:bg-[#3ABEFF]/10 transition-all"
+                                    className="mt-2 w-full border border-primary/30 text-primary py-2.5 rounded-xl font-bold text-sm hover:bg-primary/10 transition-all"
                                 >
                                     View Registrations
                                 </button>
@@ -731,36 +824,37 @@ function Admin() {
                         </div>
                    </div>
                ) : (
-                   <div className="bg-[rgba(24,34,58,0.6)] backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-lg text-center">
-                        <span className="material-symbols-outlined text-4xl text-[#9BA3B4]/50 mb-4">touch_app</span>
-                        <p className="text-[#9BA3B4]">
+                   <div className="bg-surface-card backdrop-blur-xl rounded-2xl border border-fest-border p-8 shadow-lg text-center">
+                        <span className="material-symbols-outlined text-4xl text-text-secondary/50 mb-4">touch_app</span>
+                        <p className="text-text-secondary">
                            {activeTab === 'users' ? 'User management in list view.' : 'Select an item from the queue to review details.'}
                         </p>
                    </div>
                )}
             </div>
           </div>
+          )}
         </div>
       </main>
 
       {/* Registrations Modal Overlay */}
       {viewingRegistrations && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-            <div className="bg-[#0A0F1F] border border-white/20 rounded-lg max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto relative">
+            <div className="bg-surface border border-fest-border rounded-lg max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto relative">
               <button
                   onClick={() => setViewingRegistrations(null)}
-                  className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                  className="absolute top-4 right-4 text-text-secondary hover:text-text-primary"
                 >
                   <span className="material-symbols-outlined">close</span>
               </button>
 
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-white">
+                <h3 className="text-xl font-bold text-text-primary">
                   Registrations: {viewingRegistrations.eventName}
                 </h3>
                 <button
                     onClick={handleDownloadCSV}
-                    className="flex items-center gap-2 bg-[#3ABEFF]/20 text-[#3ABEFF] px-4 py-2 rounded-lg hover:bg-[#3ABEFF]/30 transition mr-8"
+                    className="flex items-center gap-2 bg-primary/20 text-primary px-4 py-2 rounded-lg hover:bg-primary/30 transition mr-8"
                 >
                     <span className="material-symbols-outlined text-sm">download</span>
                     Export CSV
@@ -768,28 +862,42 @@ function Admin() {
               </div>
               
               {loadingRegistrations ? (
-                <div className="text-center py-8 text-gray-400">Loading registrations...</div>
+                <div className="text-center py-8 text-text-secondary">Loading registrations...</div>
               ) : registrations.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">No registrations found.</div>
+                <div className="text-center py-8 text-text-secondary">No registrations found.</div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-white/10">
+                  <table className="min-w-full divide-y divide-fest-border">
                     <thead>
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Email</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Mobile</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Name</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Email</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Mobile</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Payment</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Amount</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/10">
+                    <tbody className="divide-y divide-fest-border">
                       {registrations.map((reg) => (
                         <tr key={reg.id}>
-                          <td className="px-4 py-3 text-sm text-gray-300">{reg.name}</td>
-                          <td className="px-4 py-3 text-sm text-gray-300">{reg.email}</td>
-                          <td className="px-4 py-3 text-sm text-gray-300">{reg.phone}</td>
-                          <td className="px-4 py-3 text-sm text-gray-300">
-                             {new Date(reg.registeredAt).toLocaleTimeString()}
+                          <td className="px-4 py-3 text-sm text-text-primary">{reg.name}</td>
+                          <td className="px-4 py-3 text-sm text-text-primary">{reg.email}</td>
+                          <td className="px-4 py-3 text-sm text-text-primary">{reg.phone}</td>
+                          <td className="px-4 py-3 text-sm text-text-primary">
+                             {new Date(reg.registeredAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-3 text-sm">
+                             <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${
+                                (reg.paymentStatus === 'completed' || reg.paymentStatus === 'paid') 
+                                ? 'bg-green-500/10 text-green-500' 
+                                : 'bg-yellow-500/10 text-yellow-500'
+                             }`}>
+                                {reg.paymentStatus || 'Pending'}
+                             </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-text-primary">
+                             ₹{reg.amount || 0}
                           </td>
                         </tr>
                       ))}

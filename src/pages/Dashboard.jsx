@@ -20,6 +20,12 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Redirect admin to admin panel
+    if (userRole === 'admin') {
+      navigate('/admin');
+      return;
+    }
+
     // Hide global navbar for this page to use the new layout
     const nav = document.querySelector('nav');
     if (nav) nav.style.display = 'none';

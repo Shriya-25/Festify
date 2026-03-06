@@ -86,7 +86,9 @@ const Navbar = () => {
           
           {currentUser && (
             <>
-              <NavItem to="/dashboard" icon="grid_view" label="Dashboard" active={location.pathname === '/dashboard'} />
+              {userRole !== 'admin' && (
+                <NavItem to="/dashboard" icon="grid_view" label="Dashboard" active={location.pathname === '/dashboard'} />
+              )}
               
               {userRole === 'organizer' && (
                 <NavItem to="/create-fest" icon="add_circle" label="Create Fest" active={location.pathname === '/create-fest'} />

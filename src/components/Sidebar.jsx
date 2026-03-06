@@ -56,21 +56,21 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
           {!isCollapsed && <span>Explore Events</span>}
         </Link>
         
-        {currentUser && (
+        {currentUser && userRole !== 'admin' && userRole !== 'organizer' && (
           <Link to="/dashboard" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/dashboard')}`} title={isCollapsed ? "Dashboard" : ""}>
             <span className="material-symbols-outlined text-2xl">dashboard</span>
              {!isCollapsed && <span>Dashboard</span>}
           </Link>
         )}
 
-        {currentUser && userRole !== 'organizer' && (
+        {currentUser && userRole !== 'organizer' && userRole !== 'admin' && (
           <Link to="/my-registrations" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/my-registrations')}`} title={isCollapsed ? "My Registrations" : ""}>
             <span className="material-symbols-outlined text-2xl">confirmation_number</span>
              {!isCollapsed && <span>My Registrations</span>}
           </Link>
         )}
 
-        {currentUser && userRole !== 'organizer' && (
+        {currentUser && userRole !== 'organizer' && userRole !== 'admin' && (
           <Link to="/saved-events" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/saved-events')}`} title={isCollapsed ? "Saved Events" : ""}>
             <span className="material-symbols-outlined text-2xl">bookmark</span>
              {!isCollapsed && <span>Saved Events</span>}
@@ -86,11 +86,6 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
                 )}
                 {isCollapsed && <div className="h-4"></div>}
                 
-                <Link to="/create-fest" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/create-fest')}`} title={isCollapsed ? "Create Fest" : ""}>
-                    <span className="material-symbols-outlined text-2xl">add_circle</span>
-                     {!isCollapsed && <span>Create Fest</span>}
-                </Link>
-
                 <Link to="/manage-fests" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/manage-fests')}`} title={isCollapsed ? "Manage Fests" : ""}>
                     <span className="material-symbols-outlined text-2xl">edit_document</span>
                      {!isCollapsed && <span>Manage Fests</span>}

@@ -66,14 +66,14 @@ const ManageFestList = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <h1 className="text-3xl font-extrabold text-text-primary mb-2 tracking-tight">Manage Fests</h1>
-              <p className="text-text-secondary">Select a fest to manage events, registrations, and details.</p>
+              <p className="text-text-secondary">You have {fests.length} active festivals currently being organized.</p>
             </div>
             
             <Link 
               to="/create-fest" 
-              className="px-6 py-2.5 bg-gradient-to-r from-primary to-primary-end text-bg-base font-bold rounded-xl shadow-glow-primary hover:scale-105 transition-transform flex items-center gap-2"
+              className="px-6 py-2.5 bg-primary hover:bg-primary-hover text-white font-bold rounded-lg shadow-glow-primary transition-all flex items-center gap-2"
             >
-              <span className="material-symbols-outlined">add_circle</span>
+              <span className="material-symbols-outlined">add</span>
               Create New Fest
             </Link>
           </div>
@@ -83,71 +83,128 @@ const ManageFestList = () => {
                 <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
              </div>
           ) : fests.length === 0 ? (
-            <div className="bg-surface-card border border-white/10 rounded-2xl p-12 text-center">
-                <div className="w-20 h-20 bg-surface border border-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-500">
+            <div className="bg-surface-card border border-fest-border rounded-2xl p-12 text-center">
+                <div className="w-20 h-20 bg-surface border border-fest-border rounded-full flex items-center justify-center mx-auto mb-6 text-text-muted">
                     <span className="material-symbols-outlined text-4xl">event_busy</span>
                 </div>
                 <h3 className="text-xl font-bold text-text-primary mb-2">No Fests Created Yet</h3>
                 <p className="text-text-secondary mb-6 max-w-md mx-auto">Start by creating your first fest to manage events and registrations.</p>
                 <Link 
                   to="/create-fest" 
-                  className="px-6 py-2.5 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-colors inline-flex items-center gap-2"
+                  className="px-6 py-2.5 bg-primary text-white font-bold rounded-xl hover:bg-primary-hover transition-colors inline-flex items-center gap-2"
                 >
                   Create Fest
                 </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {fests.map(fest => (
-                <div key={fest.id} className="bg-surface-card backdrop-blur-xl border border-fest-border p-6 rounded-2xl group hover:border-primary/50 transition-all duration-300">
-                    <div className="flex justify-between items-start mb-4">
-                        <div>
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                                fest.status === 'published' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-                                fest.status === 'draft' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
-                                'bg-red-500/20 text-red-400 border border-red-500/30'
-                            }`}>
-                                {fest.status}
-                            </span>
-                            <h3 className="text-xl font-bold text-text-primary mt-3 group-hover:text-primary transition-colors">{fest.festName}</h3>
-                            <p className="text-text-secondary text-sm">{fest.collegeName}</p>
-                        </div>
-                        <div className="w-12 h-12 rounded-xl bg-surface border border-white/5 flex items-center justify-center text-text-muted">
-                             <span className="material-symbols-outlined">event</span>
-                        </div>
-                    </div>
+                <div key={fest.id} className="group bg-surface-card border border-fest-border rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-lg flex flex-col h-full">
                     
-                    <div className="flex items-center gap-4 text-sm text-text-secondary mb-6">
-                        <span className="flex items-center gap-1">
-                            <span className="material-symbols-outlined text-lg">calendar_month</span>
-                            {new Date(fest.festStartDate).toLocaleDateString()}
-                        </span>
-                        <span className="flex items-center gap-1">
-                            <span className="material-symbols-outlined text-lg">location_on</span>
-                            {fest.city}
-                        </span>
+                    {/* Banner Image Area */}
+                    <div className="h-40 bg-surface relative overflow-hidden">
+                        {fest.bannerUrl ? (
+                            <img 
+                                src={fest.bannerUrl} 
+                                alt={fest.festName} 
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-4xl text-primary/40">image</span>
+                            </div>
+                        )}
+                        
+                        {/* Status Badge */}
+                        <div className="absolute top-3 right-3">
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm ${
+                                fest.status === 'approved' ? 'bg-primary text-white' :
+                                fest.status === 'published' ? 'bg-green-500 text-white' :
+                                fest.status === 'pending' ? 'bg-amber-500 text-white' :
+                                'bg-slate-500 text-white'
+                            }`}>
+                                {fest.status || 'Draft'}
+                            </span>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                        <Link 
-                            to={`/fest/${fest.id}/manage`}
-                            className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-surface hover:bg-white/5 border border-white/10 text-text-primary font-semibold transition-colors group/btn"
-                        >
-                            <span className="material-symbols-outlined text-primary group-hover/btn:scale-110 transition-transform">settings</span>
-                            Manage
-                        </Link>
-                        <Link 
-                            to={`/fest/${fest.id}/create-event`}
-                            className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 border border-primary/20 text-primary font-semibold transition-colors"
-                        >
-                            <span className="material-symbols-outlined">add</span>
-                            Add Event
-                        </Link>
+                    <div className="p-5 flex-1 flex flex-col">
+                        <div className="mb-4">
+                            <h3 className="text-xl font-bold text-text-primary mb-1 line-clamp-1">{fest.festName}</h3>
+                            <p className="text-primary text-xs font-semibold uppercase tracking-wide line-clamp-1">
+                                {fest.collegeName} {fest.tagline && `• ${fest.tagline}`}
+                            </p>
+                        </div>
+                        
+                        <div className="space-y-2 mb-6">
+                            <div className="flex items-center gap-2 text-text-secondary text-sm">
+                                <span className="material-symbols-outlined text-lg opacity-70">calendar_month</span>
+                                <span>
+                                    {new Date(fest.festStartDate || fest.startDate || Date.now()).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} - {new Date(fest.festEndDate || fest.endDate || fest.festStartDate || Date.now()).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-text-secondary text-sm">
+                                <span className="material-symbols-outlined text-lg opacity-70">location_on</span>
+                                <span className="truncate">{fest.city || fest.venue || 'TBA'}</span>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 mt-auto">
+                            <Link 
+                                to={`/fest/${fest.id}/manage`}
+                                className="flex items-center justify-center gap-2 py-2.5 rounded-lg border border-fest-border text-text-primary font-semibold text-sm hover:bg-white/5 transition-colors"
+                            >
+                                Manage
+                            </Link>
+                            <Link 
+                                to={`/fest/${fest.id}/create-event`}
+                                className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-semibold text-sm transition-colors"
+                            >
+                                Add Event
+                            </Link>
+                        </div>
                     </div>
                 </div>
               ))}
             </div>
           )}
+
+          {/* Recent Activity Section */}
+          <div className="mt-12 bg-surface-card border border-fest-border rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary">history</span>
+                Recent Activity
+            </h2>
+            
+            <div className="space-y-4">
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-fest-border hover:bg-surface-card transition-colors">
+                    <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div>
+                    <div>
+                    <h4 className="text-text-primary font-medium text-sm">Login Successful</h4>
+                    <p className="text-xs text-text-secondary">Welcome back to your dashboard.</p>
+                    </div>
+                    <span className="ml-auto text-xs text-text-secondary">Just now</span>
+                </div>
+
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-fest-border hover:bg-surface-card transition-colors">
+                    <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0"></div>
+                    <div>
+                    <h4 className="text-text-primary font-medium text-sm">Fest Updated</h4>
+                    <p className="text-xs text-text-secondary">Updated details for "TechStorm 2024"</p>
+                    </div>
+                    <span className="ml-auto text-xs text-text-secondary">2 hours ago</span>
+                </div>
+
+                 <div className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-fest-border hover:bg-surface-card transition-colors">
+                    <div className="w-2 h-2 rounded-full bg-purple-500 mt-1.5 flex-shrink-0"></div>
+                    <div>
+                    <h4 className="text-text-primary font-medium text-sm">New Event Added</h4>
+                    <p className="text-xs text-text-secondary">Added "Hackathon" to TechStorm 2024</p>
+                    </div>
+                    <span className="ml-auto text-xs text-text-secondary">5 hours ago</span>
+                </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>

@@ -300,14 +300,15 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Live Events (Horizontal Slider) */}
+            {/* Live Events (Horizontal Carousel) */}
             <section className="space-y-6 group/slider">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                      <div className="flex items-center gap-3">
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse box-shadow-glow"></span>
-                        <h2 className="text-2xl font-bold text-white tracking-wide">Live Events</h2>
+                        <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_rgba(220,38,38,0.7)]"></span>
+                        <h2 className="text-2xl font-bold text-white tracking-wide drop-shadow-lg">Live Events</h2>
                      </div>
-                     <div className="flex items-center gap-4 self-start md:self-auto">
+                     <div className="flex items-center gap-4 self-start md:self-auto opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300">
+                        {/* Navigation Buttons */}
                         <div className="hidden md:flex gap-2">
                             <button onClick={scrollLeft} className="p-2 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-colors">
                                 <span className="material-symbols-outlined">chevron_left</span>
@@ -316,50 +317,47 @@ const Home = () => {
                                 <span className="material-symbols-outlined">chevron_right</span>
                             </button>
                         </div>
-                        <button className="px-6 py-2 bg-gradient-to-r from-primary to-primary-end text-bg-base font-bold rounded-full shadow-glow-primary hover:scale-105 transition-transform flex items-center gap-2">
-                            Register Now
-                            <span className="material-symbols-outlined text-lg">app_registration</span>
-                        </button>
                      </div>
                 </div>
                 
-                {/* Horizontal Scroll Layout */}
-                <div className="relative group">
-                    {/* Navigation Buttons Overlay */}
+                {/* Horizontal Scroll Layout - Netflix Style */}
+                <div className="relative group/carousel">
+                    {/* Navigation Buttons Overlay (Large Side Buttons) */}
                      <button 
                         onClick={scrollLeft}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-black/70 backdrop-blur-md border border-white/20 text-white rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all shadow-lg hidden md:flex opacity-100"
+                        className="absolute left-0 top-0 bottom-8 z-30 w-12 bg-gradient-to-r from-black/80 to-transparent text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 hover:from-black/90 focus:outline-none"
                         aria-label="Scroll Left"
                      >
-                        <span className="material-symbols-outlined">chevron_left</span>
+                        <span className="material-symbols-outlined text-4xl drop-shadow-lg transform hover:scale-125 transition-transform">chevron_left</span>
                      </button>
                      <button 
                         onClick={scrollRight}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-black/70 backdrop-blur-md border border-white/20 text-white rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all shadow-lg hidden md:flex opacity-100"
+                        className="absolute right-0 top-0 bottom-8 z-30 w-12 bg-gradient-to-l from-black/80 to-transparent text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 hover:from-black/90 focus:outline-none"
                         aria-label="Scroll Right"
                      >
-                        <span className="material-symbols-outlined">chevron_right</span>
+                        <span className="material-symbols-outlined text-4xl drop-shadow-lg transform hover:scale-125 transition-transform">chevron_right</span>
                      </button>
 
-
-
                     {loading ? (
-                        <div className="flex overflow-x-hidden gap-6 pb-4">
-                            {[1, 2, 3, 4].map(i => (
-                                <div key={i} className="min-w-[300px] h-80 rounded-2xl bg-white/5 animate-pulse border border-white/5"></div>
+                        <div className="flex overflow-x-hidden gap-4 pb-8 px-4">
+                            {[1, 2, 3, 4, 5, 6].map(i => (
+                                <div key={i} className="min-w-[280px] h-72 rounded-xl bg-white/5 animate-pulse border border-white/5"></div>
                             ))}
                         </div>
                     ) : filteredFests.length > 0 ? (
                         <div 
                             ref={scrollRef}
-                            className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide px-2 items-stretch" 
+                            className="flex overflow-x-auto gap-4 pb-8 pt-4 px-1 snap-x snap-mandatory scrollbar-hide items-stretch" 
                             style={{ scrollBehavior: 'smooth' }}
                         >
                             {filteredFests.map(fest => (
-                                <div key={fest.id} className="min-w-[320px] max-w-[320px] snap-center transform transition-transform duration-300">
+                                <div key={fest.id} className="min-w-[280px] max-w-[280px] md:min-w-[300px] md:max-w-[300px] snap-center transform transition-all duration-300 hover:scale-105 hover:z-20 origin-center cursor-pointer">
                                     <FestCard fest={fest} />
                                 </div>
                             ))}
+                            
+                            {/* Spacer for right padding */}
+                            <div className="min-w-[20px] snap-start"></div>
                         </div>
                     ) : (
                         <div className="bg-surface-card p-12 rounded-xl border border-white/10 text-center backdrop-blur-md">
