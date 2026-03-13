@@ -121,11 +121,6 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
              {!isCollapsed && <span>Profile</span>}
           </Link>
         )}
-        
-        <Link to="/settings" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/settings')}`} title={isCollapsed ? "Settings" : ""}>
-          <span className="material-symbols-outlined text-2xl">settings</span>
-           {!isCollapsed && <span>Settings</span>}
-        </Link>
 
         {currentUser ? (
           <button 
