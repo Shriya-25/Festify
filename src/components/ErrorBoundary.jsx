@@ -12,11 +12,10 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
-    this.state = {
-      ...this.state,
+    this.setState({
       error,
       errorInfo
-    };
+    });
   }
 
   render() {
@@ -47,7 +46,7 @@ class ErrorBoundary extends React.Component {
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               We're sorry, but something unexpected happened. Please try refreshing the page.
             </p>
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="mb-4 text-sm">
                 <summary className="cursor-pointer text-red-600 dark:text-red-400 font-semibold mb-2">
                   Error Details (Development Only)
