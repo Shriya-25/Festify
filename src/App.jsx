@@ -1,31 +1,37 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
-import RoleSelection from './pages/RoleSelection';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import VerifyEmail from './pages/VerifyEmail';
-import ResendVerification from './pages/ResendVerification';
-import FestDetails from './pages/FestDetails';
-import EventDetails from './pages/EventDetails';
-import CreateFest from './pages/CreateFest';
-import EditFest from './pages/EditFest';
-import CreateEvent from './pages/CreateEvent';
-import PaymentSetup from './pages/PaymentSetup';
-import EditEvent from './pages/EditEvent';
-import ManageFestList from './pages/ManageFestList';
-import ManageFest from './pages/ManageFest';
-import StudentProfile from './pages/StudentProfile';
-import Dashboard from './pages/Dashboard';
-import Admin from './pages/Admin';
-import Profile from './pages/Profile';
+const RoleSelection = lazy(() => import('./pages/RoleSelection'));
+const Home = lazy(() => import('./pages/Home'));
+const Login = lazy(() => import('./pages/Login'));
+const Signup = lazy(() => import('./pages/Signup'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
+const ResendVerification = lazy(() => import('./pages/ResendVerification'));
+const FestDetails = lazy(() => import('./pages/FestDetails'));
+const EventDetails = lazy(() => import('./pages/EventDetails'));
+const CreateFest = lazy(() => import('./pages/CreateFest'));
+const EditFest = lazy(() => import('./pages/EditFest'));
+const CreateEvent = lazy(() => import('./pages/CreateEvent'));
+const PaymentSetup = lazy(() => import('./pages/PaymentSetup'));
+const EditEvent = lazy(() => import('./pages/EditEvent'));
+const ManageFestList = lazy(() => import('./pages/ManageFestList'));
+const ManageFest = lazy(() => import('./pages/ManageFest'));
+const StudentProfile = lazy(() => import('./pages/StudentProfile'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Admin = lazy(() => import('./pages/Admin'));
+const Profile = lazy(() => import('./pages/Profile'));
+
+const RouteLoader = () => (
+  <div className="flex items-center justify-center py-10">
+    <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-blue-600 animate-spin" aria-label="Loading page" />
+  </div>
+);
 
 // Wrapper to handle role selection redirect
 const AppContent = () => {
@@ -50,6 +56,7 @@ const AppContent = () => {
       <Navbar />
       <div className="flex-1 flex flex-col min-w-0 transition-all duration-300 relative">
         <main className="flex-grow overflow-y-auto h-screen scrollbar-hide">
+          <Suspense fallback={<RouteLoader />}>
           <Routes>
             <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -155,6 +162,7 @@ const AppContent = () => {
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Suspense>
         <Footer />
       </main>
       </div>
