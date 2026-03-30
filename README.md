@@ -136,7 +136,13 @@ Visit `http://localhost:5173`
 npm run build
 ```
 
-## 👨‍💼 Setting Up Admin Account
+## � Deploy to Firebase Hosting
+
+```bash
+npm run deploy
+```
+
+## �👨‍💼 Setting Up Admin Account
 
 See: [SET_ADMIN_INSTRUCTIONS.md](SET_ADMIN_INSTRUCTIONS.md)
 
