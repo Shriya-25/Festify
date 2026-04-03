@@ -590,7 +590,7 @@ function Admin() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Left Column: List/Table */}
-            <div className="lg:col-span-2 flex flex-col gap-4">
+            <div className={`${activeTab === 'users' ? 'lg:col-span-3' : 'lg:col-span-2'} flex flex-col gap-4`}>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold capitalize text-text-primary">{activeTab} Queue</h2>
                 
@@ -599,13 +599,13 @@ function Admin() {
                   <div className="flex gap-2">
                      <button 
                         onClick={() => activeTab === 'fests' ? setFestStatusFilter('all') : setEventStatusFilter('all')}
-                        className={`text-xs px-2 py-1 rounded-md border ${festStatusFilter === 'all' && eventStatusFilter === 'all' ? 'bg-primary/20 border-primary text-primary' : 'border-fest-border text-text-secondary'}`}
+                        className={`text-xs px-2 py-1 rounded-md border ${(activeTab === 'fests' ? festStatusFilter : eventStatusFilter) === 'all' ? 'bg-primary/20 border-primary text-primary' : 'border-fest-border text-text-secondary'}`}
                      >
                         All
                      </button>
                      <button 
                         onClick={() => activeTab === 'fests' ? setFestStatusFilter('pending') : setEventStatusFilter('pending')}
-                        className={`text-xs px-2 py-1 rounded-md border ${festStatusFilter === 'pending' || eventStatusFilter === 'pending' ? 'bg-yellow-500/20 border-yellow-500 text-yellow-500' : 'border-fest-border text-text-secondary'}`}
+                        className={`text-xs px-2 py-1 rounded-md border ${(activeTab === 'fests' ? festStatusFilter : eventStatusFilter) === 'pending' ? 'bg-primary/20 border-primary text-primary' : 'border-fest-border text-text-secondary'}`}
                      >
                         Pending
                      </button>
@@ -630,7 +630,7 @@ function Admin() {
                                 <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Status</th>
                             </>
                         )}
-                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Action</th>
+                        {activeTab !== 'users' && <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Action</th>}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
@@ -714,11 +714,11 @@ function Admin() {
                                     </>
                                 )}
                                 
-                                <td className="px-6 py-4">
-                                    <button className="text-primary hover:text-text-primary transition-colors text-sm font-bold">
-                                        {activeTab === 'users' ? 'Edit' : 'Review'}
-                                    </button>
-                                </td>
+                                {activeTab !== 'users' && (
+                                    <td className="px-6 py-4">
+                                        <button className="text-primary hover:text-text-primary transition-colors text-sm font-bold">Review</button>
+                                    </td>
+                                )}
                             </tr>
                         ))
                       )}
@@ -728,8 +728,8 @@ function Admin() {
               </div>
             </div>
 
-            {/* Right Column: Review Details Panel */}
-            <div className="flex flex-col gap-4">
+            {/* Right Column: Review Details Panel - hidden for users tab */}
+            {activeTab !== 'users' && <div className="flex flex-col gap-4">
                <h2 className="text-xl font-bold text-text-primary">Review Details</h2>
                
                {activeTab !== 'users' && (selectedFest || selectedEvent) ? (
@@ -851,7 +851,7 @@ function Admin() {
                         </p>
                    </div>
                )}
-            </div>
+            </div>}
           </div>
           )}
         </div>
