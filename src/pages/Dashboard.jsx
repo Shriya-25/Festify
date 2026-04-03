@@ -84,21 +84,40 @@ const Dashboard = () => {
         }
       }
 
-      // 3. Calculate totals
+      // 3. Calculate total registrations
       const totalRegistrations = allEvents.reduce((sum, event) => sum + (event.participantCount || 0), 0);
-      
-      // Revenue estimate (Price * Participants) - Ideally should verify payment status from registrations
-      // but this is a dashboard overview
-      const totalRevenue = allEvents.reduce((sum, event) => {
-        const price = parseFloat(event.registrationFee) || 0;
-        const count = event.participantCount || 0;
-        return sum + (price * count);
-      }, 0);
+
+      // 4. Fetch actual verified payments from eventRegistrations
+      const eventIds = allEvents.map(e => e.id).filter(Boolean);
+      let verifiedRevenue = 0;
+
+      for (let i = 0; i < eventIds.length; i += 10) {
+        const batch = eventIds.slice(i, i + 10);
+        if (batch.length === 0) continue;
+        const regsQuery = query(
+          collection(db, 'eventRegistrations'),
+          where('eventId', 'in', batch)
+        );
+        const regsSnap = await getDocs(regsQuery);
+        regsSnap.docs.forEach(d => {
+          const reg = d.data();
+          const status = reg.paymentProof?.paymentStatus;
+          if (status === 'verified' || status === 'success') {
+            const amount = parseFloat(
+              reg.couponUsed?.finalAmount ??
+              reg.paymentProof?.finalAmount ??
+              reg.paymentProof?.amount ??
+              0
+            );
+            verifiedRevenue += amount;
+          }
+        });
+      }
 
       setStats({
         activeFests: activeFestsCount,
         totalRegistrations,
-        totalRevenue
+        totalRevenue: verifiedRevenue
       });
 
     } catch (error) {

@@ -431,9 +431,13 @@ const ManageFest = () => {
                       
                       <div className="flex gap-2 p-2 sm:p-3 md:p-4 pt-2 border-t border-fest-border">
                         <button
-                          onClick={() => handleEventClick(event)}
+                          onClick={() => event.status === 'approved' && handleEventClick(event)}
+                          disabled={event.status !== 'approved'}
+                          title={event.status !== 'approved' ? 'Only approved events can show registrations' : ''}
                           className={`flex-1 text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg sm:rounded-xl transition-colors ${
-                            selectedEvent?.id === event.id
+                            event.status !== 'approved'
+                              ? 'bg-background text-text-secondary/40 border border-fest-border cursor-not-allowed opacity-50'
+                              : selectedEvent?.id === event.id
                               ? 'bg-primary text-white shadow-glow'
                               : 'bg-background hover:bg-background/80 text-text-secondary border border-fest-border'
                           }`}
