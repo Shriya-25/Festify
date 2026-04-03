@@ -80,7 +80,7 @@ const Dashboard = () => {
              where('festId', 'in', batch)
            );
            const eventsSnap = await getDocs(eventsQuery);
-           allEvents = [...allEvents, ...eventsSnap.docs.map(d => d.data())];
+           allEvents = [...allEvents, ...eventsSnap.docs.map(d => ({ id: d.id, ...d.data() }))];
         }
       }
 
@@ -88,7 +88,11 @@ const Dashboard = () => {
       const totalRegistrations = allEvents.reduce((sum, event) => sum + (event.participantCount || 0), 0);
 
       // 4. Fetch actual verified payments from eventRegistrations
-      const eventIds = allEvents.map(e => e.id).filter(Boolean);
+      // Build a map of eventId → entryFee so we can look up the fee when the registration doesn't store the amount
+      const eventFeeMap = {};
+      allEvents.forEach(e => { if (e.id) eventFeeMap[e.id] = parseFloat(e.entryFee) || 0; });
+
+      const eventIds = Object.keys(eventFeeMap);
       let verifiedRevenue = 0;
 
       for (let i = 0; i < eventIds.length; i += 10) {
@@ -103,10 +107,12 @@ const Dashboard = () => {
           const reg = d.data();
           const status = reg.paymentProof?.paymentStatus;
           if (status === 'verified' || status === 'success') {
+            // Use the amount stored on the registration if present, else fall back to event entryFee
             const amount = parseFloat(
               reg.couponUsed?.finalAmount ??
               reg.paymentProof?.finalAmount ??
               reg.paymentProof?.amount ??
+              eventFeeMap[reg.eventId] ??
               0
             );
             verifiedRevenue += amount;
