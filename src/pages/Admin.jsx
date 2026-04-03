@@ -626,7 +626,7 @@ function Admin() {
                             </>
                         ) : (
                             <>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Organizer</th>
+                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">{activeTab === 'events' ? 'Fest' : 'Organizer'}</th>
                                 <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">Status</th>
                             </>
                         )}
@@ -694,8 +694,13 @@ function Admin() {
                                     </>
                                 ) : (
                                     <>
-                                        {/* Show College Name for Organizer column */}
-                                        <td className="px-6 py-4 text-sm text-text-secondary">{item.college || item.collegeName || item.organizerName || 'N/A'}</td>
+                                        {/* Show Fest Name for events, college name for fests */}
+                                        <td className="px-6 py-4 text-sm text-text-secondary">
+                                            {activeTab === 'events'
+                                                ? (fests.find(f => f.id === item.festId)?.festName || item.festId || 'N/A')
+                                                : (item.college || item.collegeName || item.organizerName || 'N/A')
+                                            }
+                                        </td>
                                         <td className="px-6 py-4">
                                             <span className={`text-xs font-bold px-2 py-1 rounded-full uppercase ${
                                                 item.status === 'approved' ? 'bg-green-500/20 text-green-400' :
@@ -819,14 +824,23 @@ function Admin() {
                                 </button>
                             </div>
                             
-                            {selectedEvent && (
-                                <button
-                                    onClick={() => handleViewRegistrations(selectedEvent)}
-                                    className="mt-2 w-full border border-primary/30 text-primary py-2.5 rounded-xl font-bold text-sm hover:bg-primary/10 transition-all"
-                                >
-                                    View Registrations
-                                </button>
-                            )}
+                            {selectedEvent && (() => {
+                                const isDisabled = selectedEvent.status === 'changes_requested' || selectedEvent.status === 'rejected' || selectedEvent.status === 'pending';
+                                return (
+                                    <button
+                                        onClick={() => !isDisabled && handleViewRegistrations(selectedEvent)}
+                                        disabled={isDisabled}
+                                        className={`mt-2 w-full py-2.5 rounded-xl font-bold text-sm transition-all border ${
+                                            isDisabled
+                                                ? 'border-fest-border text-text-secondary/40 cursor-not-allowed opacity-50'
+                                                : 'border-primary/30 text-primary hover:bg-primary/10'
+                                        }`}
+                                        title={isDisabled ? 'Registrations unavailable for pending, changes requested, or rejected events' : ''}
+                                    >
+                                        View Registrations
+                                    </button>
+                                );
+                            })()}
                         </div>
                    </div>
                ) : (
