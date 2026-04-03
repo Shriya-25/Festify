@@ -127,6 +127,12 @@ const EventDetails = () => {
         return;
       }
 
+      if (!userData.phone || !userData.college || !userData.name) {
+        setMessage('Please complete your profile (name, phone, college) before registering.');
+        setTimeout(() => navigate('/profile'), 2000);
+        return;
+      }
+
       if (!isRegistrationOpen()) {
         setMessage('Registration is closed for this event');
         return;

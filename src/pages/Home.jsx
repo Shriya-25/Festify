@@ -300,12 +300,12 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Live Events (Horizontal Carousel) */}
+            {/* Live Fests (Horizontal Carousel) */}
             <section className="space-y-6 group/slider">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                      <div className="flex items-center gap-3">
                         <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_rgba(220,38,38,0.7)]"></span>
-                        <h2 className="text-2xl font-bold text-white tracking-wide drop-shadow-lg">Live Events</h2>
+                        <h2 className="text-2xl font-bold text-white tracking-wide drop-shadow-lg">Live Fests</h2>
                      </div>
                      <div className="flex items-center gap-4 self-start md:self-auto opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300">
                         {/* Navigation Buttons */}

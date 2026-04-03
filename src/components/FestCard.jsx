@@ -77,15 +77,9 @@ const FestCard = ({ fest }) => {
             <span className="truncate">{fest.city || 'TBA'}</span>
         </div>
         
-        <div className="flex items-center justify-between text-xs font-bold text-primary pt-2 border-t border-white/5 mt-2">
-            <div className="flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm">calendar_today</span>
-                <span>{fest.festStartDate ? new Date(fest.festStartDate).toLocaleDateString(undefined, {month: 'short', day: 'numeric'}) : 'TBA'}</span>
-            </div>
-            <div className="flex items-center gap-1">
-                 <span className="material-symbols-outlined text-sm">payments</span>
-                 <span>Free</span> 
-            </div>
+        <div className="flex items-center gap-1 text-xs font-bold text-primary pt-2 border-t border-white/5 mt-2">
+            <span className="material-symbols-outlined text-sm">calendar_today</span>
+            <span>{fest.festStartDate ? new Date(fest.festStartDate).toLocaleDateString(undefined, {month: 'short', day: 'numeric'}) : 'TBA'}</span>
         </div>
       </div>
        {/* Link wrapper for full card click functionality */}

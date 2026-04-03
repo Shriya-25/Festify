@@ -70,13 +70,6 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
           </Link>
         )}
 
-        {currentUser && userRole !== 'organizer' && userRole !== 'admin' && (
-          <Link to="/saved-events" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/saved-events')}`} title={isCollapsed ? "Saved Events" : ""}>
-            <span className="material-symbols-outlined text-2xl">bookmark</span>
-             {!isCollapsed && <span>Saved Events</span>}
-          </Link>
-        )}
-
         {userRole === 'organizer' && (
              <>
                 {!isCollapsed && (
