@@ -1,6 +1,8 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider } from './components/Toast';
+import { ConfirmProvider } from './components/ConfirmDialog';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -175,7 +177,11 @@ function App() {
     <ErrorBoundary>
       <Router>
         <AuthProvider>
-          <AppContent />
+          <ToastProvider>
+            <ConfirmProvider>
+              <AppContent />
+            </ConfirmProvider>
+          </ToastProvider>
         </AuthProvider>
       </Router>
     </ErrorBoundary>

@@ -3,11 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 
 const StudentProfile = () => {
   const { userId } = useParams();
   const { currentUser, userRole } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
   const [student, setStudent] = useState(null);
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ const StudentProfile = () => {
       // Fetch student profile
       const userDoc = await getDoc(doc(db, 'users', userId));
       if (!userDoc.exists()) {
-        alert('Student not found');
+        toast.error('Student not found');
         navigate(-1);
         return;
       }
@@ -32,7 +34,7 @@ const StudentProfile = () => {
       
       // Verify this is a student profile
       if (studentData.role !== 'student') {
-        alert('Invalid profile');
+        toast.error('Invalid profile');
         navigate(-1);
         return;
       }
@@ -68,7 +70,7 @@ const StudentProfile = () => {
         const hasAccess = studentRegs.some(reg => eventIds.includes(reg.eventId));
         
         if (!hasAccess) {
-          alert('You do not have permission to view this profile');
+          toast.error('You do not have permission to view this profile');
           navigate(-1);
           return;
         }
@@ -80,7 +82,7 @@ const StudentProfile = () => {
 
     } catch (error) {
       console.error('Error fetching student profile:', error);
-      alert('Error loading profile');
+      toast.error('Error loading profile');
       navigate(-1);
     } finally {
       setLoading(false);

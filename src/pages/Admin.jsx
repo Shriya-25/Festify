@@ -4,10 +4,14 @@ import { db } from '../firebase/config';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import Header from '../components/Header'; // Import Header
+import { useToast } from '../components/Toast';
+import { useConfirm } from '../components/ConfirmDialog';
 
 function Admin() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme(); // Use theme context
+  const toast = useToast();
+  const { confirm } = useConfirm();
   const [fests, setFests] = useState([]);
   const [events, setEvents] = useState([]);
   const [users, setUsers] = useState([]);
@@ -125,10 +129,10 @@ function Admin() {
           registrationsData.sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt));
           setRegistrations(registrationsData);
         } catch (fallbackErr) {
-          alert('Failed to load registrations. Please try again.');
+          toast.error('Failed to load registrations. Please try again.');
         }
       } else {
-        alert('Failed to load registrations');
+        toast.error('Failed to load registrations');
       }
     } finally {
       setLoadingRegistrations(false);
@@ -179,16 +183,16 @@ function Admin() {
       setFests(fests.map(fest => 
         fest.id === festId ? { ...fest, status: 'approved', adminComments: comments } : fest
       ));
-      alert('Fest approved successfully!');
+      toast.success('Fest approved successfully!');
     } catch (err) {
       console.error('Error approving fest:', err);
-      alert('Failed to approve fest');
+      toast.error('Failed to approve fest');
     }
   };
 
   const handleRejectFest = async (festId, comments = '') => {
     if (!comments) {
-      alert('Please provide comments explaining why the fest is being rejected');
+      toast.warning('Please provide comments explaining why the fest is being rejected');
       return;
     }
     try {
@@ -199,16 +203,16 @@ function Admin() {
       setFests(fests.map(fest => 
         fest.id === festId ? { ...fest, status: 'rejected', adminComments: comments } : fest
       ));
-      alert('Fest rejected with comments sent to organizer');
+      toast.success('Fest rejected with comments sent to organizer');
     } catch (err) {
       console.error('Error rejecting fest:', err);
-      alert('Failed to reject fest');
+      toast.error('Failed to reject fest');
     }
   };
 
   const handleRequestFestChanges = async (festId, comments = '') => {
     if (!comments) {
-      alert('Please provide feedback for the requested changes');
+      toast.warning('Please provide feedback for the requested changes');
       return;
     }
     try {
@@ -219,25 +223,25 @@ function Admin() {
       setFests(fests.map(fest => 
         fest.id === festId ? { ...fest, status: 'changes_requested', adminComments: comments } : fest
       ));
-      alert('Change request sent to organizer');
+      toast.success('Change request sent to organizer');
     } catch (err) {
       console.error('Error requesting fest changes:', err);
-      alert('Failed to request changes');
+      toast.error('Failed to request changes');
     }
   };
 
   const handleDeleteFest = async (festId) => {
-    if (!confirm('Are you sure you want to delete this fest? This action cannot be undone.')) {
+    if (!await confirm('Are you sure you want to delete this fest? This action cannot be undone.', { title: 'Delete Fest' })) {
       return;
     }
     try {
       await deleteDoc(doc(db, 'fests', festId));
       setFests(fests.filter(fest => fest.id !== festId));
       if (selectedFest?.id === festId) setSelectedFest(null);
-      alert('Fest deleted successfully');
+      toast.success('Fest deleted successfully');
     } catch (err) {
       console.error('Error deleting fest:', err);
-      alert('Failed to delete fest');
+      toast.error('Failed to delete fest');
     }
   };
 
@@ -251,16 +255,16 @@ function Admin() {
       setEvents(events.map(event => 
         event.id === eventId ? { ...event, status: 'approved', adminComments: comments } : event
       ));
-      alert('Event approved successfully!');
+      toast.success('Event approved successfully!');
     } catch (err) {
       console.error('Error approving event:', err);
-      alert('Failed to approve event');
+      toast.error('Failed to approve event');
     }
   };
 
   const handleRejectEvent = async (eventId, comments = '') => {
     if (!comments) {
-      alert('Please provide comments explaining why the event is being rejected');
+      toast.warning('Please provide comments explaining why the event is being rejected');
       return;
     }
     try {
@@ -271,16 +275,16 @@ function Admin() {
       setEvents(events.map(event => 
         event.id === eventId ? { ...event, status: 'rejected', adminComments: comments } : event
       ));
-      alert('Event rejected with comments sent to organizer');
+      toast.success('Event rejected with comments sent to organizer');
     } catch (err) {
       console.error('Error rejecting event:', err);
-      alert('Failed to reject event');
+      toast.error('Failed to reject event');
     }
   };
 
   const handleRequestEventChanges = async (eventId, comments = '') => {
     if (!comments) {
-      alert('Please provide feedback for the requested changes');
+      toast.warning('Please provide feedback for the requested changes');
       return;
     }
     try {
@@ -291,25 +295,25 @@ function Admin() {
       setEvents(events.map(event => 
         event.id === eventId ? { ...event, status: 'changes_requested', adminComments: comments } : event
       ));
-      alert('Change request sent to organizer');
+      toast.success('Change request sent to organizer');
     } catch (err) {
       console.error('Error requesting event changes:', err);
-      alert('Failed to request changes');
+      toast.error('Failed to request changes');
     }
   };
 
   const handleDeleteEvent = async (eventId) => {
-    if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+    if (!await confirm('Are you sure you want to delete this event? This action cannot be undone.', { title: 'Delete Event' })) {
       return;
     }
     try {
       await deleteDoc(doc(db, 'events', eventId));
       setEvents(events.filter(event => event.id !== eventId));
       if (selectedEvent?.id === eventId) setSelectedEvent(null);
-      alert('Event deleted successfully');
+      toast.success('Event deleted successfully');
     } catch (err) {
       console.error('Error deleting event:', err);
-      alert('Failed to delete event');
+      toast.error('Failed to delete event');
     }
   };
 
@@ -321,10 +325,10 @@ function Admin() {
       setUsers(users.map(user => 
         user.id === userId ? { ...user, role: newRole } : user
       ));
-      alert(`User role updated to ${newRole}`);
+      toast.success(`User role updated to ${newRole}`);
     } catch (err) {
       console.error('Error updating user role:', err);
-      alert('Failed to update user role');
+      toast.error('Failed to update user role');
     }
   };
 
@@ -417,28 +421,28 @@ function Admin() {
         </div>
         <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
           <button 
-            onClick={() => setActiveTab('fests')}
+            onClick={() => { setActiveTab('fests'); setSelectedEvent(null); }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'fests' ? 'bg-primary/10 text-primary font-semibold' : 'text-text-secondary hover:bg-white/5 hover:text-primary'}`}
           >
             <span className="material-symbols-outlined fill-1">verified</span>
             <span className="text-sm">Fests</span>
           </button>
           <button 
-            onClick={() => setActiveTab('events')}
+            onClick={() => { setActiveTab('events'); setSelectedFest(null); }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'events' ? 'bg-primary/10 text-primary font-semibold' : 'text-text-secondary hover:bg-white/5 hover:text-primary'}`}
           >
             <span className="material-symbols-outlined">calendar_month</span>
             <span className="text-sm">Events</span>
           </button>
           <button 
-            onClick={() => setActiveTab('users')}
+            onClick={() => { setActiveTab('users'); setSelectedFest(null); setSelectedEvent(null); }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'users' ? 'bg-primary/10 text-primary font-semibold' : 'text-text-secondary hover:bg-white/5 hover:text-primary'}`}
           >
             <span className="material-symbols-outlined">group</span>
             <span className="text-sm">Users</span>
           </button>
           <button 
-            onClick={() => setActiveTab('activity')}
+            onClick={() => { setActiveTab('activity'); setSelectedFest(null); setSelectedEvent(null); }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeTab === 'activity' ? 'bg-primary/10 text-primary font-semibold' : 'text-text-secondary hover:bg-white/5 hover:text-primary'}`}
           >
             <span className="material-symbols-outlined">history</span>
@@ -642,10 +646,12 @@ function Admin() {
                                 onClick={() => {
                                     if(activeTab === 'fests') {
                                         setSelectedFest(item);
+                                        setSelectedEvent(null);
                                         setAdminComments(item.adminComments || '');
                                     }
                                     else if(activeTab === 'events') {
                                         setSelectedEvent(item);
+                                        setSelectedFest(null);
                                         setAdminComments(item.adminComments || '');
                                     }
                                     else if(activeTab === 'users') {

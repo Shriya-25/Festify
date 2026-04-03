@@ -3,11 +3,15 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
+import { useConfirm } from '../components/ConfirmDialog';
 
 const ManageFest = () => {
   const { festId } = useParams();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
+  const { confirm, prompt } = useConfirm();
   const [fest, setFest] = useState(null);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +33,7 @@ const ManageFest = () => {
       // Fetch fest details
       const festDoc = await getDoc(doc(db, 'fests', festId));
       if (!festDoc.exists()) {
-        alert('Fest not found');
+        toast.error('Fest not found');
         navigate('/dashboard');
         return;
       }
@@ -38,7 +42,7 @@ const ManageFest = () => {
       
       // Check ownership
       if (festData.createdBy !== currentUser.uid) {
-        alert('You do not have permission to manage this fest');
+        toast.error('You do not have permission to manage this fest');
         navigate('/dashboard');
         return;
       }
@@ -98,7 +102,7 @@ const ManageFest = () => {
   };
 
   const handleVerifyPayment = async (registrationId, registrationData) => {
-    if (!window.confirm('Are you sure you want to verify this payment?')) {
+    if (!await confirm('Are you sure you want to verify this payment?', { title: 'Verify Payment', danger: false, confirmText: 'Verify' })) {
       return;
     }
 
@@ -124,17 +128,17 @@ const ManageFest = () => {
           : reg
       ));
 
-      alert('Payment verified successfully!');
+      toast.success('Payment verified successfully!');
     } catch (error) {
       console.error('Error verifying payment:', error);
-      alert('Failed to verify payment. Please try again.');
+      toast.error('Failed to verify payment. Please try again.');
     } finally {
       setVerifyingPayment(false);
     }
   };
 
   const handleRejectPayment = async (registrationId) => {
-    const reason = window.prompt('Enter reason for rejection (optional):');
+    const reason = await prompt('Enter reason for rejection (optional):', { title: 'Reject Payment', inputPlaceholder: 'Reason for rejection...', confirmText: 'Reject', danger: true });
     if (reason === null) return; // User cancelled
 
     try {
@@ -161,10 +165,10 @@ const ManageFest = () => {
           : reg
       ));
 
-      alert('Payment rejected.');
+      toast.success('Payment rejected.');
     } catch (error) {
       console.error('Error rejecting payment:', error);
-      alert('Failed to reject payment. Please try again.');
+      toast.error('Failed to reject payment. Please try again.');
     } finally {
       setVerifyingPayment(false);
     }

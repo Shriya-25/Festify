@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useToast } from './Toast';
 
 const FormBuilder = ({ fields, onUpdate }) => {
+  const toast = useToast();
   const [editingField, setEditingField] = useState(null);
   const [newOptionValue, setNewOptionValue] = useState('');
   const [newField, setNewField] = useState({
@@ -26,12 +28,12 @@ const FormBuilder = ({ fields, onUpdate }) => {
 
   const addField = () => {
     if (!newField.label.trim()) {
-      alert('Please enter a field label');
+      toast.warning('Please enter a field label');
       return;
     }
 
     if (['dropdown', 'radio'].includes(newField.type) && newField.options.length === 0) {
-      alert('Please add at least one option for this field type');
+      toast.warning('Please add at least one option for this field type');
       return;
     }
 
