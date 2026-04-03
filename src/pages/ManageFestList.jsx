@@ -66,6 +66,17 @@ const ManageFestList = () => {
         <div className="p-4 lg:p-8 space-y-8 flex-1">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="inline-flex items-center gap-2 text-text-secondary hover:text-primary transition-colors mb-3 group"
+              >
+                <span className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                </span>
+                <span className="text-sm font-medium">Back to Dashboard</span>
+              </button>
               <h1 className="text-3xl font-extrabold text-text-primary mb-2 tracking-tight">Manage Fests</h1>
               <p className="text-text-secondary">You have {fests.length} active festivals currently being organized.</p>
             </div>

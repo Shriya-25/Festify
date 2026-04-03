@@ -37,8 +37,8 @@ const FestCard = ({ fest }) => {
   const categoryColor = getCategoryColor(fest.category);
 
   return (
-    <div className="bg-surface-card backdrop-blur-[16px] rounded-xl overflow-hidden border border-white/10 group transition-all hover:shadow-card-main hover:-translate-y-2 flex flex-col gap-0 p-0 min-w-[280px] h-full snap-start relative">
-      <div className="h-40 overflow-hidden relative">
+    <div className="bg-surface-card backdrop-blur-[16px] rounded-xl overflow-hidden border border-white/10 group transition-all hover:shadow-card-main hover:-translate-y-1 flex flex-col gap-0 p-0 h-full relative">
+      <div className="h-32 overflow-hidden relative">
         {/* Status Badge */}
         {status && (
             <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full border shadow-[0_0_10px_rgba(58,190,255,0.3)] backdrop-blur-md z-20 ${status.label === 'Live Now' ? 'bg-primary/20 border-primary/50 animate-pulse' : 'bg-surface-card/80 border-white/10'}`}>
@@ -66,9 +66,9 @@ const FestCard = ({ fest }) => {
         <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-bg-base/80 to-transparent"></div>
       </div>
 
-      <div className="p-5 space-y-2 flex flex-col flex-grow relative z-10">
-        <h3 className="font-bold text-lg leading-snug text-text-primary line-clamp-2 group-hover:text-primary transition-colors">{fest.festName}</h3>
-        <p className="text-sm text-text-secondary font-medium line-clamp-1 mb-1">
+      <div className="p-3 space-y-1.5 flex flex-col flex-grow relative z-10">
+        <h3 className="font-bold text-sm leading-snug text-text-primary line-clamp-2 group-hover:text-primary transition-colors">{fest.festName}</h3>
+        <p className="text-xs text-text-secondary font-medium line-clamp-1">
             {fest.collegeName}
         </p>
         
