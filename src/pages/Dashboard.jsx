@@ -255,7 +255,7 @@ const Dashboard = () => {
                     title="Manage Fests"
                     description="Edit details, view analytics, and manage attendees for your events."
                     link="/manage-fests"
-                    gradient="from-royal-purple to-indigo-600"
+                    gradient="from-primary to-primary-end"
                     icon={<span className="material-symbols-outlined text-2xl">edit_document</span>}
                     />
                 </>

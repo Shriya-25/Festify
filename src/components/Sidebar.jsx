@@ -86,9 +86,9 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
                 )}
                 {isCollapsed && <div className="h-4"></div>}
                 
-                <Link to="/manage-fests" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/manage-fests')}`} title={isCollapsed ? "Manage Fests" : ""}>
+                <Link to="/dashboard" className={`flex items-center gap-3 py-2.5 rounded-lg ${isActive('/dashboard')}`} title={isCollapsed ? "Dashboard" : ""}>
                     <span className="material-symbols-outlined text-2xl">edit_document</span>
-                     {!isCollapsed && <span>Manage Fests</span>}
+                     {!isCollapsed && <span>Dashboard</span>}
                 </Link>
              </>
         )}
