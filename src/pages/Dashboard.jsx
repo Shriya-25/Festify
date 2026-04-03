@@ -10,6 +10,7 @@ const Dashboard = () => {
   const { currentUser, userRole, logout } = useAuth();
   const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   
   // Organizer Stats State
   const [stats, setStats] = useState({
@@ -144,7 +145,7 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className={`flex-1 ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} min-h-screen flex flex-col relative z-0 transition-all duration-300`}>
-        <Header />
+        <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
         <div className="p-4 lg:p-8 space-y-8 flex-1">
             {/* Greeting Header */}

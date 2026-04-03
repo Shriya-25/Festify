@@ -12,6 +12,7 @@ const ManageFestList = () => {
   const [fests, setFests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     // Hide global navbar for this page
@@ -60,7 +61,7 @@ const ManageFestList = () => {
       <Sidebar isCollapsed={isSidebarCollapsed} toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)} />
 
       <main className={`flex-1 ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} min-h-screen flex flex-col relative z-0 transition-all duration-300`}>
-        <Header />
+        <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
         <div className="p-4 lg:p-8 space-y-8 flex-1">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -98,7 +99,12 @@ const ManageFestList = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {fests.map(fest => (
+              {fests.filter(fest =>
+                !searchTerm ||
+                (fest.festName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (fest.collegeName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (fest.venue || fest.location || '').toLowerCase().includes(searchTerm.toLowerCase())
+              ).map(fest => (
                 <div key={fest.id} className="group bg-surface-card border border-fest-border rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-lg flex flex-col h-full">
                     
                     {/* Banner Image Area */}
