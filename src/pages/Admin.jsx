@@ -235,6 +235,11 @@ function Admin() {
       return;
     }
     try {
+      // Delete all events belonging to this fest
+      const eventsQuery = query(collection(db, 'events'), where('festId', '==', festId));
+      const eventsSnapshot = await getDocs(eventsQuery);
+      await Promise.all(eventsSnapshot.docs.map(eventDoc => deleteDoc(doc(db, 'events', eventDoc.id))));
+
       await deleteDoc(doc(db, 'fests', festId));
       setFests(fests.filter(fest => fest.id !== festId));
       if (selectedFest?.id === festId) setSelectedFest(null);
