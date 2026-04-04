@@ -159,7 +159,7 @@ const FestDetails = () => {
                 <span className="w-1 h-6 bg-primary rounded-full"></span>
                 About The Fest
               </h2>
-              <p className="text-text-secondary leading-relaxed text-base scrollbar-hide">
+              <p className="text-text-secondary leading-relaxed text-base break-words" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
                 {fest.description}
               </p>
             </div>
