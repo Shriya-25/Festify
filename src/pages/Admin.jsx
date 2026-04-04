@@ -231,7 +231,7 @@ function Admin() {
   };
 
   const handleDeleteFest = async (festId) => {
-    if (!await confirm('Are you sure you want to delete this fest? This action cannot be undone.', { title: 'Delete Fest' })) {
+    if (!await confirm('Are you sure you want to delete this fest? All events under this fest will also be deleted. This action cannot be undone.', { title: 'Delete Fest' })) {
       return;
     }
     try {
