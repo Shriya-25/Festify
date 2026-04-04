@@ -1,4 +1,4 @@
-# Festify - College Event Management Platform
+﻿# Festify - College Event Management Platform
 
 A comprehensive event management platform for college fests where students can discover events, register with payments, and organizers can manage registrations, payment verifications, and track funds collected.
 
