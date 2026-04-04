@@ -243,7 +243,7 @@ function Admin() {
       await deleteDoc(doc(db, 'fests', festId));
       setFests(fests.filter(fest => fest.id !== festId));
       if (selectedFest?.id === festId) setSelectedFest(null);
-      toast.success('Fest deleted successfully');
+      toast.success('Fest and all its events deleted successfully');
     } catch (err) {
       console.error('Error deleting fest:', err);
       toast.error('Failed to delete fest');
