@@ -298,7 +298,10 @@ const FestDetails = () => {
                     )}
                     {fest.contactEmail && (
                         <a href={`mailto:${fest.contactEmail}`} className="p-2 bg-background/50 border border-fest-border hover:bg-red-500 rounded-lg transition-all text-text-secondary hover:text-white shadow-sm hover:shadow-lg" aria-label="Email">
-                            <span className="text-xl">📧</span>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                              <polyline points="22,6 12,13 2,6"/>
+                            </svg>
                         </a>
                     )}
                   </div>
