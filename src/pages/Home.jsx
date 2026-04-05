@@ -288,61 +288,91 @@ const Home = () => {
             </section>
 
             {/* Live Fests Grid */}
-            <section className="space-y-6">
-                <div className="flex items-center gap-3">
-                    <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_rgba(220,38,38,0.7)]"></span>
-                    <h2 className="text-2xl font-bold text-white tracking-wide drop-shadow-lg">Live Fests</h2>
-                </div>
+            {(() => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                // Normalize reg date to local midnight to avoid UTC-vs-local timezone mismatch
+                const toLocalMidnight = (dateStr) => {
+                    const d = new Date(dateStr);
+                    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+                };
+                const liveFests = filteredFests.filter(f => {
+                    if (!f.registrationStartDate) return false;
+                    return toLocalMidnight(f.registrationStartDate) <= today;
+                });
+                const upcomingFests = filteredFests.filter(f => {
+                    if (!f.registrationStartDate) return true;
+                    return toLocalMidnight(f.registrationStartDate) > today;
+                });
 
-                {loading ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
-                            <div key={i} className="h-72 rounded-xl bg-white/5 animate-pulse border border-white/5"></div>
-                        ))}
-                    </div>
-                ) : filteredFests.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                        {filteredFests.map(fest => (
-                            <div key={fest.id}>
-                                <FestCard fest={fest} />
+                return (
+                    <>
+                        <section className="space-y-6">
+                            <div className="flex items-center gap-3">
+                                <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_rgba(220,38,38,0.7)]"></span>
+                                <h2 className="text-2xl font-bold text-white tracking-wide drop-shadow-lg">Live Fests</h2>
                             </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="bg-surface-card p-12 rounded-xl border border-white/10 text-center backdrop-blur-md">
-                        <div className="text-4xl mb-4">🔍</div>
-                        <h3 className="text-xl font-bold text-white mb-2">No events found</h3>
-                        <p className="text-text-secondary">Try adjusting your filters or search term.</p>
-                        <button 
-                            onClick={() => {setSearchTerm(''); setSelectedCategory('all'); setCityFilter('all');}}
-                            className="mt-6 px-6 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary hover:text-white transition-colors"
-                        >
-                            Reset Filters
-                        </button>
-                    </div>
-                )}
-            </section>
 
-             {/* Upcoming Events Section */}
-             <section className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold text-text-primary flex items-center gap-2">
-                         <span className="w-1 h-6 bg-royal-purple rounded-full"></span>
-                         Upcoming Events
-                    </h2>
-                </div>
-                <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x px-2">
-                    {loading ? (
-                         <div className="min-w-[280px] h-64 bg-white/5 animate-pulse rounded-xl"></div>
-                    ) : (
-                         fests.filter(f => new Date(f.festStartDate) > new Date()).slice(0, 5).map(fest => (
-                              <div key={`upcoming-${fest.id}`} className="min-w-[280px] snap-start">
-                                 <FestCard fest={fest} />
-                              </div>
-                         ))
-                    )}
-                </div>
-            </section>
+                            {loading ? (
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                    {[1,2,3,4,5].map(i => (
+                                        <div key={i} className="h-56 rounded-xl bg-white/5 animate-pulse border border-white/5"></div>
+                                    ))}
+                                </div>
+                            ) : liveFests.length > 0 ? (
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                    {liveFests.map(fest => (
+                                        <div key={fest.id}>
+                                            <FestCard fest={fest} />
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="bg-surface-card p-10 rounded-xl border border-white/10 text-center backdrop-blur-md">
+                                    <div className="text-4xl mb-3">🎪</div>
+                                    <h3 className="text-lg font-bold text-white mb-1">No live fests right now</h3>
+                                    <p className="text-text-secondary text-sm">Check back soon or explore upcoming fests below.</p>
+                                    <button
+                                        onClick={() => {setSearchTerm(''); setSelectedCategory('all'); setCityFilter('all');}}
+                                        className="mt-5 px-5 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary hover:text-white transition-colors text-sm"
+                                    >
+                                        Reset Filters
+                                    </button>
+                                </div>
+                            )}
+                        </section>
+
+                        <section className="space-y-6">
+                            <div className="flex items-center gap-3">
+                                <span className="w-1 h-6 bg-royal-purple rounded-full"></span>
+                                <h2 className="text-2xl font-bold text-text-primary tracking-wide">Upcoming Fests</h2>
+                            </div>
+
+                            {loading ? (
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                    {[1,2,3,4,5].map(i => (
+                                        <div key={i} className="h-56 rounded-xl bg-white/5 animate-pulse border border-white/5"></div>
+                                    ))}
+                                </div>
+                            ) : upcomingFests.length > 0 ? (
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                    {upcomingFests.map(fest => (
+                                        <div key={`upcoming-${fest.id}`}>
+                                            <FestCard fest={fest} />
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="bg-surface-card p-10 rounded-xl border border-white/10 text-center backdrop-blur-md">
+                                    <div className="text-4xl mb-3">🗓️</div>
+                                    <h3 className="text-lg font-bold text-text-primary mb-1">No upcoming fests</h3>
+                                    <p className="text-text-secondary text-sm">All visible fests have already opened registrations.</p>
+                                </div>
+                            )}
+                        </section>
+                    </>
+                );
+            })()}
         </div>
       </main>
     </div>
