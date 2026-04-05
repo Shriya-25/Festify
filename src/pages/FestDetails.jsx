@@ -139,7 +139,14 @@ const FestDetails = () => {
                 </div>
                 <div className="flex items-center gap-1.5 hover:text-white transition-colors">
                    <span className="material-symbols-outlined text-neon-pink text-lg">calendar_month</span>
-                  {new Date(fest.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                  {(() => {
+                    const fmt = (d) => d ? new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : null;
+                    const start = fmt(fest.festStartDate);
+                    const end = fmt(fest.registrationEndDate);
+                    if (start && end) return `${start} – ${end}`;
+                    if (start) return start;
+                    return 'Date TBA';
+                  })()}
                 </div>
               </div>
             </div>
