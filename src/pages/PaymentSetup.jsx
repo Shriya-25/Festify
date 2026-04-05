@@ -203,6 +203,7 @@ const PaymentSetup = () => {
         bannerUrl: eventData.bannerUrl || '',
         registrationForm: cleanedRegistrationForm,
         prefillUserData: eventData.prefillUserData !== false,
+        prizePool: eventData.prizePool?.type === 'none' || !eventData.prizePool ? null : eventData.prizePool,
         createdBy: currentUser.uid,
         createdAt: new Date().toISOString(),
         participantCount: 0,

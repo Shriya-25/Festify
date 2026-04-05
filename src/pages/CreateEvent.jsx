@@ -38,7 +38,15 @@ const CreateEvent = () => {
     contacts: [],
     guests: [],
     registrationForm: [],
-    prefillUserData: true
+    prefillUserData: true,
+    prizePool: {
+      type: 'none', // 'none' | 'total' | 'levelwise'
+      total: '',
+      winner: '',
+      runnerUp: '',
+      secondRunnerUp: '',
+      special: ''
+    }
   });
 
   // States for contact management
@@ -466,6 +474,7 @@ const CreateEvent = () => {
         bannerUrl: bannerUrl || '',
         registrationForm: cleanedRegistrationForm,
         prefillUserData: eventData.prefillUserData,
+        prizePool: eventData.prizePool.type === 'none' ? null : eventData.prizePool,
         createdBy: currentUser.uid,
         createdAt: new Date().toISOString(),
         participantCount: 0,
@@ -807,6 +816,98 @@ const CreateEvent = () => {
               <p className="text-sm text-gray-500 mt-1">
                 Specify participation rules, team size, eligibility, judging criteria, etc.
               </p>
+            </div>
+
+            {/* Prize Pool Section */}
+            <div className="border-t border-fest-border pt-4 sm:pt-6">
+              <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-1">Prize Pool</h3>
+              <p className="text-sm text-text-secondary mb-4">Optionally configure prizes for this event</p>
+
+              {/* Prize type selector */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {[{val:'none', label:'No Prize'}, {val:'total', label:'Total Prize Pool'}, {val:'levelwise', label:'Level-wise Prizes'}].map(opt => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setEventData({...eventData, prizePool: {...eventData.prizePool, type: opt.val}})}
+                    className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                      eventData.prizePool.type === opt.val
+                        ? 'bg-primary text-white border-primary'
+                        : 'bg-surface border-fest-border text-text-secondary hover:border-primary/50'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Total prize pool */}
+              {eventData.prizePool.type === 'total' && (
+                <div>
+                  <label className="label text-sm">Total Prize Pool (₹)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className="input-field"
+                    placeholder="e.g., 50000"
+                    value={eventData.prizePool.total}
+                    onChange={e => setEventData({...eventData, prizePool: {...eventData.prizePool, total: e.target.value}})}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Enter the combined prize amount across all positions</p>
+                </div>
+              )}
+
+              {/* Level-wise prizes */}
+              {eventData.prizePool.type === 'levelwise' && (
+                <div className="bg-surface/50 rounded-2xl border border-fest-border p-4 space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="label text-sm">🥇 Winner Prize (₹)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        className="input-field"
+                        placeholder="e.g., 10000"
+                        value={eventData.prizePool.winner}
+                        onChange={e => setEventData({...eventData, prizePool: {...eventData.prizePool, winner: e.target.value}})}
+                      />
+                    </div>
+                    <div>
+                      <label className="label text-sm">🥈 Runner-up Prize (₹)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        className="input-field"
+                        placeholder="e.g., 5000"
+                        value={eventData.prizePool.runnerUp}
+                        onChange={e => setEventData({...eventData, prizePool: {...eventData.prizePool, runnerUp: e.target.value}})}
+                      />
+                    </div>
+                    <div>
+                      <label className="label text-sm">🥉 2nd Runner-up Prize (₹) <span className="text-gray-500 font-normal">(Optional)</span></label>
+                      <input
+                        type="number"
+                        min="0"
+                        className="input-field"
+                        placeholder="e.g., 2500"
+                        value={eventData.prizePool.secondRunnerUp}
+                        onChange={e => setEventData({...eventData, prizePool: {...eventData.prizePool, secondRunnerUp: e.target.value}})}
+                      />
+                    </div>
+                    <div>
+                      <label className="label text-sm">🏅 Special Award (₹) <span className="text-gray-500 font-normal">(Optional)</span></label>
+                      <input
+                        type="number"
+                        min="0"
+                        className="input-field"
+                        placeholder="e.g., 1000"
+                        value={eventData.prizePool.special}
+                        onChange={e => setEventData({...eventData, prizePool: {...eventData.prizePool, special: e.target.value}})}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Contacts Section */}
