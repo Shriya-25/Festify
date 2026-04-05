@@ -1,5 +1,14 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    document.getElementById('main-scroll')?.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
+  return null;
+};
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './components/Toast';
 import { ConfirmProvider } from './components/ConfirmDialog';
@@ -57,8 +66,9 @@ const AppContent = () => {
     <div className="min-h-screen flex bg-background font-sans text-text-primary transition-colors duration-300">
       <Navbar />
       <div className="flex-1 flex flex-col min-w-0 transition-all duration-300 relative">
-        <main className="flex-grow overflow-y-auto h-screen scrollbar-hide">
+        <main id="main-scroll" className="flex-grow overflow-y-auto h-screen scrollbar-hide">
           <Suspense fallback={<RouteLoader />}>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
