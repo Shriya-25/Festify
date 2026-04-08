@@ -16,7 +16,6 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
-const RoleSelection = lazy(() => import('./pages/RoleSelection'));
 const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/Signup'));
@@ -44,24 +43,10 @@ const RouteLoader = () => (
   </div>
 );
 
-// Wrapper to handle role selection redirect
+// Wrapper component
 const AppContent = () => {
-  const { needsRoleSelection, currentUser } = useAuth();
-
-  // If user is logged in and needs role selection, redirect to role selection
-  if (currentUser && needsRoleSelection) {
-    return (
-      <div className="min-h-screen flex bg-background">
-        <Navbar />
-        <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
-           <main className="flex-grow p-4 md:p-8 overflow-y-auto h-screen">
-             <RoleSelection />
-           </main>
-        </div>
-      </div>
-    );
-  }
-
+  const { currentUser } = useAuth();
+  void currentUser; // used by sub-routes via context
   return (
     <div className="min-h-screen flex bg-background font-sans text-text-primary transition-colors duration-300">
       <Navbar />
@@ -77,7 +62,6 @@ const AppContent = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/resend-verification" element={<ResendVerification />} />
-          <Route path="/role-selection" element={<RoleSelection />} />
           <Route path="/fest/:id" element={<FestDetails />} />
           <Route path="/event/:eventId" element={<EventDetails />} />
           
