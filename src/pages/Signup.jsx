@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Signup = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -24,7 +25,7 @@ const Signup = () => {
     try {
       setError('');
       setLoading(true);
-      await signup(email, password, 'student');
+      await signup(email, password, name);
       navigate('/verify-email');
     } catch (error) {
       setError('Failed to create an account: ' + error.message);
@@ -37,7 +38,7 @@ const Signup = () => {
     try {
       setError('');
       setGoogleLoading(true);
-      await signInWithGoogle('student');
+      await signInWithGoogle();
       navigate('/');
     } catch (error) {
       setError('Failed to sign in with Google: ' + error.message);
@@ -63,7 +64,7 @@ const Signup = () => {
             </span>
           </Link>
           <h2 className="text-3xl font-bold text-text-primary mb-2 tracking-tight">Join the Community</h2>
-          <p className="text-text-secondary">Start your journey as a student or organizer</p>
+          <p className="text-text-secondary">Create your student account</p>
         </div>
 
         <div className="glass-card p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-fest-border backdrop-blur-xl">
@@ -82,6 +83,28 @@ const Signup = () => {
           <div className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-5 animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-1.5 md:col-span-2">
+                  <label htmlFor="name" className="text-xs font-semibold text-text-secondary uppercase tracking-wider ml-1">
+                    Full Name
+                  </label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-500 group-focus-within:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <input
+                      id="name"
+                      type="text"
+                      required
+                      className="input-field pl-10"
+                      placeholder="Your full name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-1.5 md:col-span-2">
                   <label htmlFor="email" className="text-xs font-semibold text-text-secondary uppercase tracking-wider ml-1">
                     Email Address
