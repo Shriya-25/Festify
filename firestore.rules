@@ -32,10 +32,11 @@ service cloud.firestore {
       // Allow authenticated users to create their own document
       allow create: if isOwner(userId);
       
-      // Allow users to update their own document
-      allow update: if isOwner(userId);
+      // Users can update their own profile fields but NOT their role
+      allow update: if isOwner(userId) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
       
-      // Admins can read and write all users
+      // Admins can read and write all users (including role changes)
       allow read, write: if hasRole('admin');
     }
     
