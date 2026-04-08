@@ -27,7 +27,6 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [needsRoleSelection, setNeedsRoleSelection] = useState(false);
 
   // Sign up function
   const signup = async (email, password, name) => {
@@ -43,11 +42,11 @@ export const AuthProvider = ({ children }) => {
       // Send email verification
       await sendEmailVerification(user);
       
-      // Create user document in Firestore without role (will be set after verification)
+      // Create user document in Firestore with default student role
       const userData = {
         name,
         email,
-        role: null, // Will be set after email verification in role selection
+        role: 'student',
         emailVerified: false,
         createdAt: new Date().toISOString(),
         authProvider: 'email'
@@ -82,13 +81,14 @@ export const AuthProvider = ({ children }) => {
       }
       
       // Update Firestore emailVerified status if verified
-      if (user.emailVerified) {
-        await setDoc(doc(db, 'users', user.uid), {
-          emailVerified: true
-        }, { merge: true });
-      }
+      await setDoc(doc(db, 'users', user.uid), { emailVerified: true }, { merge: true });
+
+      // Fetch role and set in state so redirect can happen immediately
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const role = userDoc.exists() ? (userDoc.data().role || 'student') : 'student';
+      setUserRole(role);
       
-      return user;
+      return { user, role };
     } catch (error) {
       throw error;
     }
@@ -140,20 +140,18 @@ export const AuthProvider = ({ children }) => {
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       
       if (!userDoc.exists()) {
-        // New Google user - create document with verified status
-        // Google users are automatically verified
+        // New Google user - create document with verified status, default student role
         await setDoc(doc(db, 'users', user.uid), {
           name: user.displayName,
           email: user.email,
-          role: null, // Will be set after role selection
-          emailVerified: true, // Google users are pre-verified
+          role: 'student',
+          emailVerified: true,
           createdAt: new Date().toISOString(),
           authProvider: 'google'
         });
-        
-        setNeedsRoleSelection(true);
+        setUserRole('student');
       } else {
-        // Existing user - check role
+        // Existing user - load their role
         const userData = userDoc.data();
         
         // Update Firestore if not marked as verified
@@ -163,38 +161,20 @@ export const AuthProvider = ({ children }) => {
           }, { merge: true });
         }
         
-        // Check role
+        // If existing user has no role (old account), default to student
         if (!userData.role) {
-          setNeedsRoleSelection(true);
+          await setDoc(doc(db, 'users', user.uid), { role: 'student' }, { merge: true });
+          setUserRole('student');
         } else {
           setUserRole(userData.role);
-          setNeedsRoleSelection(false);
         }
       }
-      
-      return user;
+
+      // Read back the role we just set
+      const finalRole = (await getDoc(doc(db, 'users', user.uid))).data()?.role || 'student';
+      return { user, role: finalRole };
     } catch (error) {
       console.error('Google sign-in error:', error);
-      throw error;
-    }
-  };
-
-  // Set user role (for Google sign-in users)
-  const setUserRoleInDB = async (role) => {
-    try {
-      if (!currentUser) throw new Error('No user logged in');
-      
-      await setDoc(doc(db, 'users', currentUser.uid), {
-        name: currentUser.displayName,
-        email: currentUser.email,
-        role,
-        createdAt: new Date().toISOString(),
-        authProvider: 'google'
-      }, { merge: true });
-      
-      setUserRole(role);
-      setNeedsRoleSelection(false);
-    } catch (error) {
       throw error;
     }
   };
@@ -202,7 +182,6 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = () => {
     setUserRole(null);
-    setNeedsRoleSelection(false);
     return signOut(auth);
   };
 
@@ -212,14 +191,9 @@ export const AuthProvider = ({ children }) => {
       const userDoc = await getDoc(doc(db, 'users', uid));
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        if (!userData.role) {
-          setNeedsRoleSelection(true);
-        } else {
-          setUserRole(userData.role);
-        }
-        return userData.role;
-      } else {
-        setNeedsRoleSelection(true);
+        const role = userData.role || 'student';
+        setUserRole(role);
+        return role;
       }
     } catch (error) {
       console.error('Error fetching user role:', error);
@@ -243,11 +217,9 @@ export const AuthProvider = ({ children }) => {
   const value = {
     currentUser,
     userRole,
-    needsRoleSelection,
     signup,
     login,
     signInWithGoogle,
-    setUserRoleInDB,
     resendVerificationEmail,
     reloadUser,
     logout,
