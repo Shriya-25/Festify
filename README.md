@@ -1,6 +1,162 @@
-﻿# Festify - College Event Management Platform
+﻿# Festify — College Event Management Platform
 
-A comprehensive event management platform for college fests where students can discover events, register with payments, and organizers can manage registrations, payment verifications, and track funds collected.
+> **Live Demo:** [https://festify-six.vercel.app](https://festify-six.vercel.app)
+
+Festify is a full-stack college event management platform where students discover and register for fest events, organizers manage fests and verify payments, and admins oversee the entire platform.
+
+---
+
+## 📸 Highlights
+
+- Students browse live/upcoming fests, register for events (free or paid)
+- Organizers create fests, manage events, verify payment screenshots
+- Admins approve/reject fests and events, manage all users
+- Role-based access: student → organizer → admin
+- Google Sign-In + Email/Password with email verification
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Tech |
+|---|---|
+| Frontend | React 18 + Vite + Tailwind CSS |
+| Auth | Firebase Authentication |
+| Database | Firebase Firestore |
+| Routing | React Router v6 |
+| Images | ImgBB API |
+| Email | EmailJS |
+| Payments | Razorpay + Manual QR/UPI |
+| Deployment | Vercel |
+
+---
+
+## ✨ Features
+
+### Student
+- Browse fests by category, city, date
+- Register for free or paid events
+- Upload payment screenshot + transaction ID
+- Track registration status
+- Email confirmation after registration
+- Profile management
+
+### Organizer
+- Create and manage fests (multi-step form)
+- Create free or paid events with custom forms
+- Upload QR code for manual payments or configure Razorpay
+- Verify / reject payment proofs
+- Track funds collected in real time
+- Export registrations as CSV
+
+### Admin
+- Approve / reject / request changes on fests & events
+- View and manage all users
+- Platform-wide analytics dashboard
+- Cascade delete fests with all their events
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone & Install
+
+```bash
+git clone https://github.com/Shriya-25/Festify.git
+cd Festify
+npm install
+```
+
+### 2. Environment Variables
+
+Create a `.env` file in the root (use `.env.example` as reference):
+
+```env
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_FIREBASE_MEASUREMENT_ID=
+
+VITE_IMGBB_API_KEY=
+VITE_EMAILJS_SERVICE_ID=
+VITE_EMAILJS_TEMPLATE_ID=
+VITE_EMAILJS_PUBLIC_KEY=
+```
+
+### 3. Firebase Setup
+
+1. Create a project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Enable **Authentication** → Email/Password + Google
+3. Create **Firestore Database** in production mode
+4. Deploy security rules:
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   firebase deploy --only firestore:rules
+   ```
+5. Add your Firebase config values to `.env`
+
+### 4. Run Locally
+
+```bash
+npm run dev
+```
+
+---
+
+## 🔐 Role System
+
+| Role | How assigned | Access |
+|---|---|---|
+| `student` | Default on every signup | Browse, register for events |
+| `organizer` | Manually set in Firestore by admin | Create/manage fests & events |
+| `admin` | Manually set in Firestore | Full platform access |
+
+> Roles are stored in Firestore `users/{uid}.role` and are **not self-assignable** — users cannot change their own role.
+
+### Set organizer/admin role (Firestore Console)
+1. Go to Firestore → `users` collection
+2. Find the user document
+3. Edit `role` field → set to `"organizer"` or `"admin"`
+4. User needs to log out and back in
+
+---
+
+## ☁️ Deploying to Vercel
+
+```bash
+npm install -g vercel
+vercel login
+vercel --prod
+```
+
+Add all `VITE_*` environment variables in Vercel → Project Settings → Environment Variables.
+
+Also add your Vercel domain to **Firebase Console → Authentication → Settings → Authorized domains**.
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── components/       # Navbar, Header, Footer, ProtectedRoute, etc.
+├── context/          # AuthContext, ThemeContext
+├── firebase/         # Firebase config
+├── pages/            # All route pages
+├── services/         # EmailJS service
+└── utils/            # Validation, date utils, constants
+```
+
+---
+
+## 📄 License
+
+MIT
+
 
 ## 🌟 Key Features
 
