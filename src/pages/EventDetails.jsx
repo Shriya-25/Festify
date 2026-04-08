@@ -829,6 +829,10 @@ const EventDetails = () => {
                                 <span className="material-symbols-outlined">check_circle</span>
                                 Already Registered
                             </button>
+                         ) : userRole === null ? (
+                            <div className="w-full py-4 flex items-center justify-center">
+                              <div className="h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+                            </div>
                          ) : userRole === 'student' ? (
                             <button 
                                 onClick={openRegistrationModal}
