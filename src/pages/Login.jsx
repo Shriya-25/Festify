@@ -9,8 +9,14 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { login, signInWithGoogle } = useAuth();
+  const { login, signInWithGoogle, userRole } = useAuth();
   const navigate = useNavigate();
+
+  const redirectByRole = (role) => {
+    if (role === 'admin') navigate('/admin');
+    else if (role === 'organizer') navigate('/dashboard');
+    else navigate('/');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,8 +24,8 @@ const Login = () => {
     try {
       setError('');
       setLoading(true);
-      await login(email, password);
-      navigate('/');
+      const { role } = await login(email, password);
+      redirectByRole(role);
     } catch (error) {
       setError('Failed to login: ' + error.message);
     } finally {
@@ -31,8 +37,8 @@ const Login = () => {
     try {
       setError('');
       setGoogleLoading(true);
-      await signInWithGoogle();
-      navigate('/');
+      const { role } = await signInWithGoogle();
+      redirectByRole(role);
     } catch (error) {
       setError('Failed to sign in with Google: ' + error.message);
     } finally {
@@ -191,6 +197,8 @@ const Login = () => {
               </p>
             </div>
           </form>
+
+
         </div>
       </div>
     </div>
