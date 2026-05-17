@@ -1,63 +1,143 @@
-﻿# Festify — College Event Management Platform
+﻿<div align="center">
 
-> **Live Demo:** [https://festify-six.vercel.app](https://festify-six.vercel.app)
+# Festify 🎉
 
-Festify is a full-stack college event management platform where students discover and register for fest events, organizers manage fests and verify payments, and admins oversee the entire platform.
+**A full-stack college event management platform for students, organizers, and admins.**
 
----
+**🔗 Live Demo:** [festify-six.vercel.app](https://festify-six.vercel.app)
 
-## 📸 Highlights
+React 18 · Vite · Tailwind CSS · Firebase · Razorpay · Vercel
 
-- Students browse live/upcoming fests, register for events (free or paid)
-- Organizers create fests, manage events, verify payment screenshots
-- Admins approve/reject fests and events, manage all users
-- Role-based access: student → organizer → admin
-- Google Sign-In + Email/Password with email verification
+</div>
 
 ---
 
-## 🛠️ Tech Stack
+## 📸 Screenshots
 
-| Layer | Tech |
-|---|---|
-| Frontend | React 18 + Vite + Tailwind CSS |
-| Auth | Firebase Authentication |
-| Database | Firebase Firestore |
-| Routing | React Router v6 |
-| Images | ImgBB API |
-| Email | EmailJS |
-| Payments | Razorpay + Manual QR/UPI |
-| Deployment | Vercel |
+<p align="center">
+  <img src="./screenshots/1.png" alt="Screenshot 1" style="max-width:100%; height:auto; margin:6px;">
+  <img src="./screenshots/2.png" alt="Screenshot 2" style="max-width:100%; height:auto; margin:6px;">
+  <img src="./screenshots/3.png" alt="Screenshot 3" style="max-width:100%; height:auto; margin:6px;">
+  <img src="./screenshots/4.png" alt="Screenshot 4" style="max-width:100%; height:auto; margin:6px;">
+</p>
+
+> Drop your screenshots into a `screenshots/` folder in the project root, named `1.png`, `2.png`, `3.png`, `4.png` — they will render at their natural size and stay responsive.
+
+---
+
+## 🧠 What Is Festify?
+
+Festify digitalizes the entire college fest lifecycle — from fest creation and event registration to payment verification and admin approvals — through a structured three-role platform.
+
+| Role | Responsibility |
+|------|---------------|
+| 🎓 **Student** | Discover fests, register for events, pay and track status |
+| 🏢 **Organizer** | Create fests & events, configure payments, verify registrations |
+| 🛡️ **Admin** | Approve fests & events, manage users, monitor the platform |
 
 ---
 
 ## ✨ Features
 
-### Student
-- Browse fests by category, city, date
-- Register for free or paid events
-- Upload payment screenshot + transaction ID
-- Track registration status
-- Email confirmation after registration
-- Profile management
+<details>
+<summary><strong>🎓 Student</strong></summary>
 
-### Organizer
-- Create and manage fests (multi-step form)
-- Create free or paid events with custom forms
-- Upload QR code for manual payments or configure Razorpay
-- Verify / reject payment proofs
-- Track funds collected in real time
-- Export registrations as CSV
+- Browse and search fests by name, college, category, city, or date
+- Register for free or paid events with a custom registration form
+- Pay via **Razorpay** (instant verification) or **manual QR/UPI** (screenshot upload + transaction ID)
+- Track registration and payment verification status in real time
+- Receive an automatic email confirmation with full event details after registration
+- Manage personal profile information
 
-### Admin
-- Approve / reject / request changes on fests & events
-- View and manage all users
-- Platform-wide analytics dashboard
-- Cascade delete fests with all their events
+</details>
+
+<details>
+<summary><strong>🏢 Organizer</strong></summary>
+
+- Multi-step fest creation with a custom registration form builder
+- Create free or paid events with configurable payment methods
+- Upload a UPI QR code for manual payments or integrate Razorpay for automated checkout
+- Verify or reject student payment proofs from a dedicated dashboard
+- Track total funds collected per event in real time
+- Export complete registration and payment data as CSV
+
+</details>
+
+<details>
+<summary><strong>🛡️ Admin</strong></summary>
+
+- Approve, reject, or request changes on fests and events with comment feedback
+- Manage all users across the platform
+- View platform-wide analytics and pending approval queue
+- Cascade delete a fest along with all its associated events
+
+</details>
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18 + Vite |
+| Styling | Tailwind CSS |
+| Routing | React Router v6 |
+| State Management | React Context API |
+| Authentication | Firebase Auth — Email/Password + Google Sign-In |
+| Database | Firebase Firestore |
+| Image Hosting | ImgBB API |
+| Email Notifications | EmailJS |
+| Payments | Razorpay + Manual QR/UPI |
+| Deployment | Vercel |
+
+---
+
+## 🏗️ Architecture
+
+```
+┌──────────────────────────────────────┐
+│         React 18 + Vite              │
+│     Tailwind CSS · Router v6         │
+└────────────────┬─────────────────────┘
+                 │
+     ┌───────────┼────────────┐
+     ▼           ▼            ▼
+Firebase Auth  Firestore   ImgBB API
+(Auth flows)  (App data)  (Images/QR)
+     │
+ ┌───┴────┐
+ ▼        ▼
+EmailJS  Razorpay
+```
+
+---
+
+## 🔄 User Workflow
+
+```
+Student   →  Registers for Event  →  Pays (Razorpay or QR upload)
+                                              │
+Organizer ←────────────────────  Verifies Payment Proof
+                                              │
+Admin     ←──────────────────── Approves Fests & Events
+```
+
+**Payment flow detail:**
+- **Free events** — direct registration, no payment step
+- **Razorpay** — student pays → instant verification → confirmed
+- **Manual QR** — student pays → uploads screenshot → organizer verifies → confirmed
 
 ---
 
 ## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js v16+
+- Firebase project ([console.firebase.google.com](https://console.firebase.google.com))
+- ImgBB API key — free at [api.imgbb.com](https://api.imgbb.com)
+- EmailJS account — free at [emailjs.com](https://www.emailjs.com) *(optional, for email confirmations)*
+- Razorpay account — [razorpay.com](https://razorpay.com) *(optional, for payment gateway)*
 
 ### 1. Clone & Install
 
@@ -69,9 +149,10 @@ npm install
 
 ### 2. Environment Variables
 
-Create a `.env` file in the root (use `.env.example` as reference):
+Create a `.env` file in the project root:
 
 ```env
+# Firebase
 VITE_FIREBASE_API_KEY=
 VITE_FIREBASE_AUTH_DOMAIN=
 VITE_FIREBASE_PROJECT_ID=
@@ -80,7 +161,10 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 VITE_FIREBASE_MEASUREMENT_ID=
 
+# ImgBB
 VITE_IMGBB_API_KEY=
+
+# EmailJS (optional)
 VITE_EMAILJS_SERVICE_ID=
 VITE_EMAILJS_TEMPLATE_ID=
 VITE_EMAILJS_PUBLIC_KEY=
@@ -89,39 +173,30 @@ VITE_EMAILJS_PUBLIC_KEY=
 ### 3. Firebase Setup
 
 1. Create a project at [console.firebase.google.com](https://console.firebase.google.com)
-2. Enable **Authentication** → Email/Password + Google
-3. Create **Firestore Database** in production mode
-4. Deploy security rules:
-   ```bash
-   npm install -g firebase-tools
-   firebase login
-   firebase deploy --only firestore:rules
-   ```
-5. Add your Firebase config values to `.env`
+2. Enable **Authentication** → Email/Password + Google Sign-In
+3. Create a **Firestore Database** in production mode
+4. Deploy Firestore security rules:
+
+```bash
+npm install -g firebase-tools
+firebase login
+firebase deploy --only firestore:rules
+```
+
+5. Paste your Firebase config values into `.env`
 
 ### 4. Run Locally
 
 ```bash
 npm run dev
+# → http://localhost:5173
 ```
 
----
+### 5. Build for Production
 
-## 🔐 Role System
-
-| Role | How assigned | Access |
-|---|---|---|
-| `student` | Default on every signup | Browse, register for events |
-| `organizer` | Manually set in Firestore by admin | Create/manage fests & events |
-| `admin` | Manually set in Firestore | Full platform access |
-
-> Roles are stored in Firestore `users/{uid}.role` and are **not self-assignable** — users cannot change their own role.
-
-### Set organizer/admin role (Firestore Console)
-1. Go to Firestore → `users` collection
-2. Find the user document
-3. Edit `role` field → set to `"organizer"` or `"admin"`
-4. User needs to log out and back in
+```bash
+npm run build
+```
 
 ---
 
@@ -133,349 +208,70 @@ vercel login
 vercel --prod
 ```
 
-Add all `VITE_*` environment variables in Vercel → Project Settings → Environment Variables.
-
-Also add your Vercel domain to **Firebase Console → Authentication → Settings → Authorized domains**.
-
----
-
-## 📁 Project Structure
-
-```
-src/
-├── components/       # Navbar, Header, Footer, ProtectedRoute, etc.
-├── context/          # AuthContext, ThemeContext
-├── firebase/         # Firebase config
-├── pages/            # All route pages
-├── services/         # EmailJS service
-└── utils/            # Validation, date utils, constants
-```
+- Add all `VITE_*` variables under **Vercel → Project Settings → Environment Variables**
+- Add your Vercel domain to **Firebase Console → Authentication → Authorized Domains**
 
 ---
 
-## 📄 License
+## 🔐 Role System
 
-MIT
+Roles are stored in Firestore at `users/{uid}.role` and are **not self-assignable**.
 
+| Role | How Assigned | Access |
+|------|-------------|--------|
+| `student` | Default on every signup | Browse and register for events |
+| `organizer` | Manually set in Firestore | Create and manage fests & events |
+| `admin` | Manually set in Firestore | Full platform access |
 
-## 🌟 Key Features
+**To assign organizer or admin role:**
+1. Open Firestore → `users` collection
+2. Find the user's document
+3. Set the `role` field to `"organizer"` or `"admin"`
+4. Ask the user to log out and back in
 
-### For Students
-- 🔐 **Secure Authentication** - Email/Password + Google Sign-In
-- ✉️ **Email Verification** for email/password sign-ups
-- 🎪 **Browse & Discover Fests** - Search by name, college, or location
-- 🎯 **Event Registration** - Register for free or paid events
-- � **Email Confirmation** - Automatic confirmation email after registration with all event and registration details
-- �💳 **Multiple Payment Options**:
-  - Manual QR Payment (UPI, PhonePe, GPay, etc.)
-  - Razorpay Payment Gateway (Instant verification)
-- 📱 **Payment Proof Upload** - Submit screenshot and transaction ID for manual payments
-- 📊 **Registration Status Tracking** - View payment verification status
-- 👤 **Profile Management** - Update personal information
-- 🖼️ **Event Banners** - Rich visual event discovery
-
-### For Organizers
-- 🎉 **Create & Manage Fests** - Multi-step fest creation with custom forms
-- 🎯 **Event Management** - Create free or paid events
-- 💰 **Payment Configuration**:
-  - Upload QR codes for manual payments
-  - Configure Razorpay for automated payments
-- ✅ **Payment Verification Dashboard** - Verify/reject payment proofs
-- 💵 **Fund Tracking** - Real-time tracking of total funds collected
-- 📥 **CSV Export** - Download complete registration data with payment details
-- 📝 **Custom Registration Forms** - Build custom forms with FormBuilder
-- 🖼️ **Banner Upload** - Add event banners via ImgBB
-- 📊 **Registration Analytics** - View participant counts and payment status
-
-### For Admins
-- 🔐 **Admin Panel** - Comprehensive management dashboard
-- ✅ **Fest Approval System** - Approve/reject/request changes for fests
-- 🎯 **Event Approval System** - Approve/reject/request changes for events
-- 👥 **User Management** - View and manage all users
-- 📊 **Platform Analytics** - View pending items and platform statistics
-- 💬 **Admin Comments** - Provide feedback to organizers
-
-## 🛠️ Tech Stack
-
-- **Frontend**: React.js (Vite) + Tailwind CSS
-- **Backend**: Firebase (Authentication + Firestore)
-- **Routing**: React Router v6
-- **Image Hosting**: ImgBB API
-- **Payment Gateway**: Razorpay
-- **State Management**: React Context API
-
-## 📋 Prerequisites
-
-- Node.js (v16 or higher)
-- Firebase Account
-- ImgBB API Key (for image uploads)
-- Razorpay Account (optional, for payment gateway)
-
-## 🚀 Getting Started
-
-### 1. Clone and Install
-
-```bash
-git clone <repository-url>
-cd Festify
-npm install
-```
-
-### 2. Environment Setup
-
-Create a `.env` file in the root directory:
-
-```env
-# Firebase Configuration
-VITE_FIREBASE_API_KEY=your_api_key_here
-VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain_here
-VITE_FIREBASE_PROJECT_ID=your_project_id_here
-VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket_here
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id_here
-VITE_FIREBASE_APP_ID=your_app_id_here
-
-# ImgBB API (for image uploads)
-VITE_IMGBB_API_KEY=your_imgbb_api_key_here
-```
-
-### 3. Firebase Setup
-
-See detailed guides in:
-- 📄 [FIREBASE_SETUP.md](FIREBASE_SETUP.md) - Complete Firebase configuration
-- 📄 [FIRESTORE_RULES_SETUP.md](FIRESTORE_RULES_SETUP.md) - Security rules setup
-- 📄 [GOOGLE_SIGNIN_SETUP.md](GOOGLE_SIGNIN_SETUP.md) - Google authentication
-- 📄 [EMAIL_VERIFICATION_GUIDE.md](EMAIL_VERIFICATION_GUIDE.md) - Email verification flow
-
-#### Quick Firebase Setup:
-1. Create a Firebase project at https://console.firebase.google.com
-2. Enable **Authentication**:
-   - Email/Password
-   - Google Sign-In (optional)
-3. Create **Firestore Database** (Start in production mode)
-4. Deploy **Firestore Security Rules**:
-   ```bash
-   firebase deploy --only firestore:rules
-   ```
-5. Copy your Firebase config to `.env` file
-
-### 4. ImgBB Setup
-
-1. Get free API key from https://api.imgbb.com/
-2. Add to `.env` as `VITE_IMGBB_API_KEY`
-3. Used for uploading fest/event banners and payment QR codes
-
-See: [IMGBB_SETUP.md](IMGBB_SETUP.md)
-
-### 5. EmailJS Setup (Optional - For Email Confirmations)
-
-1. Create free account at https://www.emailjs.com/
-2. Configure email service and create template
-3. Add to `.env`:
-   - `VITE_EMAILJS_SERVICE_ID`
-   - `VITE_EMAILJS_TEMPLATE_ID`
-   - `VITE_EMAILJS_PUBLIC_KEY`
-4. Students will receive automatic confirmation emails after registering for events
-
-See: [EMAILJS_SETUP.md](EMAILJS_SETUP.md) for detailed setup guide
-
-### 6. Run Development Server
-
-```bash
-npm run dev
-```
-
-Visit `http://localhost:5173`
-
-## 📦 Build for Production
-
-```bash
-npm run build
-```
-
-## � Deploy to Firebase Hosting
-
-```bash
-npm run deploy
-```
-
-## �👨‍💼 Setting Up Admin Account
-
-See: [SET_ADMIN_INSTRUCTIONS.md](SET_ADMIN_INSTRUCTIONS.md)
-
-Two methods:
-1. **Firebase Console**: Manually set `role: "admin"` in Firestore
-2. **Admin Script**: Use `set-admin.js` script
+Alternatively, use the included script:
 
 ```bash
 node set-admin.js your-email@example.com
 ```
 
-## 💳 Payment System Setup
+---
 
-### Razorpay Integration (Optional)
+## 📂 Project Structure
 
-1. Create account at https://razorpay.com
-2. Get **Key ID** and **Secret Key** from Dashboard
-3. Configure during event creation in "Payment Setup" step
-4. Students can pay instantly via Razorpay checkout
-
-**Note**: Razorpay payments are auto-verified. Manual QR payments require organizer verification.
-
-### Manual QR Payment Setup
-
-1. Generate your UPI QR code (from any UPI app)
-2. Upload during event creation
-3. Students will scan, pay, and upload proof
-4. Organizers verify payments from dashboard
-
-## 📚 Documentation
-
-- 📖 [PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md) - Complete technical documentation
-- 📖 [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) - Project overview
-- 📖 [FEATURES.md](FEATURES.md) - Detailed feature list
-- 📖 [FEST_CREATION_GUIDE.md](FEST_CREATION_GUIDE.md) - How to create fests
-- 📖 [EVENT_MANAGEMENT_SYSTEM.md](EVENT_MANAGEMENT_SYSTEM.md) - Event management guide
-- 📖 [QUICKSTART.md](QUICKSTART.md) - Quick start guide
-- 📖 [INSTALLATION.md](INSTALLATION.md) - Detailed installation instructions
-
-## 🔒 Firestore Collections Structure
-
-### users
-```javascript
-{
-  uid: string,
-  email: string,
-  name: string,
-  role: "student" | "organizer" | "admin",
-  phone: string,
-  college: string,
-  createdAt: timestamp
-}
 ```
-
-### fests
-```javascript
-{
-  festName: string,
-  collegeName: string,
-  category: string,
-  description: string,
-  date: string,
-  venue: string,
-  bannerUrl: string,
-  createdBy: string (uid),
-  status: "pending" | "approved" | "rejected" | "changes_requested",
-  registrationForm: array,
-  prefillUserData: boolean,
-  adminComments: string
-}
+src/
+├── components/    # Navbar, Footer, ProtectedRoute, shared UI
+├── context/       # AuthContext, ThemeContext
+├── firebase/      # Firebase config and initialization
+├── pages/         # All route-level page components
+├── services/      # EmailJS integration
+└── utils/         # Validation helpers, date utils, constants
 ```
-
-### events
-```javascript
-{
-  festId: string,
-  eventName: string,
-  domain: string,
-  description: string,
-  date: string,
-  time: string,
-  venue: string,
-  isPaid: boolean,
-  entryFee: number,
-  paymentConfig: {
-    method: "manual" | "razorpay",
-    qrImageURL: string, // for manual
-    instructions: string, // for manual
-    apiKey: string, // for razorpay
-    businessName: string // for razorpay
-  },
-  maxParticipants: number,
-  registrationDeadline: string,
-  bannerUrl: string,
-  createdBy: string (uid),
-  status: "pending" | "approved" | "rejected",
-  participantCount: number,
-  registrationForm: array
-}
-```
-
-### eventRegistrations
-```javascript
-{
-  eventId: string,
-  festId: string,
-  userId: string,
-  name: string,
-  email: string,
-  phone: string,
-  college: string,
-  paymentProof: {
-    screenshotURL: string,
-    transactionId: string,
-    paymentStatus: "pending_verification" | "verified" | "rejected" | "success",
-    razorpay_payment_id: string, // for Razorpay
-    paymentMethod: "manual" | "razorpay"
-  },
-  paymentVerified: boolean,
-  customFields: object,
-  registeredAt: timestamp
-}
-```
-
-## 🎨 Key Features Breakdown
-
-### Payment Flow
-1. **Free Events**: Direct registration without payment
-2. **Paid Events**:
-   - **Manual QR**: Student pays → uploads proof → organizer verifies → registration complete
-   - **Razorpay**: Student pays → instant verification → registration complete
-
-### Event Creation Flow
-1. Basic Details (Name, Domain, Description, Date, Venue)
-2. Entry Fees (Free/Paid selection)
-3. Payment Setup (Upload QR or Configure Razorpay) - *if paid*
-4. Banner Upload (Optional)
-5. Registration Form Builder (Custom fields)
-6. Review & Submit (Admin approval required)
-
-### Organizer Dashboard
-- View all events with banners
-- See registration counts and payment status
-- Track total funds collected per event
-- Verify/reject payment proofs with proof viewing
-- Download CSV with complete payment details
-- Edit events (requires re-approval)
-
-## 🐛 Troubleshooting
-
-### Firebase Permission Denied
-- Check Firestore security rules are deployed
-- Verify user has correct role in Firestore
-- Ensure email is verified (for email/password users)
-
-### Payment Issues
-- Verify ImgBB API key for QR/screenshot uploads
-- Check Razorpay Key ID (not Secret Key) for frontend
-- Ensure payment configuration is saved with event
-
-### Image Upload Failures
-- Check ImgBB API key is valid
-- Verify image size < 5MB
-- Ensure stable internet connection
-
-## 📝 License
-
-This project is MIT licensed.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📧 Support
-
-For issues and questions, please open an issue on GitHub.
 
 ---
 
-**Built with ❤️ for college fest management**
+## 🚀 Future Improvements
+
+- Real-time push notifications
+- QR code–based event tickets for entry
+- AI-powered fest/event recommendations
+- Attendance tracking system
+- Organizer analytics enhancements
+- Mobile application (React Native)
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome. Fork the repository, make your changes, and open a pull request.
+
+---
+
+<div align="center">
+
+⭐ **If this project helped you or impressed you, consider starring it on GitHub!**
+
+Built with ❤️ by Shriya Kulkarni
+
+</div>
