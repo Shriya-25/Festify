@@ -1,27 +1,25 @@
-﻿<div align="center">
+﻿# Festify 🎉
 
-# Festify 🎉
-
-**A full-stack college event management platform for students, organizers, and admins.**
+A full-stack college event management platform for students, organizers, and admins.
 
 **🔗 Live Demo:** [festify-six.vercel.app](https://festify-six.vercel.app)
 
 React 18 · Vite · Tailwind CSS · Firebase · Razorpay · Vercel
 
-</div>
-
 ---
 
 ## 📸 Screenshots
 
-<p align="center">
-  <img src="./screenshots/1.png" alt="Screenshot 1" style="max-width:100%; height:auto; margin:6px;">
-  <img src="./screenshots/2.png" alt="Screenshot 2" style="max-width:100%; height:auto; margin:6px;">
-  <img src="./screenshots/3.png" alt="Screenshot 3" style="max-width:100%; height:auto; margin:6px;">
-  <img src="./screenshots/4.png" alt="Screenshot 4" style="max-width:100%; height:auto; margin:6px;">
-</p>
-
-> Drop your screenshots into a `screenshots/` folder in the project root, named `1.png`, `2.png`, `3.png`, `4.png` — they will render at their natural size and stay responsive.
+<table>
+  <tr>
+    <td><img src="./screenshots/1.png" width="340" alt="Screenshot 1"></td>
+    <td><img src="./screenshots/2.png" width="340" alt="Screenshot 2"></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshots/3.png" width="340" alt="Screenshot 3"></td>
+    <td><img src="./screenshots/4.png" width="340" alt="Screenshot 4"></td>
+  </tr>
+</table>
 
 ---
 
